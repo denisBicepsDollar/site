@@ -26,12 +26,12 @@
     &quot;assignee&quot;: &quot;denisBicepsDollar&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/denisBicepsDollar/front.git&quot;,
-    &quot;accountId&quot;: &quot;b5036fdf-128c-4693-b8f0-2130dfa47121&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:denisBicepsDollar/site.git",
+    "accountId": "b5036fdf-128c-4693-b8f0-2130dfa47121"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1,
   &quot;fromUser&quot;: false
@@ -54,7 +54,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "main",
     "javascript.preferred.runtime.type.id": "node",
     "last_opened_file_path": "E:/sait2/cart/checkout-step2",
     "list.type.of.created.stylesheet": "CSS",
@@ -110,7 +110,7 @@
       <workItem from="1778955859494" duration="23591000" />
       <workItem from="1779029981195" duration="27034000" />
       <workItem from="1779107441285" duration="92843000" />
-      <workItem from="1779288912006" duration="17542000" />
+      <workItem from="1779288912006" duration="17850000" />
     </task>
     <servers />
   </component>
