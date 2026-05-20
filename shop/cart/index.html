@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Корзина — Цветочная лавка "Зеленые усы"</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="./cart.css">
+</head>
+<body>
+    <header class="header">
+        <div class="wrapper header__wrapper">
+            <h1 class="header__logo">
+                <a href="../" class="header__title">Цветочная лавка "Зеленые усы"</a>
+            </h1>
+            <div class="header__actions">
+                <a href="./" class="button header__cart" id="cart-button">
+                    Корзина<span class="header__cart-count">0</span>
+                </a>
+
+                <nav class="header__nav">
+                    <button type="button"
+                            class="button header__button"
+                            id="menu-button"
+                            aria-expanded="false"
+                            aria-controls="site-menu">
+                        Открыть меню
+                    </button>
+                    <ul class="menu" id="site-menu">
+                        <li>
+                            <a class="menu__link" href="../catalog">Каталог</a>
+                        </li>
+                        <li>
+                            <a class="menu__link" href="../about">О лавке</a>
+                        </li>
+                        <li>
+                            <a class="menu__link" href="../information">Информация</a>
+                        </li>
+                        <li>
+                            <a class="menu__link" href="../delivery">Доставка и оплата</a>
+                        </li>
+                        <li>
+                            <a class="menu__link" href="../contacts">Контакты</a>
+                        </li>
+
+                    </ul>
+                </nav>
+
+            </div>
+        </div>
+        <div class="checkout-progress">
+            <div id="checkout-progress-bar" class="checkout-progress__bar"></div>
+        </div>
+    </header>
+
+
+
+
+    <main class="main">
+        <section class="section">
+            <div class="wrapper">
+                <h2 class="section__title">Корзина</h2>
+
+                <!-- Если корзина пуста -->
+                <div class="cart-empty" id="cart-empty">
+                    <p class="cart-empty__text">Корзина пуста</p>
+                    <a class="button" href="../catalog">Перейти к покупкам</a>
+                </div>
+
+                <!-- Если есть товары -->
+                <div class="cart-page" id="cart-page">
+
+                    <!-- ================== -->
+                    <!-- ШАГ 1: Корзина -->
+                    <!-- ================== -->
+                    <div id="step-1" class="checkout-step">
+
+                        <!-- Товары -->
+                        <div class="cart-items" id="cart-items">
+
+                        </div>
+
+                        <!-- Итого -->
+                        <div class="cart-summary" id="cart-summary">
+                            <div class="cart-summary__row">
+                                <span>Товаров:</span>
+                                <span id="cart-total-items">0 шт.</span>
+                            </div>
+                            <div class="cart-summary__row cart-summary__row--total">
+                                <span>Итого:</span>
+                                <span id="cart-total-price">0 ₽</span>
+                            </div>
+                        </div>
+
+                        <p class="min-order-text">Минимальная сумма заказа 1500 руб.</p>
+                        <button class="button button--outline" type="button" id="clear-cart-button">
+                            Очистить корзину
+                        </button>
+
+                        <!-- Навигация шага 1 -->
+                        <div class="step-nav">
+                            <a href="../catalog" class="back-btn">← К покупкам</a>
+                            <button type="button" id="next-to-step-2" class="next-btn" disabled>
+                                Далее →
+                            </button>
+                        </div>
+                    </div>
+
+                    <form id="checkout-form" novalidate>
+
+                        <!-- ================== -->
+                        <!-- ШАГ 2: Адрес + расчёт -->
+                        <!-- ================== -->
+                        <div id="step-2" class="checkout-step hidden">
+                            <div class="checkout-getting">
+                                <h4>Как хотите получить заказ?</h4>
+
+                                <label class="checkout-form__radio">
+                                    <input type="radio" name="getting" value="pickup">
+                                    <div class="checkout-form__radio-content">
+                                        <span class="checkout-form__radio-text">Самовывоз</span>
+                                        <span class="checkout-form__radio-price">Бесплатно</span>
+                                    </div>
+                                </label>
+                                <label class="checkout-form__radio">
+                                    <input type="radio" name="getting" value="delivery">
+                                    <div class="checkout-form__radio-content">
+                                        <span class="checkout-form__radio-text">Доставка</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div id="pickup-block" class="pickup-block">
+                                <p><strong>Самовывоз из лавки</strong></p>
+                                <p>Адрес: Ярославская обл., г. Рыбинск, ...</p>
+                                <p>После оформления мы свяжемся с вами.</p>
+                            </div>
+
+
+                            <div id="delivery-block" class="delivery-block hidden">
+                                <h3 class="checkout-step__title">Укажите адрес</h3>
+
+                                <div id="input-adress-block" class="info-text">
+                                    <p class="label-text2">
+                                        Для расчёта стоимости доставки введите название вашего населённого пункта.
+                                    </p>
+                                    <section class="container">
+                                        Выберите адрес из выпадающего списка.
+                                        <input
+                                                id="inp-address"
+                                                class="input-text2 suggestions-input"
+                                                name="address"
+                                                type="text"
+                                                placeholder="Введите название вашего населённого пункта"
+                                                autocomplete="address-level2"
+                                                autocorrect="on"
+                                                autocapitalize="words"
+                                                spellcheck="true"
+                                        />
+                                    </section>
+                                </div>
+
+                            <!-- Результат расчёта (появляется после клика) -->
+                                <div id="company-delivery__options" class="company-delivery__options hidden">
+                                    <h4 class="company-delivery__options__title">Выберите способ доставки:</h4>
+                                    <p>Рекомендуем выбирать перевозчика со сроком доставки не более 5 дней в пути.<br/>
+                                    Вес и габариты уточним при приёме в отделении, цена может измениться.</p>
+                                    <fieldset class="checkout-form__section">
+
+                                        <div class="checkout-form__radio-group">
+
+                                            <!-- Почта России -->
+                                            <label class="checkout-form__radio">
+                                                <input type="radio" name="delivery-company" value="pochta">
+                                                <div class="checkout-form__radio-content">
+                                                    <span class="checkout-form__radio-text">Почта России</span>
+                                                    <span class="checkout-form__radio-price" id="price-pochta--min">
+                                                    </span>
+                                                </div>
+                                            </label>
+
+                                            <div id="pochta-block__method" class="delivery-company__method hidden">
+
+                                                <div class="checkout-form__sub-group">
+                                                    <label class="checkout-form__radio">
+                                                        <input type="radio" name="pochta-type" value="office">
+                                                        <div class="checkout-form__radio-content">
+                                                            <span class="checkout-form__radio-text">В отделение</span>
+                                                            <span class="checkout-form__radio-price" id="price-office--min">
+                                                            </span>
+                                                        </div>
+                                                    </label>
+
+
+
+                                                    <label class="checkout-form__radio">
+                                                        <input type="radio" name="pochta-type" value="courier">
+                                                        <div class="checkout-form__radio-content">
+                                                            <span class="checkout-form__radio-text">Курьером до двери (EMS)
+                                                            </span>
+                                                            <span class="checkout-form__radio-price" id="price-courier--min"></span>
+                                                        </div>
+                                                    </label>
+                                                </div>
+
+                                                <div id="pochta-courier__block" class="courier-block">
+                                                    <div>
+                                                        <p id="pochta-courier__selected">Адресс не распознан</p>
+                                                        <div id="pochta-courier__tariff"></div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div id="pochta-office__block" class="office-block">
+                                                    <p class="delivery-widget__title">Выберите отделение Почты:</p>
+
+                                                    <div id="ecom-widget" style="height: 500px"></div>
+
+                                                    <div id="pochta-info">
+                                                        <p id="pochta-office__selected">Пункт не выбран</p>
+                                                        <div id="pochta-office__tariffs"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- СДЭК -->
+                                            <label class="checkout-form__radio">
+                                                <input type="radio" name="delivery-company" value="cdek">
+                                                <div class="checkout-form__radio-content">
+                                                    <span class="checkout-form__radio-text">Сдек</span>
+                                                    <span class="checkout-form__radio-price" id="cdek__price--min">
+                                                    </span>
+                                                </div>
+                                            </label>
+
+                                            <div id="cdek__block__method" class="delivery-company__method hidden">
+
+                                                <div class="checkout-form__radio-group">
+                                                    <label class="checkout-form__radio">
+                                                        <input type="radio" name="cdek-tariff" value="pvz" data-price="350">
+                                                        <div class="checkout-form__radio-content">
+                                                            <span class="checkout-form__radio-text">В пункт выдачи СДЭК</span>
+                                                            <span class="checkout-form__radio-price">от 350 ₽</span>
+                                                        </div>
+                                                    </label>
+
+                                                    <label class="checkout-form__radio">
+                                                        <input type="radio" name="cdek-tariff" value="courier" data-price="550">
+                                                        <div class="checkout-form__radio-content">
+                                                            <span class="checkout-form__radio-text">Курьером до двери</span>
+                                                            <span class="checkout-form__radio-price">от 550 ₽</span>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                                <p class="delivery-widget__title">Точную стоимость рассчитаем после оформления.<br/>Узнать примерную цену можно в этом калькуляторе.</p>
+                                                <div id="cdek-calc-container"></div>
+                                            </div>
+                                        </div>
+
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <!-- Навигация шага 2 -->
+                            <div class="step-nav">
+                                <button type="button" id="back-to-step-1" class="back-btn">← Назад</button>
+                                <button type="button" id="next-to-step-3" class="next-btn" disabled>
+                                    Далее →
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                        <!-- ================== -->
+                        <!-- ШАГ 3: Контакты -->
+                        <!-- ================== -->
+                        <div id="step-3" class="checkout-step hidden">
+                            <h3 class="checkout-step__title">Контактные данные</h3>
+
+                            <div class="checkout-form__field">
+                                <label class="checkout-form__label" for="surname">Фамилия *</label>
+                                <input class="checkout-form__input" type="text" id="surname" name="surname"
+                                       placeholder="Иванов" autocomplete="family-name" required>
+                                <span class="checkout-form__error" id="surname-error"></span>
+                            </div>
+
+                            <div class="checkout-form__field">
+                                <label class="checkout-form__label" for="name">Имя *</label>
+                                <input class="checkout-form__input" type="text" id="name" name="name"
+                                       placeholder="Иван" autocomplete="given-name" required>
+                                <span class="checkout-form__error" id="name-error"></span>
+                            </div>
+
+                            <div class="checkout-form__field">
+                                <label class="checkout-form__label" for="fathername">Отчество</label>
+                                <input class="checkout-form__input" type="text" id="fathername" name="fathername"
+                                       placeholder="Иванович" autocomplete="additional-name">
+                            </div>
+
+                            <div class="checkout-form__field">
+                                <label class="checkout-form__label" for="email">Email *</label>
+                                <input class="checkout-form__input" type="email" id="email" name="email"
+                                       placeholder="ivan@mail.ru" autocomplete="email" required>
+                                <span class="checkout-form__error" id="email-error"></span>
+                            </div>
+
+                            <div class="checkout-form__field">
+                                <label class="checkout-form__label" for="phone">Телефон *</label>
+                                <input class="checkout-form__input" type="tel" id="phone" name="phone"
+                                       placeholder="+7 (999) 123-45-67" autocomplete="tel" required>
+                                <span class="checkout-form__error" id="phone-error"></span>
+                            </div>
+
+                            <div class="checkout-form__field">
+                                <label class="checkout-form__label" for="comment">Комментарий</label>
+                                <textarea class="checkout-form__textarea" id="comment" name="comment"
+                                          placeholder="Пожелания по доставке..." rows="3"></textarea>
+                            </div>
+
+                            <!-- Согласие -->
+                            <div class="checkout-form__checkbox">
+                                <label class="checkout-form__checkbox-label">
+                                    <input type="checkbox" id="privacy" name="privacy" required>
+                                    <span class="checkout-form__checkbox-text">
+                                    Я даю
+                                    <a class="checkout-form__link" href="/privacy" target="_blank">согласие</a>
+                                    на обработку персональных данных
+                                </span>
+                                </label>
+                                <span class="checkout-form__error" id="privacy-error"></span>
+                            </div>
+
+                            <!-- Ошибка -->
+                            <div class="checkout-form__alert checkout-form__alert--hidden" id="form-error">
+                                <button class="checkout-form__alert-close" type="button" id="close-error">×</button>
+                                <p class="checkout-form__alert-text" id="form-error-text"></p>
+                            </div>
+
+                            <div class="cart-summary checkout-final-summary">
+                                <!-- Товары -->
+                                <div class="cart-summary__row">
+                                    <span>Товары</span>
+                                    <span id="final-products-price">0 руб.</span>
+                                </div>
+
+                                <div id="final-products-list" class="cart-summary__products-list"></div>
+
+                                <!-- Способ доставки -->
+                                <div class="cart-summary__row">
+                                    <span>Способ доставки</span>
+                                    <span id="deliveryCompany">—</span>
+                                </div>
+
+                                <!-- Тариф -->
+                                <div class="cart-summary__row">
+                                    <span>Тариф</span>
+                                    <span id="deliveryTariff">—</span>
+                                </div>
+
+                                <!-- Доставка -->
+                                <div class="cart-summary__delivery-block">
+                                    <div class="cart-summary__row">
+                                        <span>Стоимость доставки</span>
+                                        <span id="final-delivery-price">—</span>
+                                    </div>
+
+                                    <div id="deliveryAddress" class="cart-summary__address hidden"></div>
+                                </div>
+
+                                <!-- Итого -->
+                                <div class="cart-summary__row cart-summary__row--total">
+                                    <span>Итого</span>
+                                    <span id="final-total-price">0 руб.</span>
+                                </div>
+                            </div>
+                            <!-- Навигация шага 3 -->
+                            <div class="step-nav">
+                                <button type="button" id="back-to-step-2" class="back-btn">← Назад</button>
+                                <button class="button button--big" type="submit" id="submit-button">
+                                    Оформить заказ
+                                </button>
+                            </div>
+
+                            <div class="checkout-form__loader checkout-form__loader--hidden" id="submit-loader">
+                                Отправка...
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <div class="wrapper footer__wrapper">
+            <p class="footer__copyright">© 2026 Цветочная лавка "Зеленые усы"</p>
+            <div class="footer__links">
+                <a class="footer__link" href="/privacy">Политика конфиденциальности</a>
+                <a class="footer__link" href="/ps">Пользовательское соглашение</a>
+            </div>
+        </div>
+    </footer>
+    <script type="module" src="../shared/product-card/index.js"></script>
+    <script src="../menu.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@dadata/suggestions@25.11.0/dist/suggestions.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@dadata/suggestions@25.11.0/dist/suggestions.min.js"></script>
+    <script src="https://widget.pochta.ru/map/widget/widget.js"></script>
+    <script type="module" src="./index.js"></script>
+    </body>
+</html>

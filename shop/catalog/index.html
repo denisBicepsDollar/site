@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang = "ru">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Цветочная лавка "Зеленые усы" — свежие цветы</title>
+        <link rel="stylesheet" href="../styles.css">
+        <link rel="stylesheet" href="./catalog.css">
+        <link rel="stylesheet" href="../shared/product-modal/modal.css">
+    </head>
+    <body>
+        <header class="header">
+            <div class="wrapper header__wrapper">
+                <h1 class="header__logo">
+                    <a href="../" class="header__title">Цветочная лавка "Зеленые усы"</a>
+                </h1>
+                <div class="header__actions">
+                    <a href="../cart" class="button header__cart" id="cart-button">
+                        Корзина<span class="header__cart-count">0</span>
+                    </a>
+
+                    <nav class="header__nav">
+                        <button type="button"
+                                class="button header__button"
+                                id="menu-button"
+                                aria-expanded="false"
+                                aria-controls="site-menu">
+                            Открыть меню
+                        </button>
+                        <ul class="menu" id="site-menu">
+                            <li>
+                                <a class="menu__link" href="./">Каталог</a>
+                            </li>
+                            <li>
+                                <a class="menu__link" href="../about">О лавке</a>
+                            </li>
+                            <li>
+                                <a class="menu__link" href="../information">Информация</a>
+                            </li>
+                            <li>
+                                <a class="menu__link" href="../delivery">Доставка и оплата</a>
+                            </li>
+                            <li>
+                                <a class="menu__link" href="../contacts">Контакты</a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <main class="main">
+            <section class="section">
+                <div class="wrapper">
+                    <h2 class="section__title">Каталог растений</h2>
+
+                    <!-- Поиск -->
+                    <div class="catalog-search">
+                        <input type="search"
+                               id="catalog-search-input"
+                               class="catalog-search__input"
+                               placeholder="Поиск по каталогу...">
+                    </div>
+
+                    <!-- Иерархические фильтры -->
+                    <div class="catalog-filters-wrapper">
+
+                        <div class="catalog-filter-block">
+                            <div class="catalog-filter-block__title">Группа</div>
+                            <div class="catalog-filters" id="group-filters"></div>
+                        </div>
+
+                        <div class="catalog-filter-block catalog-filter-block--type hidden" id="type-block">
+                            <div class="catalog-filter-block__title">Вид</div>
+                            <div class="catalog-filters" id="type-filters"></div>
+                        </div>
+
+                        <div class="catalog-filter-block catalog-filter-block--subtype hidden" id="subtype-block">
+                            <div class="catalog-filter-block__title">Подвид</div>
+                            <div class="catalog-filters" id="subtype-filters"></div>
+                        </div>
+
+                        <div class="catalog-filter-block catalog-filter-block--variety hidden" id="variety-block">
+                            <div class="catalog-filter-block__title">Сорт</div>
+                            <div class="catalog-filters" id="variety-filters"></div>
+                        </div>
+
+                    </div>
+
+                    <!-- Сортировка -->
+                    <div class="catalog-controls">
+                        <div class="catalog-sort">
+                            <label class="catalog-sort__label" for="sort-select">Сортировка:</label>
+                            <select id="sort-select" class="catalog-sort__select">
+                                <option value="default">По умолчанию</option>
+                                <option value="popular">По популярности</option>
+                                <option value="new">Сначала новинки</option>
+                                <option value="price-asc">Сначала дешёвые</option>
+                                <option value="price-desc">Сначала дорогие</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Сетка товаров -->
+                    <div id="catalog-grid" class="catalog-grid"></div>
+
+                    <!-- Пусто -->
+                    <div id="catalog-empty" class="catalog-empty hidden">
+                        <p class="catalog-empty__text">Ничего не найдено</p>
+                        <p class="catalog-empty__subtext">Попробуйте изменить параметры поиска</p>
+                    </div>
+
+                    <!-- Загрузить ещё -->
+                    <div id="catalog-load-more" class="catalog-load-more hidden">
+                        <button id="load-more-btn" class="button button--big">Показать ещё</button>
+                    </div>
+            </section>
+
+            <div class="product-modal hidden" id="product-modal">
+                <div class="product-modal__overlay" id="product-modal-overlay"></div>
+
+                <div class="product-modal__content">
+                    <button class="product-modal__close" id="product-modal-close" type="button">✕</button>
+
+                    <div class="product-modal__body">
+                        <!-- Картинка -->
+                        <div class="product-modal__image-wrapper">
+                            <img class="product-modal__image" id="modal-product-image" src="" alt="">
+                        </div>
+
+                        <!-- Инфо -->
+                        <div class="product-modal__info">
+                            <h2 class="product-modal__name" id="modal-product-name"></h2>
+
+                            <div class="product-modal__prices">
+                                <span class="product-modal__price" id="modal-product-price"></span>
+                                <span class="product-modal__price-old" id="modal-product-price-old"></span>
+                            </div>
+
+                            <div class="product-modal__badge" id="modal-product-badge"></div>
+
+                            <!-- Объём -->
+                            <div class="product-modal__volume">
+                                <span class="product-modal__volume-label">Объём:</span>
+                                <span class="product-modal__volume-value" id="modal-product-volume"></span>
+                            </div>
+
+                            <!-- Количество -->
+                            <div class="product-modal__quantity">
+                                <span class="product-modal__quantity-label">Количество:</span>
+                                <div class="product-modal__quantity-controls">
+                                    <button class="product-modal__qty-btn" id="modal-qty-minus" type="button">−</button>
+                                    <span class="product-modal__qty-value" id="modal-qty-value">1</span>
+                                    <button class="product-modal__qty-btn" id="modal-qty-plus" type="button">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Кнопка в корзину -->
+                            <button class="button button--big product-modal__cart-btn" id="modal-add-to-cart" type="button">
+                                В корзину
+                            </button>
+
+                            <!-- Описание -->
+                            <div class="product-modal__description" id="modal-product-description"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="footer">
+            <div class="wrapper footer__wrapper">
+                <p class="footer__copyright">© 2026 Цветочная лавка "Зеленые усы"</p>
+                <div class="footer__links">
+                    <a class="footer__link" target="_blank" href="/privacy">Политика конфиденциальности</a>
+                    <a class="footer__link" target="_blank" href="/ps">Пользовательское соглашение</a>
+                </div>
+            </div>
+        </footer>
+        <script src="../menu.js"></script>
+        <script type="module" src="../cart/catalog-init.js"></script>
+        <script type="module" src="./index.js"></script>
+    </body>
+</html>

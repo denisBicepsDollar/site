@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang = "ru">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Цветочная лавка "Зеленые усы" — свежие цветы</title>
+        </script>
+        <link rel="stylesheet" href="./styles.css">
+        <link rel="stylesheet" href="./shared/product-modal/modal.css">
+    </head>
+    <body>
+        <header class="header">
+            <div class="wrapper header__wrapper">
+                <h1 class="header__logo">
+                    <a href="./" class="header__title">Цветочная лавка "Зеленые усы"</a>
+                </h1>
+                <div class="header__actions">
+                    <a href="./cart" class="button header__cart" id="cart-button">
+                        Корзина<span class="header__cart-count">0</span>
+                    </a>
+
+                    <nav class="header__nav">
+                        <button type="button"
+                                class="button header__button"
+                                id="menu-button"
+                                aria-expanded="false"
+                                aria-controls="site-menu">
+                            Открыть меню
+                        </button>
+                        <ul class="menu" id="site-menu">
+                            <li>
+                                <a class="menu__link" href="./catalog">Каталог</a>
+                            </li>
+                            <li>
+                                <a class="menu__link" href="./about">О лавке</a>
+                            </li>
+                            <li>
+                                <a class="menu__link" href="./information">Информация</a>
+                            </li>
+                            <li>
+                                <a class="menu__link" href="./delivery">Доставка и оплата</a>
+                            </li>
+                            <li>
+                                <a class="menu__link" href="./contacts">Контакты</a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <main>
+
+            <section class="hero">
+                <h2 class="hero__title">
+                    Свежие цветы с доставкой
+                </h2>
+            </section>
+
+            <section class="section section--popular">
+                    <h2 class="section__title">Популярное</h2>
+                    <div class="section__cards">
+
+                    </div>
+            </section>
+
+            <section class="section section--new">
+                <h2 class="section__title">Новинки</h2>
+                <div class="section__cards">
+
+                </div>
+            </section>
+
+            <div class="product-modal hidden" id="product-modal">
+                <div class="product-modal__overlay" id="product-modal-overlay"></div>
+
+                <div class="product-modal__content">
+                    <button class="product-modal__close" id="product-modal-close" type="button">✕</button>
+
+                    <div class="product-modal__body">
+                        <div class="product-modal__image-wrapper">
+                            <img class="product-modal__image" id="modal-product-image" src="" alt="">
+                        </div>
+
+                        <div class="product-modal__info">
+                            <h2 class="product-modal__name" id="modal-product-name"></h2>
+
+                            <div class="product-modal__prices">
+                                <span class="product-modal__price" id="modal-product-price"></span>
+                                <span class="product-modal__price-old" id="modal-product-price-old"></span>
+                            </div>
+
+                            <div class="product-modal__badge" id="modal-product-badge"></div>
+
+                            <div class="product-modal__volume">
+                                <span class="product-modal__volume-label">Объём:</span>
+                                <span class="product-modal__volume-value" id="modal-product-volume"></span>
+                            </div>
+
+                            <div class="product-modal__quantity">
+                                <span class="product-modal__quantity-label">Количество:</span>
+                                <div class="product-modal__quantity-controls">
+                                    <button class="product-modal__qty-btn" id="modal-qty-minus" type="button">−</button>
+                                    <span class="product-modal__qty-value" id="modal-qty-value">1</span>
+                                    <button class="product-modal__qty-btn" id="modal-qty-plus" type="button">+</button>
+                                </div>
+                            </div>
+
+                            <button class="button button--big product-modal__cart-btn" id="modal-add-to-cart" type="button">
+                                В корзину
+                            </button>
+
+                            <div class="product-modal__description" id="modal-product-description"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="wrapper footer__wrapper">
+                <p class="footer__copyright">© 2026 Цветочная лавка "Зеленые усы"</p>
+                <div class="footer__links">
+                    <a class="footer__link" target="_blank" href="/privacy">Политика конфиденциальности</a>
+                    <a class="footer__link" target="_blank" href="/ps">Пользовательское соглашение</a>
+                </div>
+            </div>
+        </footer>
+
+        <script src="./menu.js"></script>
+        <script type="module" src="./shared/product-modal/index.js"></script>
+        <script type="module" src="./shared/product-card/index.js"></script>
+        <script type="module" src="./cart/catalog-init.js "></script>
+        <script type="module" src="./main.js"></script>
+    </body>
+</html>

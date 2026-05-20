@@ -1,0 +1,121 @@
+/* =============================================
+   СТРАНИЦА "ДОСТАВКА И ОПЛАТА"
+   ============================================= */
+
+/* --- Сетка способов доставки и оплаты --- */
+.delivery-grid,
+.payment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+
+/* --- Карточка доставки --- */
+.delivery-card,
+.payment-card {
+    background: white;
+    padding: 24px 20px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--craft-400);
+    box-shadow: var(--shadow-card);
+    text-align: center;
+    transition: var(--transition-base);
+}
+
+.delivery-card:hover,
+.payment-card:hover {
+    transform: var(--hover-lift-md);
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--green-150);
+}
+
+.delivery-card__icon,
+.payment-card__icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+.delivery-card__title,
+.payment-card__title {
+    font-family: var(--font-accent);
+    font-size: var(--fs-md);
+    color: var(--craft-900);
+    margin-bottom: 8px;
+}
+
+.delivery-card__price {
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-bold);
+    color: var(--green-700);
+    margin-bottom: 8px;
+}
+
+.delivery-card__text,
+.payment-card__text {
+    font-size: var(--fs-base);
+    color: var(--craft-900);
+    line-height: var(--lh-relaxed);
+}
+
+
+/* --- Условия доставки --- */
+.delivery-conditions {
+    margin-top: 20px;
+}
+
+.delivery-conditions__list {
+    background: var(--craft-50);
+    border: 1px solid var(--craft-400);
+    border-radius: var(--radius-sm);
+    padding: 20px 24px 20px 44px;
+    list-style: none;
+}
+
+.delivery-conditions__list li {
+    font-size: var(--fs-base);
+    color: var(--craft-900);
+    line-height: var(--lh-relaxed);
+    padding: 6px 0;
+    position: relative;
+}
+
+.delivery-conditions__list li::before {
+    content: '🌿';
+    position: absolute;
+    left: -24px;
+}
+
+
+/* --- Адаптив --- */
+@media (max-width: 768px) {
+    .delivery-card__title,
+    .payment-card__title {
+        font-size: var(--fs-base);
+    }
+
+    .delivery-card__price {
+        font-size: var(--fs-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .delivery-grid,
+    .payment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .delivery-card,
+    .payment-card {
+        padding: 18px 14px;
+    }
+
+    .delivery-conditions__list {
+        padding: 16px 20px 16px 36px;
+    }
+
+    .delivery-conditions__list li {
+        font-size: var(--fs-sm);
+    }
+}

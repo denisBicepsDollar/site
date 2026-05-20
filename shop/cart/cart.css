@@ -1,0 +1,1637 @@
+/* =============================================
+   СТРАНИЦА КОРЗИНЫ И ОФОРМЛЕНИЯ ЗАКАЗА
+
+   Структура:
+   1. Хедер (переопределения)
+   2. Прогресс-бар оформления
+   3. Контейнер страницы
+   4. Пустая корзина
+   5. Шаги оформления (общее)
+   6. Список товаров (cart-item)
+   7. Итого (cart-summary)
+   8. Минимальная сумма
+   9. Навигация шагов (step-nav)
+   10. Шаг 2 — Город / адрес
+   11. Шаг 3 — Способ доставки
+       11a. Самовывоз
+       11b. Почта (виджет, тарифы)
+       11c. СДЭК
+       11d. Курьер
+   12. Шаг 4 — Контактные данные
+   13. Чекбокс согласия
+   14. Алерт / Лоадер
+   15. Утилиты
+   16. Адаптив
+   ============================================= */
+
+
+/* =============================================
+   1. ХЕДЕР (переопределения для страницы корзины)
+   ============================================= */
+.header {
+    border-bottom: none;
+}
+
+.header:has(.checkout-progress) {
+    padding-bottom: 0;
+}
+
+.header__title-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.header__title-link:hover {
+    opacity: 0.85;
+}
+
+
+/* =============================================
+   2. ПРОГРЕСС-БАР ОФОРМЛЕНИЯ
+   ============================================= */
+.checkout-progress {
+    margin-top: var(--header-padding-y);
+    width: 100%;
+    height: 4px;
+    background: var(--craft-400);
+    overflow: hidden;
+}
+
+.checkout-progress__bar {
+    height: 100%;
+    width: 33%;
+    background: var(--green-200);
+    transition: var(--transition-slow);
+}
+
+
+/* =============================================
+   3. КОНТЕЙНЕР СТРАНИЦЫ
+   ============================================= */
+.cart-page {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+
+/* =============================================
+   4. ПУСТАЯ КОРЗИНА
+   ============================================= */
+.cart-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.cart-empty__text {
+    font-size: var(--fs-xl);
+    color: var(--craft-900);
+    margin-bottom: 24px;
+}
+
+
+/* =============================================
+   5. ШАГИ ОФОРМЛЕНИЯ (общий контейнер)
+   ============================================= */
+.checkout-step {
+    background: white;
+    padding: 28px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 24px;
+}
+
+.checkout-step__title {
+    font-family: var(--font-accent);
+    font-size: var(--fs-2xl);
+    color: var(--green-800);
+    margin-top: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--green-50);
+}
+
+
+/* =============================================
+   6. СПИСОК ТОВАРОВ В КОРЗИНЕ
+   ============================================= */
+.cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--craft-50);
+    border: 1px solid var(--craft-400);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-base);
+}
+
+.cart-item:hover {
+    box-shadow: var(--shadow-card);
+    border-color: var(--green-150);
+}
+
+.cart-item__image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+.cart-item__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.cart-item__name {
+    font-family: var(--font-accent);
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+    color: var(--craft-900);
+    margin-bottom: 4px;
+}
+
+.cart-item__price {
+    font-size: var(--fs-base);
+    color: var(--green-700);
+    font-weight: var(--fw-bold);
+}
+
+.cart-item__controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cart-item__btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--green-150);
+    background: white;
+    color: var(--green-700);
+    border-radius: var(--radius-sm);
+    font-size: 20px;
+    font-weight: var(--fw-bold);
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+            background var(--transition-fast),
+            border-color var(--transition-fast),
+            color var(--transition-fast),
+            transform var(--transition-fast),
+            box-shadow var(--transition-fast);
+}
+
+.cart-item__btn:hover {
+    background: var(--green-50);
+    border-color: var(--green-300);
+    color: var(--green-800);
+    transform: var(--hover-lift-sm);
+}
+
+.cart-item__btn:active {
+    transform: var(--hover-press);
+    box-shadow: var(--shadow-button-active);
+}
+
+.cart-item__count {
+    min-width: 30px;
+    text-align: center;
+    font-size: var(--fs-base);
+    font-weight: var(--fw-semibold);
+    color: var(--craft-900);
+}
+
+.cart-item__subtotal {
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-bold);
+    color: var(--green-350);
+    min-width: 80px;
+    text-align: right;
+}
+
+.cart-item__remove {
+    background: none;
+    border: none;
+    color: #c62828;
+    font-size: var(--fs-lg);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: var(--transition-fast);
+}
+
+.cart-item__remove:hover {
+    transform: scale(1.2);
+    background: #fbe9e7;
+}
+
+
+/* =============================================
+   7. ИТОГО
+   ============================================= */
+.cart-summary {
+    background: var(--craft-50);
+    border: 1px solid var(--craft-400);
+    border-radius: var(--radius-sm);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+}
+
+.cart-summary__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--fs-md);
+    color: var(--craft-900);
+    padding: 6px 0;
+}
+
+.cart-summary__row--total {
+    border-top: 2px solid var(--green-150);
+    margin-top: 8px;
+    padding-top: 14px;
+    font-size: var(--fs-xl);
+    font-weight: var(--fw-bold);
+    color: var(--green-800);
+}
+
+.cart-summary__actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+/* =============================================
+   7a. ФИНАЛЬНОЕ SUMMARY НА ШАГЕ КОНТАКТОВ
+   ============================================= */
+
+.checkout-final-summary {
+    margin-top: 24px;
+}
+
+/* Список товаров в финальном блоке */
+.cart-summary__products-list {
+    margin: 8px 0 18px;
+    padding: 12px 14px;
+    background: white;
+    border: 1px solid var(--craft-400);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Один товар в списке */
+.cart-summary__product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: var(--fs-base);
+    color: var(--craft-900);
+    line-height: 1.4;
+}
+
+/* Левая часть: название + количество */
+.cart-summary__product-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.cart-summary__product-name {
+    font-weight: var(--fw-semibold);
+    color: var(--craft-900);
+    word-break: break-word;
+}
+
+.cart-summary__product-meta {
+    display: block;
+    margin-top: 2px;
+    font-size: var(--fs-sm);
+    color: #6f6f6f;
+}
+
+/* Правая часть: сумма */
+.cart-summary__product-price {
+    flex-shrink: 0;
+    font-weight: var(--fw-bold);
+    color: var(--green-700);
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Блок доставки */
+.cart-summary__delivery-block {
+    margin-top: 4px;
+    margin-bottom: 8px;
+    padding: 10px 0 4px;
+    border-top: 1px dashed var(--craft-400);
+}
+
+/* Адрес под ценой доставки */
+.cart-summary__address {
+    margin-top: 6px;
+    padding: 10px 12px;
+    background: white;
+    border: 1px solid var(--craft-400);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: #5e5e5e;
+}
+
+/* Если внутри адреса рендерится <p> */
+.cart-summary__address p {
+    margin: 0;
+}
+
+/* Лейблы слева чуть мягче */
+.checkout-final-summary .cart-summary__row > span:first-child {
+    color: #686868;
+}
+
+/* Значения справа делаем плотнее и заметнее */
+.checkout-final-summary .cart-summary__row > span:last-child {
+    font-weight: var(--fw-semibold);
+    text-align: right;
+    margin-left: 16px;
+}
+
+/* Строки компания / тип / тариф */
+#deliveryCompany,
+#deliveryType,
+#deliveryTariff {
+    color: var(--craft-900);
+}
+
+/* Стоимость доставки */
+#final-delivery-price {
+    color: var(--green-700);
+    font-weight: var(--fw-bold);
+}
+
+/* Итого */
+#final-total-price {
+    color: var(--green-800);
+}
+
+/* Пустой список товаров */
+.cart-summary__products-list:empty {
+    display: none;
+}
+.checkout-products-item{
+    justify-content: space-between;
+    display: flex;
+}
+
+/* =============================================
+   8. МИНИМАЛЬНАЯ СУММА
+   ============================================= */
+.min-order-text {
+    font-size: var(--fs-base);
+    color: #c62828;
+    font-weight: var(--fw-bold);
+    text-align: center;
+    margin-bottom: 16px;
+    padding: 10px;
+    background: #fff3e0;
+    border-radius: var(--radius-sm);
+    border: 1px solid #ffcc80;
+}
+
+
+/* =============================================
+   9. НАВИГАЦИЯ ШАГОВ (Назад / Далее)
+   ============================================= */
+.step-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--craft-400);
+}
+
+/* Кнопка «Далее» */
+.next-btn {
+    padding: 14px 32px;
+    font-size: var(--fs-md);
+    font-weight: var(--fw-bold);
+    font-family: var(--font-main);
+    color: white;
+    background: var(--green-350);
+    border: none;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-button);
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.next-btn:hover:not(:disabled) {
+    background: var(--green-300);
+    box-shadow: var(--shadow-button-hover);
+    transform: var(--hover-lift-sm);
+}
+
+.next-btn:active:not(:disabled) {
+    transform: var(--hover-press);
+    box-shadow: var(--shadow-button-active);
+}
+
+.next-btn:disabled {
+    background: var(--disabled-bg);
+    color: var(--disabled-text);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Кнопка «Назад» */
+.back-btn {
+    display: inline-block;
+    padding: 14px 24px;
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+    font-family: var(--font-main);
+    color: var(--green-700);
+    background: transparent;
+    border: 2px solid var(--green-150);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition-base);
+}
+
+.back-btn:hover {
+    background: var(--green-50);
+    border-color: var(--green-300);
+    color: var(--green-800);
+}
+
+
+/* =============================================
+   10. ШАГ 2 — ГОРОД / АДРЕС
+   ============================================= */
+.info-text {
+    margin-bottom: 20px;
+}
+
+.label-text2 {
+    font-size: var(--fs-base);
+    color: var(--craft-900);
+    margin-bottom: 10px;
+    line-height: var(--lh-base);
+}
+
+.container {
+    font-size: var(--fs-base);
+    color: #666;
+    margin-bottom: 16px;
+}
+
+.input-text2 {
+    width: 100%;
+    padding: 14px 18px;
+    margin-top: 10px;
+    font-size: var(--fs-md);
+    font-family: var(--font-main);
+    border: 2px solid var(--craft-400);
+    border-radius: var(--radius-sm);
+    background: var(--craft-50);
+    color: var(--craft-900);
+    outline: none;
+    transition: var(--transition-fast);
+    box-sizing: border-box;
+}
+
+.input-text2:focus {
+    border-color: var(--green-400);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(88, 140, 90, 0.15);
+}
+
+.input-text2::placeholder {
+    color: #aaa;
+}
+
+.t-bold {
+    font-weight: var(--fw-bold);
+}
+
+/* Кнопка «Рассчитать доставку» */
+#ok-city-button-block {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.calculate-button {
+    width: 100%;
+    padding: 14px 24px;
+    font-size: var(--fs-md);
+    font-weight: var(--fw-bold);
+    font-family: var(--font-main);
+    color: white;
+    background: var(--green-350);
+    border: none;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-button);
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.calculate-button:hover:not(:disabled) {
+    background: var(--green-300);
+    box-shadow: var(--shadow-button-hover);
+    transform: var(--hover-lift-sm);
+}
+
+.calculate-button:disabled,
+.calculate-button.not-active {
+    background: var(--disabled-bg);
+    color: var(--disabled-text);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+
+/* =============================================
+   11. ШАГ 3 — СПОСОБ ДОСТАВКИ
+   ============================================= */
+
+/* --- Общая форма --- */
+.checkout-form__section {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.checkout-form__radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.checkout-form__radio {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border: 2px solid var(--craft-400);
+    border-radius: var(--radius-sm);
+    background: var(--craft-50);
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.checkout-form__radio:hover {
+    border-color: var(--green-300);
+    background: var(--green-50);
+    transform: var(--hover-lift-sm);
+}
+
+.checkout-form__radio input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--green-400);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.checkout-form__radio-text {
+    font-size: var(--fs-md);
+    color: var(--craft-900);
+    font-weight: var(--fw-semibold);
+}
+
+/* Блок выбора способа получения */
+.checkout-getting {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* --- Вложенный блок компании доставки --- */
+.delivery-company__method {
+    margin-top: 14px;
+    margin-left: 28px;
+    margin-bottom: 20px;
+    padding-left: 18px;
+    border-left: 2px solid #e5e5e5;
+}
+
+.delivery-company__method .checkout-form__radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+/* Вложенные радио-группы */
+.checkout-form__sub-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-left: 20px;
+    border-left: 2px solid var(--craft-200);
+}
+
+.checkout-form__sub-group .checkout-form__radio-text {
+    font-size: 0.95em;
+    color: #333;
+}
+
+
+/* =============================================
+   11a. САМОВЫВОЗ
+   ============================================= */
+.pickup-block {
+    margin-top: 16px;
+    padding: 20px;
+    border: 1px solid #e7dcc0;
+    border-radius: 14px;
+    background: #f8f6ef;
+}
+
+.pickup-block p {
+    margin: 0 0 10px;
+    line-height: 1.5;
+    color: #2f2f2f;
+}
+
+.pickup-block p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =============================================
+   11b. ПОЧТА (виджет, выбор, тарифы)
+   ============================================= */
+
+/* Общие блоки «в отделение» / «курьером» */
+.office-block,
+.courier-block {
+    margin-top: 16px;
+    padding: 20px;
+    border: 1px solid #e7e7e7;
+    border-radius: 14px;
+    background: #fafafa;
+}
+
+.courier-block {
+    background: #f9fafb;
+}
+
+/* Заголовок виджета */
+.delivery-widget__title {
+    text-align: center;
+    margin: 0 0 14px;
+    font-size: 16px;
+    font-weight: var(--fw-semibold);
+    color: #2a2a2a;
+}
+
+/* Контейнер виджета (карта) */
+#ecom-widget {
+    position: relative;
+    width: 100%;
+    min-height: 500px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+/* Лоадер виджета */
+.widget-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f9f9f9;
+    z-index: 10;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 12px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Инфо-блоки почты */
+#pochta-info {
+    margin-top: 16px;
+    display: grid;
+    gap: 12px;
+}
+
+#pochta-info > div,
+#pochta-courier__block > div {
+    padding: 16px;
+    border-radius: var(--radius-md);
+    background: #fff;
+    border: 1px solid #e6e6e6;
+}
+
+/* Выбранное отделение / адрес курьера */
+#pochta-office__selected,
+#pochta-courier__selected {
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    background: #f3f6fb;
+    border: 1px solid #dbe5f2;
+    color: var(--craft-900);
+    line-height: 1.5;
+    font-size: var(--fs-md);
+    font-family: var(--font-main);
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+    transition: var(--transition-fast);
+}
+
+#pochta-office__selected strong,
+#pochta-courier__selected strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: var(--fs-base);
+    color: #4a4a4a;
+}
+
+/* --- Тарифы почты --- */
+#pochta-office__tariffs,
+#pochta-courier__tariff {
+    margin-top: 10px;
+}
+
+#pochta-office__tariffs > p:first-child,
+#pochta-courier__tariff > p:first-child {
+    margin: 0 0 12px;
+    font-weight: var(--fw-semibold);
+    color: #2f2f2f;
+    font-size: 15px;
+}
+
+#pochta-tariffs {
+    padding: 14px 16px;
+    background: #fff;
+    border: 1px solid #d8cfc2;
+    border-radius: var(--radius-md);
+}
+
+#pochta-tariffs > p {
+    margin: 0 0 12px;
+    font-size: 15px;
+    font-weight: var(--fw-bold);
+    color: #2f2a24;
+}
+
+/* Список тарифов */
+.pochta-tariffs-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pochta-tariff-item {
+    margin: 0;
+    padding: 0;
+}
+
+/* Карточка тарифа (радиокнопка) */
+.pochta-tariff-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 20px;
+    border: 2px solid #c9b07a;
+    border-radius: var(--radius-sm);
+    background: #fffaf1;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.pochta-tariff-label:hover {
+    background: #fff5e1;
+    border-color: #b89a5e;
+}
+
+.pochta-tariff-label input[type="radio"] {
+    margin-top: 3px;
+    flex-shrink: 0;
+    accent-color: #7a5c3e;
+}
+
+/* Тариф через .checkout-form__radio внутри .pochta-tariff-item */
+.pochta-tariff-item .checkout-form__radio {
+    padding: 12px 14px;
+    border: 2px solid #e3e3e3;
+    border-radius: var(--radius-sm);
+    background: #fff;
+}
+
+.pochta-tariff-item .checkout-form__radio:hover,
+#pochta-courier__tariff .checkout-form__radio:hover {
+    background: #fffaf1;
+    border-color: #c9b07a;
+}
+
+.pochta-tariff-item .checkout-form__radio:has(input:checked) {
+    border-color: #c9b07a;
+    background: #fffaf1;
+    box-shadow: 0 0 0 2px rgba(201, 176, 122, 0.12);
+}
+
+/* Контент тарифа */
+.pochta-tariff-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pochta-tariff-title {
+    font-weight: var(--fw-semibold);
+    color: #222;
+}
+
+.pochta-tariff-term {
+    font-size: var(--fs-base);
+    color: #666;
+}
+
+.pochta-tariff-price {
+    font-size: var(--fs-base);
+    color: #222;
+}
+
+/* Курьерский текст */
+#pochta-courier__tariff p {
+    margin: 0;
+    line-height: 1.5;
+    color: #2f2f2f;
+}
+
+
+/* =============================================
+   11c. СДЭК
+   ============================================= */
+#cdek-calc-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+#cdek-calc-container iframe {
+    width: 300px;
+    height: 400px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+
+/* =============================================
+   12. ШАГ 4 — КОНТАКТНЫЕ ДАННЫЕ
+   ============================================= */
+.checkout-form__field {
+    margin-bottom: 18px;
+}
+
+.checkout-form__label {
+    display: block;
+    font-size: var(--fs-base);
+    font-weight: var(--fw-bold);
+    color: var(--craft-900);
+    margin-bottom: 6px;
+}
+
+.checkout-form__input,
+.checkout-form__textarea {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: var(--fs-base);
+    font-family: var(--font-main);
+    border: 2px solid var(--craft-400);
+    border-radius: var(--radius-sm);
+    background: var(--craft-50);
+    color: var(--craft-900);
+    outline: none;
+    transition: var(--transition-fast);
+    box-sizing: border-box;
+}
+
+.checkout-form__input:focus,
+.checkout-form__textarea:focus {
+    border-color: var(--green-400);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(88, 140, 90, 0.15);
+}
+
+.checkout-form__input::placeholder,
+.checkout-form__textarea::placeholder {
+    color: #aaa;
+}
+
+.checkout-form__textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+/* Ошибка валидации */
+.checkout-form__error {
+    display: block;
+    min-height: 16px;
+    margin-top: 4px;
+    font-size: var(--fs-xs);
+    color: #c62828;
+    font-weight: var(--fw-semibold);
+}
+
+.checkout-form__input--error,
+.checkout-form__textarea--error {
+    border-color: #c62828;
+    background: #fff5f5;
+}
+
+
+/* =============================================
+   13. ЧЕКБОКС СОГЛАСИЯ
+   ============================================= */
+.checkout-form__checkbox {
+    margin-top: 20px;
+    margin-bottom: 16px;
+}
+
+.checkout-form__checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    font-size: var(--fs-base);
+    line-height: var(--lh-relaxed);
+    color: var(--craft-900);
+}
+
+.checkout-form__checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    accent-color: var(--green-400);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.checkout-form__checkbox-text {
+    flex: 1;
+}
+
+.checkout-form__link {
+    color: var(--green-350);
+    text-decoration: underline;
+    transition: var(--transition-fast);
+}
+
+.checkout-form__link:hover {
+    color: var(--green-700);
+}
+
+
+/* =============================================
+   14. АЛЕРТ / ЛОАДЕР
+   ============================================= */
+
+/* Алерт (ошибка отправки) */
+.checkout-form__alert {
+    position: relative;
+    padding: 14px 40px 14px 20px;
+    margin-top: 16px;
+    background: #ffebee;
+    border: 1px solid #ef9a9a;
+    border-radius: var(--radius-sm);
+    color: #c62828;
+}
+
+.checkout-form__alert--hidden {
+    display: none;
+}
+
+.checkout-form__alert-text {
+    font-size: var(--fs-base);
+    font-weight: var(--fw-semibold);
+    margin: 0;
+}
+
+.checkout-form__alert-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    background: none;
+    border: none;
+    color: #c62828;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    transition: var(--transition-fast);
+}
+
+.checkout-form__alert-close:hover {
+    transform: scale(1.2);
+}
+
+/* Лоадер (Отправка...) */
+.checkout-form__loader {
+    text-align: center;
+    padding: 14px;
+    margin-top: 16px;
+    background: var(--green-50);
+    border-radius: var(--radius-sm);
+    color: var(--green-700);
+    font-weight: var(--fw-bold);
+}
+
+.checkout-form__loader--hidden {
+    display: none;
+}
+
+/* Доп. кнопки */
+.checkout-form__actions {
+    margin-top: 16px;
+    text-align: center;
+}
+
+
+/* =============================================
+   15. УТИЛИТЫ
+   ============================================= */
+.hidden {
+    display: none !important;
+}
+
+
+/* =============================================
+   16. АДАПТИВ
+   ============================================= */
+/* =============================================
+   16. АДАПТИВ
+   ============================================= */
+
+/* ----- Планшет (до 768px) ----- */
+@media (max-width: 768px) {
+
+    /* Контейнер */
+    .cart-page {
+        padding: 0 12px;
+    }
+
+    /* Шаги */
+    .checkout-step {
+        padding: 22px 18px;
+    }
+
+    .checkout-step__title {
+        font-size: var(--fs-xl);
+        margin-bottom: 18px;
+    }
+
+    /* Товар в корзине */
+    .cart-item {
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .cart-item__image {
+        width: 70px;
+        height: 70px;
+    }
+
+    .cart-item__subtotal {
+        min-width: 60px;
+        font-size: var(--fs-md);
+    }
+
+    /* Итого */
+    .cart-summary {
+        padding: 16px 18px;
+    }
+
+    /* Финальное summary */
+    .cart-summary__products-list {
+        padding: 10px 12px;
+    }
+
+    /* Почта виджет */
+    #ecom-widget {
+        min-height: 400px;
+    }
+
+    /* Тарифы */
+    .pochta-tariff-label {
+        padding: 14px 16px;
+    }
+
+    /* Форма контактов */
+    .checkout-form__input,
+    .checkout-form__textarea {
+        padding: 10px 14px;
+    }
+
+    /* Навигация */
+    .step-nav {
+        gap: 10px;
+    }
+
+    .next-btn {
+        padding: 12px 24px;
+    }
+
+    .back-btn {
+        padding: 12px 18px;
+    }
+
+    /* Доставка вложенный блок */
+    .delivery-company__method {
+        margin-left: 16px;
+        padding-left: 14px;
+    }
+
+    /* Радиокнопки */
+    .checkout-form__radio {
+        padding: 14px 16px;
+        gap: 10px;
+    }
+
+    /* Самовывоз */
+    .pickup-block {
+        padding: 16px;
+    }
+
+    /* Отделение / Курьер */
+    .office-block,
+    .courier-block {
+        padding: 16px;
+    }
+}
+
+
+/* ----- Мобильный (до 600px) ----- */
+@media (max-width: 600px) {
+
+    /* Контейнер */
+    .cart-page {
+        padding: 0 8px;
+    }
+
+    /* Шаги */
+    .checkout-step {
+        padding: 18px 14px;
+        margin-bottom: 16px;
+    }
+
+    .checkout-step__title {
+        font-size: var(--fs-lg);
+        margin-top: 8px;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+    }
+
+    /* Пустая корзина */
+    .cart-empty {
+        padding: 40px 16px;
+    }
+
+    .cart-empty__text {
+        font-size: var(--fs-lg);
+    }
+
+    /* Товар в корзине */
+    .cart-item {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .cart-item__image {
+        width: 60px;
+        height: 60px;
+    }
+
+    .cart-item__info {
+        flex: 1 1 calc(100% - 76px);
+    }
+
+    .cart-item__name {
+        font-size: var(--fs-base);
+    }
+
+    .cart-item__controls {
+        flex: 1;
+        justify-content: flex-start;
+    }
+
+    .cart-item__btn {
+        width: 28px;
+        height: 28px;
+        font-size: 16px;
+    }
+
+    .cart-item__subtotal {
+        min-width: auto;
+        font-size: var(--fs-md);
+        text-align: left;
+        flex: 0;
+    }
+
+    .cart-item__remove {
+        padding: 4px;
+        font-size: var(--fs-md);
+    }
+
+    /* Итого */
+    .cart-summary {
+        padding: 14px 16px;
+    }
+
+    .cart-summary__row {
+        font-size: var(--fs-base);
+        gap: 8px;
+    }
+
+    .cart-summary__row--total {
+        font-size: var(--fs-lg);
+        padding-top: 12px;
+    }
+
+    .cart-summary__actions {
+        flex-direction: column;
+    }
+
+    /* Финальное summary */
+    .checkout-final-summary {
+        margin-top: 18px;
+    }
+
+    .cart-summary__products-list {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+
+    .cart-summary__product-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+
+    .cart-summary__product-price {
+        text-align: left;
+        font-size: var(--fs-base);
+    }
+
+    .cart-summary__product-name {
+        font-size: var(--fs-base);
+    }
+
+    .cart-summary__product-meta {
+        font-size: var(--fs-xs);
+    }
+
+    .cart-summary__delivery-block {
+        padding: 8px 0 2px;
+    }
+
+    .cart-summary__address {
+        padding: 8px 10px;
+        font-size: var(--fs-xs);
+    }
+
+    .checkout-final-summary .cart-summary__row > span:last-child {
+        margin-left: 8px;
+    }
+
+    .checkout-products-item {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    /* Минимальная сумма */
+    .min-order-text {
+        font-size: var(--fs-sm);
+        padding: 8px;
+    }
+
+    /* Навигация шагов */
+    .step-nav {
+        flex-direction: column-reverse;
+        gap: 10px;
+        padding-top: 16px;
+    }
+
+    .next-btn,
+    .back-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .next-btn {
+        padding: 14px 20px;
+    }
+
+    .back-btn {
+        padding: 12px 16px;
+    }
+
+    /* Город / Адрес */
+    .input-text2 {
+        padding: 12px 14px;
+        font-size: var(--fs-base);
+    }
+
+    .calculate-button {
+        padding: 12px 20px;
+        font-size: var(--fs-base);
+    }
+
+    /* Радиокнопки */
+    .checkout-form__radio {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+
+    .checkout-form__radio-text {
+        font-size: var(--fs-base);
+    }
+
+    .checkout-form__radio input[type="radio"] {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* Вложенный блок доставки */
+    .delivery-company__method {
+        margin-left: 8px;
+        padding-left: 12px;
+    }
+
+    .checkout-form__sub-group {
+        padding-left: 12px;
+    }
+
+    /* Самовывоз */
+    .pickup-block {
+        padding: 14px;
+        border-radius: 10px;
+    }
+
+    .pickup-block p {
+        font-size: var(--fs-base);
+    }
+
+    /* Почта — отделение / курьер */
+    .office-block,
+    .courier-block {
+        padding: 14px;
+        border-radius: 10px;
+    }
+
+    /* Почта виджет */
+    #ecom-widget {
+        min-height: 350px;
+        border-radius: var(--radius-sm);
+    }
+
+    .delivery-widget__title {
+        font-size: 14px;
+    }
+
+    /* Тарифы */
+    .pochta-tariff-label {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+
+    .pochta-tariff-title {
+        font-size: var(--fs-base);
+    }
+
+    .pochta-tariff-term,
+    .pochta-tariff-price {
+        font-size: var(--fs-sm);
+    }
+
+    .pochta-tariff-item .checkout-form__radio {
+        padding: 10px 12px;
+    }
+
+    #pochta-tariffs {
+        padding: 10px 12px;
+    }
+
+    /* Выбранное отделение */
+    #pochta-office__selected,
+    #pochta-courier__selected {
+        padding: 10px 12px;
+        font-size: var(--fs-base);
+    }
+
+    /* СДЭК */
+    #cdek-calc-container {
+        padding: 12px 0;
+    }
+
+    #cdek-calc-container iframe {
+        width: 100%;
+        max-width: 300px;
+        height: 360px;
+    }
+
+    /* Контактные данные */
+    .checkout-form__field {
+        margin-bottom: 14px;
+    }
+
+    .checkout-form__label {
+        font-size: var(--fs-sm);
+    }
+
+    .checkout-form__input,
+    .checkout-form__textarea {
+        padding: 10px 12px;
+        font-size: var(--fs-base);
+    }
+
+    .checkout-form__textarea {
+        min-height: 70px;
+    }
+
+    .checkout-form__error {
+        font-size: 11px;
+        min-height: 14px;
+    }
+
+    /* Чекбокс */
+    .checkout-form__checkbox {
+        margin-top: 14px;
+        margin-bottom: 12px;
+    }
+
+    .checkout-form__checkbox-label {
+        gap: 8px;
+        font-size: var(--fs-sm);
+    }
+
+    .checkout-form__checkbox-label input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Алерт */
+    .checkout-form__alert {
+        padding: 12px 36px 12px 14px;
+    }
+
+    .checkout-form__alert-text {
+        font-size: var(--fs-sm);
+    }
+
+    .checkout-form__alert-close {
+        top: 8px;
+        right: 8px;
+        font-size: 18px;
+    }
+
+    /* Лоадер */
+    .checkout-form__loader {
+        padding: 10px;
+        font-size: var(--fs-base);
+    }
+
+    /* Прогресс-бар */
+    .checkout-progress {
+        height: 3px;
+    }
+}
+
+
+/* ----- Совсем маленький экран (до 380px) ----- */
+@media (max-width: 380px) {
+
+    .checkout-step {
+        padding: 14px 10px;
+    }
+
+    .checkout-step__title {
+        font-size: var(--fs-md);
+    }
+
+    .cart-item {
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .cart-item__image {
+        width: 50px;
+        height: 50px;
+    }
+
+    .cart-item__btn {
+        width: 26px;
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .cart-summary {
+        padding: 10px 12px;
+    }
+
+    .cart-summary__row {
+        font-size: var(--fs-sm);
+    }
+
+    .cart-summary__row--total {
+        font-size: var(--fs-md);
+    }
+
+    .checkout-form__radio {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .checkout-form__radio-text {
+        font-size: var(--fs-sm);
+    }
+
+    .pochta-tariff-label {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .next-btn,
+    .back-btn {
+        font-size: var(--fs-base);
+        padding: 12px 14px;
+    }
+
+    .delivery-company__method {
+        margin-left: 4px;
+        padding-left: 10px;
+    }
+
+    .pickup-block,
+    .office-block,
+    .courier-block {
+        padding: 12px;
+    }
+
+    #ecom-widget {
+        min-height: 300px;
+    }
+
+    .checkout-form__input,
+    .checkout-form__textarea {
+        padding: 8px 10px;
+    }
+
+    .input-text2 {
+        padding: 10px 12px;
+    }
+
+    .calculate-button {
+        padding: 10px 16px;
+        font-size: var(--fs-sm);
+    }
+}

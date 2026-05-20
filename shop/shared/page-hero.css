@@ -1,0 +1,68 @@
+/* =============================================
+   ОБЩИЙ HERO ВНУТРЕННИХ СТРАНИЦ
+   ============================================= */
+.page-hero {
+    background: linear-gradient(180deg,
+    var(--green-500) 0%,
+    var(--green-600) 100%);
+    padding: 60px 0;
+    text-align: center;
+    border-bottom: 3px solid var(--green-800);
+    box-shadow: var(--shadow-hero);
+}
+
+.page-hero__title {
+    font-family: var(--font-accent);
+    font-size: var(--fs-3xl);
+    font-weight: var(--fw-bold);
+    color: var(--craft-200);
+    margin-bottom: 10px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.page-hero__subtitle {
+    font-size: var(--fs-md);
+    color: var(--green-100);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Заголовки секций */
+.section-title {
+    font-family: var(--font-accent);
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-bold);
+    color: var(--craft-700);
+    text-align: center;
+    margin: 40px 0 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--green-100);
+}
+
+@media (max-width: 768px) {
+    .page-hero {
+        padding: 40px 0;
+    }
+
+    .page-hero__title {
+        font-size: var(--fs-2xl);
+    }
+
+    .page-hero__subtitle {
+        font-size: var(--fs-base);
+    }
+
+    .section-title {
+        font-size: var(--fs-xl);
+        margin: 30px 0 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-hero {
+        padding: 30px 0;
+    }
+
+    .page-hero__title {
+        font-size: var(--fs-xl);
+    }
+}

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang = "ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Цветочная лавка "Зеленые усы" — свежие цветы</title>
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="./about.css">
+    <link rel="stylesheet" href="../shared/page-hero.css">
+</head>
+<body>
+<header class="header">
+    <div class="wrapper header__wrapper">
+        <h1 class="header__logo">
+            <a href="../" class="header__title">Цветочная лавка "Зеленые усы"</a>
+        </h1>
+        <div class="header__actions">
+            <a href="../cart" class="button header__cart" id="cart-button">
+                Корзина<span class="header__cart-count">0</span>
+            </a>
+
+            <nav class="header__nav">
+                <button type="button"
+                        class="button header__button"
+                        id="menu-button"
+                        aria-expanded="false"
+                        aria-controls="site-menu">
+                    Открыть меню
+                </button>
+                <ul class="menu" id="site-menu">
+                    <li>
+                        <a class="menu__link" href="../catalog">Каталог</a>
+                    </li>
+                    <li>
+                        <a class="menu__link" href="./">О лавке</a>
+                    </li>
+                    <li>
+                        <a class="menu__link" href="../information">Информация</a>
+                    </li>
+                    <li>
+                        <a class="menu__link" href="../delivery">Доставка и оплата</a>
+                    </li>
+                    <li>
+                        <a class="menu__link" href="../contacts">Контакты</a>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<main>
+    <!-- Hero -->
+    <section class="page-hero">
+        <div class="wrapper">
+            <h1 class="page-hero__title">О нас</h1>
+            <p class="page-hero__subtitle">Цветочная лавка "Зелёные усы" — выращиваем красоту с 2018 года</p>
+        </div>
+    </section>
+
+    <!-- Основной контент -->
+    <section class="section">
+        <div class="wrapper">
+
+            <!-- История -->
+            <div class="about-block">
+                <div class="about-block__content">
+                    <h2 class="about-block__title">Наша история</h2>
+                    <p class="about-block__text">
+                        Всё началось в 2018 году с небольшой теплицы под Москвой.
+                        Мы — семья садоводов в третьем поколении, влюблённая в цветы
+                        и желающая делиться этой красотой с другими.
+                    </p>
+                    <p class="about-block__text">
+                        Сегодня "Зелёные усы" — это собственный питомник, более 200 сортов растений
+                        и команда, которая знает каждый цветок по имени.
+                    </p>
+                </div>
+                <div class="about-block__image-wrapper">
+                    <img class="about-block__image" src="../images/about-1.jpg" alt="Наша теплица">
+                </div>
+            </div>
+
+            <!-- Ценности -->
+            <div class="about-values">
+                <h2 class="about-values__title">Наши ценности</h2>
+                <div class="about-values__grid">
+                    <div class="value-card">
+                        <div class="value-card__icon">🌱</div>
+                        <h3 class="value-card__title">Качество</h3>
+                        <p class="value-card__text">
+                            Каждое растение проходит контроль перед отправкой клиенту.
+                        </p>
+                    </div>
+
+                    <div class="value-card">
+                        <div class="value-card__icon">💚</div>
+                        <h3 class="value-card__title">Забота</h3>
+                        <p class="value-card__text">
+                            Бережно упаковываем и доставляем растения, чтобы они доехали живыми.
+                        </p>
+                    </div>
+
+                    <div class="value-card">
+                        <div class="value-card__icon">🌍</div>
+                        <h3 class="value-card__title">Экология</h3>
+                        <p class="value-card__text">
+                            Используем биоразлагаемую упаковку и натуральные удобрения.
+                        </p>
+                    </div>
+
+                    <div class="value-card">
+                        <div class="value-card__icon">🤝</div>
+                        <h3 class="value-card__title">Доверие</h3>
+                        <p class="value-card__text">
+                            Если растение не прижилось — мы заменим его бесплатно.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Команда -->
+            <div class="about-team">
+                <h2 class="about-team__title">Команда</h2>
+                <div class="about-team__grid">
+                    <div class="team-card">
+                        <img class="team-card__photo" src="../images/team-1.jpg" alt="Анна">
+                        <h3 class="team-card__name">Анна Иванова</h3>
+                        <p class="team-card__role">Основатель, главный садовод</p>
+                    </div>
+
+                    <div class="team-card">
+                        <img class="team-card__photo" src="../images/team-2.jpg" alt="Дмитрий">
+                        <h3 class="team-card__name">Дмитрий Петров</h3>
+                        <p class="team-card__role">Агроном</p>
+                    </div>
+
+                    <div class="team-card">
+                        <img class="team-card__photo" src="../images/team-3.jpg" alt="Мария">
+                        <h3 class="team-card__name">Мария Смирнова</h3>
+                        <p class="team-card__role">Менеджер по работе с клиентами</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</main>
+</body>
+<script src="../menu.js"></script>
+<script type="module" src="../cart/catalog-init.js "></script>
+</html>
