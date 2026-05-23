@@ -1,12 +1,23 @@
 import {modalEls} from './elements.js';
 import {renderProductModal} from './render.js';
 import {addToCart} from '../../cart/cart.js';
-import {PRODUCTS} from '../products.js'; // путь под себя
+import {getProductById, loadProductsData} from "../product-store.js";
+
 
 let currentQty = 1;
 
-export function openModal(productId) {
-    const product = PRODUCTS.find((p) => String(p.id) === String(productId));
+export async function openModal(productId) {
+    let product = getProductById(productId);
+
+    if (!product) {
+        try {
+            const products = await loadProductsData();
+            product = products.find(p => String(p.id) === String(productId));
+        } catch (err) {
+            console.error('Не удалось загрузить товар:', err);
+            return;
+        }
+    }
 
     if (!product) {
         console.warn('Товар не найден:', productId);

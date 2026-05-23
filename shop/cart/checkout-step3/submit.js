@@ -9,10 +9,9 @@ import {
     getDeliveryCompanyName,
     getDeliveryTypeName,
     getDeliveryTariffName,
-    getDeliveryAddress,
-    formatPrice
+    getDeliveryAddress
 } from './validation.js';
-
+import {showStep} from '../navigation.js'
 function showLoader(show) {
     if (!els.submitLoader) return;
 
@@ -93,7 +92,7 @@ export async function submitOrder() {
     showLoader(true);
 
     try {
-        const response = await fetch('/api/order', {
+        const response = await fetch('/api/orders', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -116,13 +115,13 @@ export async function submitOrder() {
         clearCart();
 
         // Переход на step 4 (спасибо за заказ)
-        if (typeof window.showStep === 'function') {
-            window.showStep(4);
+        if (typeof showStep === 'function') {
+            showStep(4);
         }
 
         // Если бек возвращает редирект
         if (result.redirectUrl) {
-            window.location.href = result.redirectUrl;
+            location.href = result.redirectUrl;
             return;
         }
 

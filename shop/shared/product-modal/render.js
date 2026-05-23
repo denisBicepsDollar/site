@@ -1,5 +1,6 @@
 import {modalEls} from './elements.js';
 import {safeImage, NO_IMAGE} from '../utils.js';
+import {formatPrice} from "../../cart/checkout-step3/validation.js";
 
 export function renderProductModal(product) {
     if (!product) return;
@@ -19,12 +20,12 @@ export function renderProductModal(product) {
     }
 
     if (modalEls.price) {
-        modalEls.price.textContent = `${product.price} ₽`;
+        modalEls.price.textContent = `${formatPrice(product.price)}`;
     }
 
     if (modalEls.priceOld) {
         if (product.priceOld) {
-            modalEls.priceOld.textContent = `${product.priceOld} ₽`;
+            modalEls.priceOld.textContent = `${formatPrice(product.priceOld)}`;
             modalEls.priceOld.classList.remove('hidden');
         } else {
             modalEls.priceOld.textContent = '';

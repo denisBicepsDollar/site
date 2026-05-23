@@ -10,8 +10,8 @@ import {
 import {submitOrder} from './submit.js';
 
 function goToStep(step) {
-    if (typeof window.showStep === 'function') {
-        window.showStep(step);
+    if (typeof showStep === 'function') {
+        showStep(step);
     }
 }
 

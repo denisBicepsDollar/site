@@ -8,7 +8,7 @@ import {
     getTotalItems
 } from './cart.js';
 
-// мост для старых обычных script-файлов
+// Мост для старых обычных script-файлов (БЕЗ скобок!)
 window.addToCart = addToCart;
 window.decreaseItem = decreaseItem;
 window.removeFromCart = removeFromCart;

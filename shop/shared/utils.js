@@ -1,3 +1,5 @@
+
+
 export const NO_IMAGE = '../images/no-image.jpg';
 
 export function safeImage(src) {

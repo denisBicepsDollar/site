@@ -3,6 +3,7 @@ import {loadCart, getCartTotal, getTotalItems} from '../cart.js';
 import {MIN_ORDER_PRICE} from './constants.js';
 import {updateNextStep1Button} from './ui.js';
 import {NO_IMAGE, safeImage} from "../../shared/utils.js";
+import {formatPrice} from "../checkout-step3/validation.js";
 
 export function renderCartPage() {
     const cart = loadCart();
@@ -31,7 +32,7 @@ export function renderCartPage() {
 
                 <div class="cart-item__info">
                     <h3 class="cart-item__name">${item.name}</h3>
-                    <p class="cart-item__price">${item.price} ₽</p>
+                    <p class="cart-item__price">${formatPrice(item.price)}</p>
                 </div>
 
                 <div class="cart-item__controls">
@@ -40,7 +41,7 @@ export function renderCartPage() {
                     <button class="cart-item__btn cart-item__btn--plus" type="button">+</button>
                 </div>
 
-                <p class="cart-item__subtotal">${item.price * item.count} ₽</p>
+                <p class="cart-item__subtotal">${formatPrice(item.price * item.count)}</p>
 
                 <button class="cart-item__remove" type="button" title="Удалить">✕</button>
             </div>
@@ -52,7 +53,7 @@ export function renderCartPage() {
     const total = getCartTotal();
 
     els.cartTotalItems.textContent = `${getTotalItems()} шт.`;
-    els.cartTotalPrice.textContent = `${total} ₽`;
+    els.cartTotalPrice.textContent = `${formatPrice(total)}`;
 
     if (els.minOrderText) {
         if (total >= MIN_ORDER_PRICE) {

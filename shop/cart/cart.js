@@ -1,4 +1,4 @@
-import {PRODUCTS} from "../shared/products.js";
+import {loadProductsData} from '../shared/product-store.js';
 
 const STORAGE_KEY = 'cart';
 
@@ -9,33 +9,33 @@ let isCartEventsBound = false;
 // Если PRODUCTS уже вынесен в модуль — импортируй оттуда
 // import {PRODUCTS} from '../data/products.js';
 
-// Временный вариант, если PRODUCTS пока глобальный
-function getProducts() {
-    return PRODUCTS || [];
-}
-
+// =============================================
+// LOCAL STORAGE
+// =============================================
 function readCartFromStorage() {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : [];
 }
+function saveCart() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
+}
+// =============================================
+// ПУБЛИЧНЫЕ ГЕТТЕРЫ
+// =============================================
 
 export function loadCart() {
     cart = readCartFromStorage();
     return cart;
 }
-
-function saveCart() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
-}
-
 export function getCartTotal() {
     return cart.reduce((total, item) => total + item.price * item.count, 0);
 }
-
 export function getTotalItems() {
     return cart.reduce((total, item) => total + item.count, 0);
 }
-
+// =============================================
+// СЧЁТЧИК В ХЕДЕРЕ
+// =============================================
 export function updateCartCount() {
     if (!cartCountEl) {
         cartCountEl = document.querySelector('.header__cart-count');
@@ -52,10 +52,14 @@ export function updateCartCount() {
         cartCountEl.classList.remove('header__cart-count--hidden');
     }
 }
+// =============================================
+// ОПЕРАЦИИ С КОРЗИНОЙ
+// =============================================
 
-export function addToCart(productId) {
+export async function addToCart(productId) {
 
-    const products = getProducts();
+    const products = await loadProductsData();
+
 
     const product = products.find((p) => p.id === productId);
 
@@ -121,6 +125,9 @@ export function clearCart() {
     saveCart();
     updateCartCount();
 }
+// =============================================
+// СОБЫТИЯ
+// =============================================
 
 function bindAddToCartButtons() {
     if (isCartEventsBound) return;
@@ -149,11 +156,17 @@ function bindAddToCartButtons() {
 
     isCartEventsBound = true;
 }
-
+// =============================================
+// ИНИЦИАЛИЗАЦИЯ
+// =============================================
 export function initCart() {
     cart = readCartFromStorage();
     cartCountEl = document.querySelector('.header__cart-count');
 
     updateCartCount();
     bindAddToCartButtons();
+
+    loadProductsData().catch(err => {
+        console.warn('Не удалось предзагрузить товары:', err);
+    });
 }

@@ -1,0 +1,42 @@
+{
+  "customer": {
+    "surname": "Сузопов",
+    "name": "Денис",
+    "fathername": "Романович",
+    "email": "woygad2743@gmail.com",
+    "phone": "+7 (919) 191-71-50",
+    "comment": "хочу кока колу"
+  },
+  "delivery": {
+    "method": "delivery",
+    "company": "pochta",
+    "companyName": "Почта России",
+    "type": "office",
+    "typeName": "В отделение",
+    "tariffId": "4030",
+    "tariffName": "Обычная посылка",
+    "address": "НИЖНЕКАМСК 8, 423578, Химиков пр-кт, д. 36",
+    "price": 428
+  },
+  "cart": [
+    {
+      "id": "gortenziya-pinky-winky",
+      "name": "Гортензия метельчатая Pinky Winky",
+      "price": 1400,
+      "count": 7,
+      "subtotal": 9800
+    },
+    {
+      "id": "gortenziya-candybelle",
+      "name": "Гортензия \"Candybelle Stand Up Pink\"",
+      "price": 1300,
+      "count": 4,
+      "subtotal": 5200
+    }
+  ],
+  "totals": {
+    "productsTotal": 15000,
+    "deliveryPrice": 428,
+    "grandTotal": 15428
+  }
+}

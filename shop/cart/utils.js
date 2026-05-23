@@ -1,3 +1,5 @@
+import {showStep} from './navigation.js';
+
 export function show(el) {
     if (el) {
         if (el === null) return;

@@ -4,6 +4,7 @@ import {show, hide} from '../utils.js';
 import {initCdekWidget} from './cdek.js';
 import {initPochtaWidget} from "./pochta.js";
 import {refreshStep3} from "../checkout-step3/index.js";
+import {showStep} from '../navigation.js';
 
 export function bindUIEvents() {
     els.backToStep1?.addEventListener('click', () => goToStep(1));
@@ -91,8 +92,8 @@ export function syncInitialUI() {
 }
 
 function goToStep(step) {
-    if (typeof window.showStep === 'function') {
-        window.showStep(step);
+    if (typeof showStep === 'function') {
+        showStep(step);
     }
 }
 

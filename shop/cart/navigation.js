@@ -10,7 +10,6 @@ export function initNavigation() {
     ].filter(Boolean);
 
     progressBar = document.getElementById('checkout-progress-bar');
-    window.showStep = showStep;
 }
 
 export function showStep(stepNumber) {

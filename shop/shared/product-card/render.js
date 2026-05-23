@@ -18,20 +18,16 @@
 
 
 
-import {PRODUCTS} from "../products.js";
-import {safeImage, NO_IMAGE} from '../utils.js';
 
-PRODUCTS.forEach(product => {
-    const index = buildSearchIndex(product);
-    product._searchIndex = index;
-    product._searchWords = index.split(' ');
-});
+import {safeImage, NO_IMAGE} from '../utils.js';
+import {formatPrice} from "../../cart/checkout-step3/validation.js";
+
 
 export function renderCards(options = {}) {
     // Параметры по умолчанию
     const {
         container,
-        products = PRODUCTS,
+        products = [],
         category = 'all',
         search = '',
         sort = 'default',
@@ -135,9 +131,9 @@ function createCardHTML(product) {
 
             <div class="product-card__info">
                 <div class="product-card__prices">
-                    <span class="product-card__price">${product.price} ₽</span>
+                    <span class="product-card__price">${formatPrice(product.price)}</span>
                     ${product.oldPrice
-        ? `<span class="product-card__price-old">${product.oldPrice} ₽</span>`
+        ? `<span class="product-card__price-old">${formatPrice(product.oldPrice)}</span>`
         : ''}
                 </div>
 
@@ -179,23 +175,4 @@ export function getDiscountPercent(product) {
 
 function hasTag(product, tag) {
     return product.tags && product.tags.includes(tag);
-}
-
-function normalizeText(text = '') {
-    return text
-        .toLowerCase()
-        .replace(/ё/g, 'е')              // ё -> е
-        .replace(/й/g, 'и')              // опционально, делает поиск мягче
-        .replace(/[^a-zа-я0-9\s]/gi, ' ') // убираем знаки
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-function buildSearchIndex(product) {
-    return normalizeText([
-        product.name,
-        product.description,
-        product.category,
-        ...(product.tags || [])
-    ].join(' '));
 }

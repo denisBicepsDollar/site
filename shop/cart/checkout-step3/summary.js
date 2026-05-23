@@ -1,6 +1,7 @@
 import {state} from '../checkout-step2/state.js';
 import {els} from './elements.js';
 import {
+    formatPrice,
     getCartItemsData,
     getDeliveryAddress,
     getDeliveryCompanyName, getDeliveryFullName, getDeliveryPriceText, getDeliveryTariffName,
@@ -57,8 +58,10 @@ export function renderStep3Summary() {
     }
 
     if (els.finalTotalPrice) {
-        const deliveryPrice = Number(window.state?.deliveryPrice || 0);
-        els.finalTotalPrice.textContent = `${products.totalPrice + deliveryPrice} руб.`;
+        const deliveryPrice = Number(state?.deliveryPrice || 0);
+        const total = Number(products.totalPrice) + deliveryPrice;
+        console.log('21212', total);
+        els.finalTotalPrice.textContent = `${formatPrice(total)}`;
     }
 
     if (els.deliveryCompany) {

@@ -9,10 +9,11 @@ import {
 } from '../cart.js';
 import {renderCartPage} from './render.js';
 import {MIN_ORDER_PRICE} from './constants.js';
+import {showStep} from '../navigation.js';
 
 function goToStep(step) {
-    if (typeof window.showStep === 'function') {
-        window.showStep(step);
+    if (typeof showStep === 'function') {
+        showStep(step);
     }
 }
 

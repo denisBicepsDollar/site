@@ -21,6 +21,7 @@
 import * as rowController    from './controllers/rowController.js';
 import * as reportController from './controllers/reportController.js';
 import * as tableController  from './controllers/tableController.js';
+import * as shopController from "./controllers/shopController.js";
 
 export function registerRoutes(app) {
 
@@ -29,6 +30,13 @@ export function registerRoutes(app) {
     app.get('/tables/:tableName',    rowController.list);
     app.post('/tables',              tableController.create);
     app.delete('/tables/:tableName', tableController.remove);
+
+    // Public api
+    app.get('/api/products', shopController.list);
+    app.get('/api/products/:id', shopController.get);
+    app.post('/api/orders', shopController.create);
+    app.post('/api/contacts', shopController.createContact);
+
 
     // Rows
     app.get('/tables/:tableName/rows',                               rowController.list);

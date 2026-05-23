@@ -1,27 +1,17 @@
-// ── config/index.js ───────────────────────────────────────────────────────────
-// Читает config.json и экспортирует плоский объект с настройками приложения.
-// Все параметры подключения к БД берутся отсюда — не хардкодятся в клиентах.
+import configJson from './config.json' with { type: 'json' };
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+export default {
+    port: process.env.PORT || configJson.main.port || 3000,
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const raw       = fs.readFileSync(path.resolve(__dirname, 'config.json'), 'utf8');
-const file      = JSON.parse(raw);
-
-const config = {
-    port:            file.main.port,
-    logLevel:        file.main.logLevel.toLowerCase(),
     db: {
-        host:            file.db.host,
-        port:            file.db.port,
-        user:            file.db.user,
-        password:        file.db.password,
-        defaultDatabase: file.db.defaultDatabase,
-        reportsDatabase: file.db.reportsDatabase,
-    },
-};
+        // если есть DATABASE_URL (Alwaysdata) — используем её
+        connectionString: process.env.DATABASE_URL || null,
 
-console.log(`[config] port=${config.port} logLevel=${config.logLevel} db.host=${config.db.host}`);
-export default config;
+        // fallback для локальной разработки
+        host: process.env.DB_HOST || configJson.db.host,
+        port: process.env.DB_PORT || configJson.db.port,
+        user: process.env.DB_USER || configJson.db.user,
+        password: process.env.DB_PASSWORD || configJson.db.password,
+        database: process.env.DB_NAME || configJson.db.defaultDatabase,
+    }
+};

@@ -1,12 +1,13 @@
 import {els} from './elements.js';
 import {state} from './state.js';
-import {PRODUCTS} from '../shared/products.js';
+import {getProducts} from '../shared/api.js';
 import {
     GROUP_LABELS,
     TYPE_LABELS,
     SUBTYPE_LABELS,
     VARIETY_LABELS
 } from './labels.js';
+import {loadProductsData} from "../shared/product-store.js";
 
 // =============================================
 // УНИВЕРСАЛЬНЫЕ ПОМОЩНИКИ
@@ -35,8 +36,10 @@ function getUniqueValues(products, field) {
 // =============================================
 // 1. ГРУППЫ (Садовые, Комнатные...)
 // =============================================
-export function renderGroupFilters() {
+export async function renderGroupFilters() {
     if (!els.groupFilters) return;
+
+    const PRODUCTS = await loadProductsData();
 
     const groups = ['all', ...getUniqueValues(PRODUCTS, 'group')];
 
@@ -54,13 +57,14 @@ export function renderGroupFilters() {
 // =============================================
 // 2. ВИДЫ (Гортензия, Роза, ...)
 // =============================================
-export function renderTypeFilters() {
+export async function renderTypeFilters() {
     if (!els.typeFilters || !els.typeBlock) return;
 
     if (state.currentGroup === 'all') {
         els.typeBlock.classList.add('hidden');
         return;
     }
+    const PRODUCTS = await loadProductsData();
 
     let filteredProducts = PRODUCTS.filter(p => p.group === state.currentGroup);
     const types = ['all', ...getUniqueValues(filteredProducts, 'type')];
@@ -84,13 +88,14 @@ export function renderTypeFilters() {
 // =============================================
 // 3. ПОДВИДЫ (Метельчатая, Древовидная...)
 // =============================================
-export function renderSubtypeFilters() {
+export async function renderSubtypeFilters() {
     if (!els.subtypeFilters || !els.subtypeBlock) return;
 
     if (state.currentType === 'all') {
         els.subtypeBlock.classList.add('hidden');
         return;
     }
+    const PRODUCTS = await loadProductsData();
 
     let filteredProducts = PRODUCTS
         .filter(p => p.group === state.currentGroup)
@@ -118,13 +123,14 @@ export function renderSubtypeFilters() {
 // =============================================
 // 4. СОРТА (Candybelle, ...)
 // =============================================
-export function renderVarietyFilters() {
+export async function renderVarietyFilters() {
     if (!els.varietyFilters || !els.varietyBlock) return;
 
     if (state.currentSubtype === 'all') {
         els.varietyBlock.classList.add('hidden');
         return;
     }
+    const PRODUCTS = await loadProductsData();
 
     let filteredProducts = PRODUCTS
         .filter(p => p.group === state.currentGroup)
@@ -153,9 +159,9 @@ export function renderVarietyFilters() {
 // =============================================
 // РЕНДЕР ВСЕХ УРОВНЕЙ
 // =============================================
-export function renderAllFilters() {
-    renderGroupFilters();
-    renderTypeFilters();
-    renderSubtypeFilters();
-    renderVarietyFilters();
+export async function renderAllFilters() {
+    await renderGroupFilters();
+    await renderTypeFilters();
+    await renderSubtypeFilters();
+    await renderVarietyFilters();
 }

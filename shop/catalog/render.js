@@ -1,13 +1,24 @@
 import {els} from './elements.js';
 import {state} from './state.js';
-import {PRODUCTS} from '../shared/products.js';
 import {renderCards} from '../shared/product-card/render.js';
+import {loadProductsData} from "../shared/product-store.js";
 
-export function updateCatalog() {
+export async function updateCatalog() {
     if (!els.catalogGrid) return;
 
     // Фильтруем по всем уровням
-    let filtered = [...PRODUCTS];
+    let filtered;
+    try {
+        const products = await loadProductsData();
+        filtered = [...products];
+    } catch (err) {
+        console.error('Не удалось загрузить товары:', err);
+        if (els.emptyEl) {
+            els.emptyEl.textContent = 'Ошибка загрузки товаров';
+            els.emptyEl.classList.remove('hidden');
+        }
+        return;
+    }
 
     if (state.currentGroup !== 'all') {
         filtered = filtered.filter(p => p.group === state.currentGroup);
