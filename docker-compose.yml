@@ -14,6 +14,8 @@ services:
       - ./nginx/certs:/etc/letsencrypt:ro
       - ./nginx/www:/var/www/certbot:ro
       - ./shop:/var/www/shop:ro
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
+      - ./back/frontend/dist:/var/www/admin:ro
     depends_on:
       - api
     networks:
