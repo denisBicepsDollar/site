@@ -1,25 +1,28 @@
-#das
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Зависимости
 node_modules/
+
+# Артефакты сборки React-админки
+admin-build/
+dist/
+dist-ssr/
+
+# Данные базы данных (pgdata)
+pgdata/
+back/Postgre/pgdata/
+
+# Логи
+*.log
+logs/
+
+# Окружение (секреты!)
+.env
+.env.prod
+.env.local
+
+# IDE
 .idea/
+.vscode/
+.DS_Store
+
+# Если не хочешь хранить сертификаты в репозитории (опционально)
+# nginx/certs/
