@@ -6,7 +6,7 @@ import fs from 'fs';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Папка куда сохраняем картинки
-const uploadDir = path.join(__dirname, '../../../shop/images');
+const uploadDir = path.join(__dirname, '../../shop/images');
 
 // Создаём папку если нет
 if (!fs.existsSync(uploadDir)) {
