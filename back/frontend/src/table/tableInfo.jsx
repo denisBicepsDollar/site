@@ -64,6 +64,7 @@ export default function TableInfo({ tableInfo }) {
         // Преобразование любого значения в строку
         return String(val);
     };
+    const [uploading, setUploading] = useState(false);
 
     // Функция определения фильтра для идентификации строки при запросе к API
     function getFilterForRow(row, columnsList) {
@@ -131,6 +132,28 @@ export default function TableInfo({ tableInfo }) {
         setEditingData({});
     };
 
+
+
+
+    const handleImageUpload = async (file) => {
+        if (!file) return;
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            if (!res.ok) throw new Error('Ошибка загрузки');
+            const data = await res.json();
+            setEditingData(prev => ({ ...prev, image: data.path }));
+        } catch (e) {
+            alert('Ошибка загрузки картинки: ' + e.message);
+        } finally {
+            setUploading(false);
+        }
+    };
     // Обработчик отправки отредактированных данных на сервер
     const submitEdit = async () => {
         if (!editingRow) return;
