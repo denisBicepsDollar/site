@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import * as api from "../api.js";
+import {uploadImage} from "../api.js";
 
 export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = [] }) {
     const [open, setOpen] = useState(false);
@@ -61,14 +62,7 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
         if (!file) return;
         setUploading(true);
         try {
-            const formData = new FormData();
-            formData.append('image', file);
-            const res = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            });
-            if (!res.ok) throw new Error('Ошибка загрузки');
-            const data = await res.json();
+            const data = await api.uploadImage(file);
             updateValue('image', data.path);
         } catch (e) {
             setError('Ошибка загрузки картинки: ' + e.message);

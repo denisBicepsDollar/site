@@ -290,12 +290,3 @@ export function validateStep3() {
 
     return results.every(Boolean);
 }
-
-export function clearAllErrors() {
-    clearError(els.surname, els.surnameError);
-    clearError(els.name, els.nameError);
-    clearError(els.email, els.emailError);
-    clearError(els.phone, els.phoneError);
-
-    if (els.privacyError) els.privacyError.textContent = '';
-}

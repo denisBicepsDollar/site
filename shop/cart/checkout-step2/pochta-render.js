@@ -2,23 +2,6 @@
 import { state } from './state.js';
 import {POCHTA_COURIER_OBJECT} from "./constants.js";
 
-
-
-
-export function renderFinalPochtaTariff(data) {
-    const price = Math.ceil((Number(data.cashOfDelivery) || 0) / 100);
-    const days = data?.deliveryDescription?.description || '';
-
-    return `
-        <p><strong>Выбранный вариант доставки:</strong></p>
-        <p>
-            Почта России: 
-            ${days ? `Срок доставки ${days}. ` : ''}
-            Стоимость доставки: ${price} руб.
-        </p>
-    `;
-}
-
 export function renderPochtaPostOffice(results) {
     const result = Array.isArray(results)
         ? results.find(function (item) {

@@ -38,12 +38,6 @@ const WINDOW_FNS = [
 
 const ORDER_DIRECTIONS = ['ASC', 'DESC', 'ASC NULLS LAST', 'DESC NULLS LAST', 'ASC NULLS FIRST', 'DESC NULLS FIRST'];
 
-const COALESCE_DEFAULTS = {
-    numeric: '0',
-    text: "''",
-    boolean: 'false',
-};
-
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
 const uid = () => Date.now() + Math.random();

@@ -67,8 +67,3 @@ export function getProductById(id) {
     if (!cache) return null;
     return cache.find(p => String(p.id) === String(id));
 }
-
-export function clearProductsCache() {
-    cache = null;
-    loadingPromise = null;
-}

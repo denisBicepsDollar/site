@@ -143,14 +143,7 @@ export default function TableInfo({ tableInfo }) {
         if (!file) return;
         setUploading(true);
         try {
-            const formData = new FormData();
-            formData.append('image', file);
-            const res = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            });
-            if (!res.ok) throw new Error('Ошибка загрузки');
-            const data = await res.json();
+            const data = await api.uploadImage(file);
             setEditingData(prev => ({ ...prev, image: data.path }));
         } catch (e) {
             alert('Ошибка загрузки картинки: ' + e.message);
