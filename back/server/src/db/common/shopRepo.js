@@ -99,13 +99,15 @@ export async function createOrder(order, items) {
 
         // ШАГ 3: пишем заказ в таблицу orders
         const orderSql = `
-            INSERT INTO orders (customer_name,email,phone,delivery_method,delivery_company,delivery_type,delivery_price,address,total_price)
-            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id
+            INSERT INTO orders (customer_name, email, phone, delivery_method, delivery_company, delivery_type, delivery_price, address, pochta_tariff, cdek_tariff, total_price)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10::jsonb,$11) RETURNING id
         `;
         const orderVals = [
             order.customerName, order.email, order.phone,
             order.deliveryMethod, order.deliveryCompany, order.deliveryType,
-            order.deliveryPrice, order.address, total
+            order.deliveryPrice, order.address,
+            order.pochtaTariff, order.cdekTariff,
+            total
         ];
         const { rows: [newOrder] } = await client.query(orderSql, orderVals);
 
