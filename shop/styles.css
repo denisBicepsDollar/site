@@ -482,7 +482,7 @@ body {
 .hero__button {
     margin-top: 30px;
     padding: 16px 40px; /* Делаем её чуть крупнее обычных кнопок */
-    font-size: var(--fs-md);
+    font-size: var(--fs-3xl);
     font-weight: var(--fw-bold);
     letter-spacing: 0.5px;
 
