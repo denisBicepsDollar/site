@@ -56,7 +56,9 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
         }
 
         // Преобразование в массив, если строка содержит запятые
-        if (typeof s === 'string' && s.includes(',')) return s.split(',').map(x => x.trim());
+        if (type.includes('[]') || type === 'array' || type === 'ARRAY') {
+            if (typeof s === 'string' && s.includes(',')) return s.split(',').map(x => x.trim());
+        }
 
         // Возвращаем исходное значение, если преобразование не требуется
         return raw;
