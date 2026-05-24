@@ -22,6 +22,7 @@ import * as rowController    from './controllers/rowController.js';
 import * as reportController from './controllers/reportController.js';
 import * as tableController  from './controllers/tableController.js';
 import * as shopController from "./controllers/shopController.js";
+import { upload, uploadImage } from './controllers/uploadController.js';
 
 export function registerRoutes(app) {
 
@@ -51,4 +52,6 @@ export function registerRoutes(app) {
     app.get('/tables/:tableName/reports/:reportId/status',       reportController.status);
     app.get('/tables/:tableName/reports/:reportId/download',     reportController.download);
     app.delete('/tables/:tableName/reports/:reportId',           reportController.remove);
+    // Загрузка картинок (только для админки)
+    app.post('/api/upload', upload.single('image'), uploadImage);
 }

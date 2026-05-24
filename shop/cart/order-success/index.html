@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Заказ оформлен — Зелёные усы</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .success {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success__icon {
+            font-size: 72px;
+            margin-bottom: 24px;
+        }
+
+        .success__title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d6a4f;
+            margin-bottom: 12px;
+        }
+
+        .success__subtitle {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 24px;
+            max-width: 480px;
+            line-height: 1.6;
+        }
+
+        .success__order {
+            background: #e8f5e9;
+            border-radius: 12px;
+            padding: 20px 32px;
+            margin-bottom: 32px;
+        }
+
+        .success__order-label {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 6px;
+        }
+
+        .success__order-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d6a4f;
+            letter-spacing: 1px;
+        }
+
+        .success__contacts {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 32px;
+        }
+
+        .success__contacts a {
+            color: #2d6a4f;
+            text-decoration: none;
+        }
+
+        .success__btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: #2d6a4f;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .success__btn:hover {
+            background: #1b4332;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="wrapper header__wrapper">
+            <h1 class="header__logo">
+                <a href="../" class="header__title">Цветочная лавка "Зелёные усы"</a>
+            </h1>
+            <div class="header__actions">
+                <a href="../cart" class="button header__cart" id="cart-button">
+                    Корзина<span class="header__cart-count">0</span>
+                </a>
+                <nav class="header__nav">
+                    <button type="button" class="button header__button" id="menu-button"
+                            aria-expanded="false" aria-controls="site-menu">
+                        Открыть меню
+                    </button>
+                    <ul class="menu" id="site-menu">
+                        <li><a class="menu__link" href="../catalog">Каталог</a></li>
+                        <li><a class="menu__link" href="../about">О лавке</a></li>
+                        <li><a class="menu__link" href="../delivery">Доставка и оплата</a></li>
+                        <li><a class="menu__link" href="../contacts">Контакты</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="success">
+            <div class="success__icon">🌿</div>
+            <h2 class="success__title">Спасибо за заказ!</h2>
+            <p class="success__subtitle">
+                Мы получили ваш заказ и скоро свяжемся с вами для подтверждения.
+            </p>
+
+            <div class="success__order">
+                <div class="success__order-label">Номер вашего заказа</div>
+                <div class="success__order-number" id="order-number">—</div>
+            </div>
+
+            <p class="success__contacts">
+                Если возникли вопросы — напишите нам:<br>
+                <a href="/cdn-cgi/l/email-protection#f49d9a929bb48e9198919a8d9181878dda8681"><span class="__cf_email__" data-cfemail="c0a9aea6af80baa5aca5aeb9a5b5b3b9eeb2b5">[email&#160;protected]</span></a>
+            </p>
+
+            <a href="../catalog" class="success__btn">Продолжить покупки</a>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="wrapper footer__wrapper">
+            <p class="footer__copyright">© 2026 Цветочная лавка "Зелёные усы"</p>
+        </div>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="../menu.js"></script>
+    <script>
+        // Читаем orderId из URL: /order-success?orderId=123
+        const params = new URLSearchParams(window.location.search);
+        const orderId = params.get('orderId');
+        if (orderId) {
+            document.getElementById('order-number').textContent = '#' + orderId;
+        }
+
+        // Очищаем корзину после успешного заказа
+        localStorage.removeItem('cart');
+
+        // Обновляем счётчик корзины в хедере
+        const cartBtn = document.getElementById('cart-button');
+        const counter = cartBtn?.querySelector('.header__cart-count');
+        if (counter) counter.textContent = '0';
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a00c7c81be674b78',t:'MTc3OTYyNzY1OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
