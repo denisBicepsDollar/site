@@ -35,8 +35,8 @@ async function startServer() {
     const port = config.port;
     app.listen(port, () => {
         console.log(`[server] started on port ${port}`);
-        console.log(`📦 Магазин: http://localhost:${port}`);
-        console.log(`🛠  API:    http://localhost:${port}/tables`);
+        console.log(`Магазин: http://localhost:${port}`);
+        console.log(`API:    http://localhost:${port}/tables`);
     });
 }
 

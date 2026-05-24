@@ -86,7 +86,6 @@ export async function submitOrder() {
 
     const payload = collectFormData();
 
-    console.log('Отправляем заказ:', payload);
 
     els.submitButton.disabled = true;
     showLoader(true);
@@ -109,7 +108,6 @@ export async function submitOrder() {
 
         const result = await response.json();
 
-        console.log('Заказ оформлен:', result);
 
         // Очистка корзины
         clearCart();

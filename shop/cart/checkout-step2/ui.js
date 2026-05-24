@@ -14,7 +14,7 @@ export function bindUIEvents() {
     });
 
     document.addEventListener('change', function (event) {
-        console.log('changed:', event.target.name);
+
 
         const allowedNames = [
             'getting',
@@ -108,16 +108,7 @@ export function updateMainDeliveryWay() {
     if (els.deliveryRadio?.checked) {
 
         state.deliveryMethod = 'delivery';
-        console.log(state.deliveryMethod);
-        console.log(state.deliveryCompany);
-        console.log(state.deliveryType);
-        console.log(state.deliveryType);
-        console.log(state.selectedPochtaOffice);
-        console.log(state.selectedPochtaTariff);
-        console.log(state.selectedCdekOffice);
-        console.log(state.selectedCdekTariff);
-        console.log(state.deliveryPrice);
-        console.log(state.fullSelectedAddress);
+
         hide(els.pickupBlock);
         show(els.deliveryBlock);
     }
@@ -129,15 +120,7 @@ export function updateDeliveryCompanyWay() {
 
     if (els.pochtaRadio?.checked) {
         state.deliveryCompany = 'pochta';
-        console.log(state.deliveryMethod);
-        console.log(state.deliveryCompany);
-        console.log(state.deliveryType);
-        console.log(state.selectedPochtaOffice);
-        console.log(state.selectedPochtaTariff);
-        console.log(state.selectedCdekOffice);
-        console.log(state.selectedCdekTariff);
-        console.log(state.deliveryPrice);
-        console.log(state.fullSelectedAddress);
+
         document.querySelectorAll('input[name="cdek-tariff"]').forEach((input) => {
             input.checked = false;
         });

@@ -2,7 +2,7 @@ import { calculateAndRenderPochta } from './pochta.js';
 import { els } from './elements.js';
 
 export async function callbackAddress(data) {
-    console.log('Выбрано отделение:', data);
+
 
     const toIndex = data.indexTo;
 

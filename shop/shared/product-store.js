@@ -44,8 +44,6 @@ export async function loadProductsData() {
             products.forEach(product => {
                 const index = buildSearchIndex(product);
                 if (product.name?.includes('Сандей')) {
-                    console.log('Индекс:', JSON.stringify(index));
-                    console.log('Слова:', product._searchWords);
                 }
                 product._searchIndex = index;
                 product._searchWords = index.split(' ');

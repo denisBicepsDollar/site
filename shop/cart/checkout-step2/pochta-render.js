@@ -22,7 +22,7 @@ export function renderPochtaPostOffice(results) {
     const index = office.index || '';
     const address = office.address || '';
     state.autoOffice = [name, index, address].filter(Boolean).join(', ');
-    console.log('auto', state.autoOffice)
+
 
     return `
         <strong>Предварительное отделение Почты:</strong>

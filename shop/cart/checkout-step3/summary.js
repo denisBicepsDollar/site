@@ -19,16 +19,6 @@ export function formatDeliveryAddress() {
 }
 
 export function renderDeliveryInfo() {
-    console.log('step3 render');
-    console.log('deliveryMethod:', state.deliveryMethod);
-    console.log('deliveryCompany:', state.deliveryCompany);
-    console.log('deliveryType:', state.deliveryType);
-    console.log('selectedPochtaOffice:', state.selectedPochtaOffice);
-    console.log('selectedPochtaTariff:', state.selectedPochtaTariff);
-    console.log('selectedCdekOffice:', state.selectedCdekOffice);
-    console.log('selectedCdekTariff:', state.selectedCdekTariff);
-    console.log('deliveryPrice:', state.deliveryPrice);
-    console.log('fullSelectedAddress:', state.fullSelectedAddress);
 
     if (els.deliveryAddress) {
         const deliveryAddressHtml = formatDeliveryAddress();
@@ -60,14 +50,12 @@ export function renderStep3Summary() {
     if (els.finalTotalPrice) {
         const deliveryPrice = Number(state?.deliveryPrice || 0);
         const total = Number(products.totalPrice) + deliveryPrice;
-        console.log('21212', total);
         els.finalTotalPrice.textContent = `${formatPrice(total)}`;
     }
 
     if (els.deliveryCompany) {
         els.deliveryCompany.textContent = getDeliveryFullName();
     }
-    console.log(els.deliveryTariff);
     if (els.deliveryTariff) {
         els.deliveryTariff.textContent = getDeliveryTariffName();
     }

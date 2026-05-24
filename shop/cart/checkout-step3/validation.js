@@ -37,7 +37,6 @@ export function getDeliveryTypeName() {
 
     if (state.deliveryCompany === 'cdek') {
         const tariffId = getCdekTariffId();
-        console.log('das52262', tariffId);
         if (tariffId === 'pvz') return 'Пункт выдачи';
         if (tariffId === 'courier') return 'Курьер';
     }
@@ -49,7 +48,6 @@ export function getDeliveryFullName() {
     const company = getDeliveryCompanyName();
     const type = getDeliveryTypeName();
 
-    console.log('dasdasdasd1', type);
 
     if (company === 'Самовывоз') {
         return company;
@@ -62,7 +60,6 @@ export function getDeliveryFullName() {
     if (!type || type === '—') {
         return company;
     }
-    console.log('dasdasdasd', type);
 
     return `${company}, ${type}`;
 }
@@ -117,7 +114,6 @@ function getCdekTariffId() {
     if (!state.selectedCdekTariff) return null;
 
     if (typeof state.selectedCdekTariff === 'object') {
-        console.log(state.selectedCdekTariff.id)
         return state.selectedCdekTariff.id || '';
     }
 
@@ -131,7 +127,6 @@ export function getDeliveryTariffName() {
 
     if (state.deliveryCompany === 'pochta') {
         const tariffId = getPochtaTariffId();
-        console.log('dasd2352', tariffId);
         return POCHTA_TARIFF_NAMES[tariffId] || '—';
     }
 
