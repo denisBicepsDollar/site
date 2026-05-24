@@ -9,12 +9,12 @@ CREATE TABLE IF NOT EXISTS reports (
     table_name    TEXT NOT NULL,
     title         TEXT,
     params        JSONB,
-    config        JSONB,                              -- ✅ добавил тип
+    config        JSONB,
     status        TEXT DEFAULT 'В ожидании...',
     result_path   TEXT,
     mime          TEXT,
     error         TEXT,
-    source_db_id  TEXT,                               -- ✅ добавил колонку для индекса
+    source_db_id  TEXT,
     created_at    TIMESTAMPTZ DEFAULT now(),
     finished_at   TIMESTAMPTZ
     );
