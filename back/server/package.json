@@ -17,6 +17,7 @@
     "express": "^5.2.1",
     "fast-safe-stringify": "^2.1.1",
     "jsonwebtoken": "^9.0.0",
+    "multer": "^2.1.1",
     "pg": "^8.19.0",
     "pino": "^10.3.1",
     "pino-pretty": "^13.1.3"
