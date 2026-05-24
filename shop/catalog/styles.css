@@ -214,9 +214,10 @@
 /* ============================== */
 .catalog-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(var(--card-width, 280px), 1fr));
+    grid-template-columns: repeat(auto-fill, var(--card-width, 280px));
     gap: var(--cards-gap, 24px);
     margin-bottom: 40px;
+    justify-content: center;
 }
 
 
