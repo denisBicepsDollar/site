@@ -1196,7 +1196,7 @@
     }
 
     .cart-item__subtotal {
-        flex: 0;
+        flex: 0 1 auto;
         min-width: auto;
         text-align: left;
         font-size: var(--fs-md);
@@ -1280,6 +1280,7 @@
         flex-direction: column-reverse;
         gap: 10px;
         padding-top: 16px;
+        align-items: stretch;
     }
 
     .next-btn,

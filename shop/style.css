@@ -369,6 +369,7 @@
 
 @media (max-width: 380px) {
     .hero__title {
+        padding: 12px 14px;
         font-size: var(--fs-lg);
     }
 
