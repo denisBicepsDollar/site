@@ -480,25 +480,22 @@ body {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 .hero__button {
-    margin-top: 24px;
-    padding: 14px 36px;
+    margin-top: 30px;
+    padding: 16px 40px; /* Делаем её чуть крупнее обычных кнопок */
     font-size: var(--fs-md);
-    min-width: 180px;
+    font-weight: var(--fw-bold);
+    letter-spacing: 0.5px;
 
-    background: linear-gradient(180deg,
-    var(--craft-200) 0%,
-    var(--craft-400) 100%);
-    color: var(--green-800);
-    border: 1px solid var(--craft-400);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(180deg, var(--green-200) 0%, var(--green-300) 100%);
+    color: white;
+    border: 1px solid var(--green-150);
+    box-shadow: 0 6px 16px rgba(104, 159, 56, 0.3);
 }
 
 .hero__button:hover {
-    background: linear-gradient(180deg,
-    var(--craft-100) 0%,
-    var(--craft-200) 100%);
-    color: var(--green-900);
-}
+    background: linear-gradient(180deg, var(--green-150) 0%, var(--green-250) 100%);
+    box-shadow: 0 8px 20px rgba(104, 159, 56, 0.45);
+ }
 
 /* =============================================
    7. SECTION
