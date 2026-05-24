@@ -32,15 +32,17 @@ export async function loadProductsData() {
 
     loadingPromise = getProducts({})
         .then(data => {
-            data.forEach(product => {
+
+            const products = Array.isArray(data) ? data : (data.data || []);
+            products.forEach(product => {
                 const index = buildSearchIndex(product);
                 product._searchIndex = index;
                 product._searchWords = index.split(' ');
             });
 
-            cache = data;
+            cache = products;
             loadingPromise = null;
-            return data;
+            return products;
         })
         .catch(err => {
             loadingPromise = null;
