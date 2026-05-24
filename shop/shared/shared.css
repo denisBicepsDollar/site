@@ -1075,7 +1075,8 @@ a {
     }
 }
 
-
+.header__title-full  { display: inline; }  /* "Цветочная лавка..." видно */
+.header__title-short { display: none;   }
 /* На мобиле (≤600px): */
 @media (max-width: 600px) {
     .header__title-full  { display: none;   }
