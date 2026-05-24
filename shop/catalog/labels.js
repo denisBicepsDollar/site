@@ -15,8 +15,9 @@ export const TYPE_LABELS = {
     orhideya: 'Орхидея',
     tulpan: 'Тюльпан',
     lily: 'Лилия',
-    narciss: 'Нарцисс',     // ← новое
-    buket: 'Букет'
+    iris: 'Ирис',
+    narciss: 'Нарцисс',
+    filodendron: 'Филодендрон',
 };
 
 export const SUBTYPE_LABELS = {
@@ -25,7 +26,7 @@ export const SUBTYPE_LABELS = {
     parkovaya: 'Парковая',
     chayno: 'Чайно-гибридная',
     pletistaya: 'Плетистая',
-    floribunda: 'Флорибунда',   // ← новое
+    floribunda: 'Флорибунда',
     // Гортензии
     drevovidnaya: 'Древовидная',
     metelchataya: 'Метельчатая',
@@ -33,12 +34,13 @@ export const SUBTYPE_LABELS = {
     // Пионы
     travyanistyi: 'Травянистый',
     drevovidnyi: 'Древовидный',
-    ito: 'ИТО-гибрид',          // ← новое
+    ito: 'ИТО-гибрид',
     // Комнатные
     senpoliya: 'Сенполия',
     khimera: 'Химера',           // ← новое
     falenopsis: 'Фаленопсис',
-    dendrobium: 'Дендробиум',   // ← новое
+    dendrobium: 'Дендробиум',
+    sodiroy: 'Содирой',    // ← новое
     // Луковичные
     triumf: 'Триумф',
     pozdniy: 'Поздний',
