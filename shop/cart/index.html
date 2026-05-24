@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Корзина — Цветочная лавка "Зеленые усы"</title>
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../shared/shared.css">
     <link rel="stylesheet" href="./cart.css">
 </head>
 <body>
-    <header class="header">
+    <header class="header header--checkout">
         <div class="wrapper header__wrapper">
             <h1 class="header__logo">
                 <a href="../" class="header__title">Цветочная лавка "Зеленые усы"</a>
@@ -138,14 +138,14 @@
                                 <h3 class="checkout-step__title">Укажите адрес</h3>
 
                                 <div id="input-adress-block" class="info-text">
-                                    <p class="label-text2">
+                                    <p class=".city-form__label">
                                         Для расчёта стоимости доставки введите название вашего населённого пункта.
                                     </p>
-                                    <section class="container">
+                                    <section class=".city-form__hint">
                                         Выберите адрес из выпадающего списка.
                                         <input
                                                 id="inp-address"
-                                                class="input-text2 suggestions-input"
+                                                class=".city-form__input suggestions-input"
                                                 name="address"
                                                 type="text"
                                                 placeholder="Введите название вашего населённого пункта"

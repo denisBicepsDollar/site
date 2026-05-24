@@ -1,8 +1,12 @@
-/* =============================================
-   СТРАНИЦА "ДОСТАВКА И ОПЛАТА"
-   ============================================= */
+/* =============================================================================
+   DELIVERY / СТРАНИЦА "ДОСТАВКА И ОПЛАТА"
+   Требует: shared.css
+   ============================================================================= */
 
-/* --- Сетка способов доставки и оплаты --- */
+
+/* =============================================================================
+   1. СЕТКА СПОСОБОВ ДОСТАВКИ / ОПЛАТЫ
+   ============================================================================= */
 .delivery-grid,
 .payment-grid {
     display: grid;
@@ -12,83 +16,92 @@
 }
 
 
-/* --- Карточка доставки --- */
+/* =============================================================================
+   2. КАРТОЧКИ
+   ============================================================================= */
 .delivery-card,
 .payment-card {
-    background: white;
     padding: 24px 20px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--craft-400);
-    box-shadow: var(--shadow-card);
     text-align: center;
-    transition: var(--transition-base);
+    background: #fff;
+    border: 1px solid var(--craft-400);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    transition:
+            transform    var(--transition-base),
+            box-shadow   var(--transition-base),
+            border-color var(--transition-base);
 }
 
 .delivery-card:hover,
 .payment-card:hover {
-    transform: var(--hover-lift-md);
-    box-shadow: var(--shadow-card-hover);
     border-color: var(--green-150);
+    box-shadow: var(--shadow-card-hover);
+    transform: var(--hover-lift-md);
 }
 
 .delivery-card__icon,
 .payment-card__icon {
-    font-size: 40px;
     margin-bottom: 12px;
+    font-size: 40px;
 }
 
 .delivery-card__title,
 .payment-card__title {
+    margin-bottom: 8px;
     font-family: var(--font-accent);
     font-size: var(--fs-md);
     color: var(--craft-900);
-    margin-bottom: 8px;
 }
 
 .delivery-card__price {
+    margin-bottom: 8px;
     font-size: var(--fs-lg);
     font-weight: var(--fw-bold);
     color: var(--green-700);
-    margin-bottom: 8px;
 }
 
 .delivery-card__text,
 .payment-card__text {
     font-size: var(--fs-base);
-    color: var(--craft-900);
     line-height: var(--lh-relaxed);
+    color: var(--craft-900);
 }
 
 
-/* --- Условия доставки --- */
+/* =============================================================================
+   3. УСЛОВИЯ ДОСТАВКИ
+   ============================================================================= */
 .delivery-conditions {
     margin-top: 20px;
 }
 
 .delivery-conditions__list {
+    padding: 20px 24px 20px 44px;
+    list-style: none;
     background: var(--craft-50);
     border: 1px solid var(--craft-400);
     border-radius: var(--radius-sm);
-    padding: 20px 24px 20px 44px;
-    list-style: none;
 }
 
 .delivery-conditions__list li {
-    font-size: var(--fs-base);
-    color: var(--craft-900);
-    line-height: var(--lh-relaxed);
-    padding: 6px 0;
     position: relative;
+    padding: 6px 0;
+    font-size: var(--fs-base);
+    line-height: var(--lh-relaxed);
+    color: var(--craft-900);
 }
 
 .delivery-conditions__list li::before {
-    content: '🌿';
+    content: "🌿";
     position: absolute;
     left: -24px;
 }
 
 
-/* --- Адаптив --- */
+/* =============================================================================
+   4. АДАПТИВ
+   ============================================================================= */
 @media (max-width: 768px) {
     .delivery-card__title,
     .payment-card__title {

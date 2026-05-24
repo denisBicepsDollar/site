@@ -1,7 +1,12 @@
-/* =============================================
-   СТРАНИЦА "КОНТАКТЫ"
-   ============================================= */
+/* =============================================================================
+   CONTACTS / СТРАНИЦА КОНТАКТОВ
+   Требует: shared.css
+   ============================================================================= */
 
+
+/* =============================================================================
+   1. СЕТКА
+   ============================================================================= */
 .contacts-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -11,14 +16,16 @@
 
 .contacts-info__title,
 .contacts-form-wrapper__title {
+    margin-bottom: 20px;
     font-family: var(--font-accent);
     font-size: var(--fs-2xl);
     color: var(--green-800);
-    margin-bottom: 20px;
 }
 
 
-/* --- Контактная информация --- */
+/* =============================================================================
+   2. КОНТАКТНАЯ ИНФОРМАЦИЯ
+   ============================================================================= */
 .contact-item {
     display: flex;
     align-items: flex-start;
@@ -29,13 +36,13 @@
 }
 
 .contact-item:last-of-type {
-    border-bottom: none;
     margin-bottom: 0;
+    border-bottom: none;
 }
 
 .contact-item__icon {
-    font-size: 28px;
     flex-shrink: 0;
+    font-size: 28px;
 }
 
 .contact-item__body {
@@ -43,22 +50,22 @@
 }
 
 .contact-item__label {
+    margin-bottom: 4px;
     font-family: var(--font-accent);
     font-size: var(--fs-base);
-    color: #686868;
-    margin-bottom: 4px;
+    color: var(--text-label);
 }
 
 .contact-item__value {
     font-size: var(--fs-md);
-    color: var(--craft-900);
     line-height: var(--lh-relaxed);
+    color: var(--craft-900);
 }
 
 .contact-item__value--link {
     color: var(--green-700);
     text-decoration: none;
-    transition: var(--transition-fast);
+    transition: color var(--transition-fast);
 }
 
 .contact-item__value--link:hover {
@@ -67,50 +74,58 @@
 }
 
 
-/* --- Соцсети --- */
+/* =============================================================================
+   3. СОЦСЕТИ
+   ============================================================================= */
 .contacts-social {
     margin-top: 24px;
 }
 
 .contacts-social__title {
+    margin-bottom: 12px;
     font-family: var(--font-accent);
     font-size: var(--fs-md);
     color: var(--craft-900);
-    margin-bottom: 12px;
 }
 
 .contacts-social__links {
     display: flex;
-    gap: 10px;
     flex-wrap: wrap;
+    gap: 10px;
 }
 
 .social-link {
     display: inline-block;
     padding: 8px 16px;
-    background: var(--green-50);
+    font-size: var(--fs-base);
+    font-weight: var(--fw-semibold);
     color: var(--green-700);
+    text-decoration: none;
+    background: var(--green-50);
     border: 2px solid var(--green-150);
     border-radius: var(--radius-sm);
-    text-decoration: none;
-    font-weight: var(--fw-semibold);
-    font-size: var(--fs-base);
-    transition: var(--transition-base);
+    transition:
+            background   var(--transition-base),
+            border-color var(--transition-base),
+            color        var(--transition-base),
+            transform    var(--transition-base);
 }
 
 .social-link:hover {
-    background: var(--green-150);
     color: var(--green-800);
+    background: var(--green-150);
     transform: var(--hover-lift-sm);
 }
 
 
-/* --- Форма контактов --- */
+/* =============================================================================
+   4. ФОРМА КОНТАКТОВ
+   ============================================================================= */
 .contacts-form-wrapper {
-    background: white;
     padding: 28px;
-    border-radius: var(--radius-md);
+    background: #fff;
     border: 1px solid var(--craft-400);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-card);
 }
 
@@ -120,37 +135,39 @@
 
 .contacts-form__label {
     display: block;
+    margin-bottom: 6px;
     font-size: var(--fs-base);
     font-weight: var(--fw-bold);
     color: var(--craft-900);
-    margin-bottom: 6px;
 }
 
 .contacts-form__input,
 .contacts-form__textarea {
     width: 100%;
     padding: 12px 16px;
-    font-size: var(--fs-base);
     font-family: var(--font-main);
+    font-size: var(--fs-base);
+    color: var(--craft-900);
+    background: var(--craft-50);
     border: 2px solid var(--craft-400);
     border-radius: var(--radius-sm);
-    background: var(--craft-50);
-    color: var(--craft-900);
     outline: none;
-    transition: var(--transition-fast);
-    box-sizing: border-box;
+    transition:
+            border-color var(--transition-fast),
+            background   var(--transition-fast),
+            box-shadow   var(--transition-fast);
 }
 
 .contacts-form__input:focus,
 .contacts-form__textarea:focus {
+    background: #fff;
     border-color: var(--green-400);
-    background: white;
-    box-shadow: 0 0 0 3px rgba(88, 140, 90, 0.15);
+    box-shadow: var(--shadow-focus-ring);
 }
 
 .contacts-form__input::placeholder,
 .contacts-form__textarea::placeholder {
-    color: #aaa;
+    color: var(--text-faded);
 }
 
 .contacts-form__textarea {
@@ -159,25 +176,29 @@
 }
 
 
-/* --- Карта --- */
+/* =============================================================================
+   5. КАРТА (плейсхолдер)
+   ============================================================================= */
 .contacts-map {
     margin-top: 20px;
 }
 
 .contacts-map__placeholder {
-    background: var(--craft-50);
-    border: 2px dashed var(--craft-400);
-    border-radius: var(--radius-md);
-    height: 320px;
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 320px;
     font-size: var(--fs-xl);
-    color: #999;
+    color: var(--text-subtle);
+    background: var(--craft-50);
+    border: 2px dashed var(--craft-400);
+    border-radius: var(--radius-md);
 }
 
 
-/* --- Адаптив --- */
+/* =============================================================================
+   6. АДАПТИВ
+   ============================================================================= */
 @media (max-width: 768px) {
     .contacts-grid {
         grid-template-columns: 1fr;
