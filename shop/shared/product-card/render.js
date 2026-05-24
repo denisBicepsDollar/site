@@ -21,7 +21,7 @@
 
 import {safeImage, NO_IMAGE} from '../utils.js';
 import {formatPrice} from "../../cart/checkout-step3/validation.js";
-import {normalizeText} from "../product-store";
+import {normalizeText} from "../product-store.js";
 
 
 export function renderCards(options = {}) {
