@@ -19,7 +19,7 @@ function buildSearchIndex(product) {
         .map(p => (p ?? '').toString())
         .filter(s => s.length > 0)
         .join(' ');
-    return text;
+    return normalizeText(text);
 }
 
 export function normalizeText(text = '') {
@@ -43,6 +43,10 @@ export async function loadProductsData() {
             const products = Array.isArray(data) ? data : (data.data || []);
             products.forEach(product => {
                 const index = buildSearchIndex(product);
+                if (product.name?.includes('Сандей')) {
+                    console.log('Индекс:', JSON.stringify(index));
+                    console.log('Слова:', product._searchWords);
+                }
                 product._searchIndex = index;
                 product._searchWords = index.split(' ');
             });
