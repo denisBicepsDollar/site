@@ -69,7 +69,7 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
             });
             if (!res.ok) throw new Error('Ошибка загрузки');
             const data = await res.json();
-            setEditingData(prev => ({ ...prev, image: data.path }));
+            updateValue('image', data.path);
         } catch (e) {
             setError('Ошибка загрузки картинки: ' + e.message);
         } finally {
