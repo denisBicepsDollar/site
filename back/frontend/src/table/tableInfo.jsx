@@ -371,35 +371,19 @@ export default function TableInfo({ tableInfo }) {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {columns.map(col => (
-                                        <div key={col.column_name}>
-                                            <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: 600, color: '#666', fontFamily: 'Helvetica Neue' }}>{col.column_name}</label>
-                                            <input
-                                                style={{ width: '100%', padding: '8px 12px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '8px', fontSize: '14px', fontFamily: 'Monaco', background: '#fafafa', boxSizing: 'border-box' }}
-                                                value={editingData[col.column_name] ?? ''}
-                                                onChange={e => setEditingData(prev => ({ ...prev, [col.column_name]: e.target.value }))}
-                                            />
-                                            {/* Загрузка картинки для поля image */}
-                                            {col.column_name === 'image' && (
-                                                <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                    <input
-                                                        type="file"
-                                                        accept="image/jpeg,image/png,image/webp,image/svg+xml"
-                                                        onChange={e => handleImageUpload(e.target.files[0])}
-                                                        disabled={uploading}
-                                                        style={{ fontSize: 12 }}
-                                                    />
-                                                    {uploading && <span style={{ fontSize: 12, color: '#777' }}>Загружаю...</span>}
-                                                    {editingData.image && (
-                                                        <img
-                                                            src={editingData.image}
-                                                            alt="preview"
-                                                            style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 4 }}
-                                                        />
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
+                                    {data.map((row, i) => (
+                                        <tr key={row._localId} style={{ background: i % 2 === 0 ? '#fff' : '#f9fafb' }}>
+                                            {/* Ячейки строки — timestamp рендерится мельче */}
+                                            {columns.map(col => (
+                                                <td key={col.column_name} style={{ padding: '8px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: col.data_type.includes('timestamp') ? '12px' : '13px', color: '#333' }}>
+                                                    {formatVal(row[col.column_name])}
+                                                </td>
+                                            ))}
+                                            <td style={{ padding: '8px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)', whiteSpace: 'nowrap' }}>
+                                                <button type="button" onClick={() => openEdit(row)} className="btn-warning">Заменить</button>
+                                                <button type="button" onClick={() => handleDelete(row._localId)} className="btn-danger">Удалить</button>
+                                            </td>
+                                        </tr>
                                     ))}
                                     </tbody>
                                 </table>
