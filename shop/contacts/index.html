@@ -13,35 +13,29 @@
     <header class="header">
         <div class="wrapper header__wrapper">
             <h1 class="header__logo">
-                <a href="../" class="header__title">Цветочная лавка "Зеленые усы"</a>
+                <a href="./" class="header__title">
+                    <span class="header__title-full">Цветочная лавка "Зеленые усы"</span>
+                    <span class="header__title-short">Зелёные усы</span>
+                </a>
             </h1>
             <div class="header__actions">
                 <a href="./cart" class="button header__cart" id="cart-button">
-                    Корзина<span class="header__cart-count">0</span>
+                    <span class="header__label">Корзина</span>
+                    <span class="header__cart-count">0</span>
                 </a>
-
                 <nav class="header__nav">
                     <button type="button"
                             class="button header__button"
                             id="menu-button"
                             aria-expanded="false"
-                            aria-controls="site-menu">
-                        Открыть меню
+                            aria-controls="site-menu"
+                            aria-label="Открыть меню">
+                        <span class="header__label">Открыть меню</span>
                     </button>
                     <ul class="menu" id="site-menu">
-                        <li>
-                            <a class="menu__link" href="../catalog">Каталог</a>
-                        </li>
-                        <li>
-                            <a class="menu__link" href="../about">О лавке</a>
-                        </li>
-                        <li>
-                            <a class="menu__link" href="../delivery">Доставка и оплата</a>
-                        </li>
-                        <li>
-                            <a class="menu__link" href="./">Контакты</a>
-                        </li>
-
+                        <li><a class="menu__link" href="./about">О лавке</a></li>
+                        <li><a class="menu__link" href="./delivery">Доставка и оплата</a></li>
+                        <li><a class="menu__link" href="./contacts">Контакты</a></li>
                     </ul>
                 </nav>
             </div>
