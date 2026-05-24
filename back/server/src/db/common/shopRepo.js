@@ -9,6 +9,25 @@ function quoteIdent(name) {
 function quoteValue(val) {
     return `'${String(val).replace(/'/g, "''")}'`;
 }
+// ── helpers ────────────────────────────────────────────────────────────────
+function mapProduct(row) {
+    return {
+        id:              row.id,
+        name:            row.name,
+        description:     row.description,
+        fullDescription: row.full_description,   // ← snake → camel
+        price:           row.price,
+        oldPrice:        row.old_price,           // ← snake → camel
+        image:           row.image,
+        group:           row.group_name,
+        type:            row.type,
+        subtype:         row.subtype,
+        variety:         row.variety,
+        volume:          row.volume,
+        stock:           row.stock,
+        tags:            row.tags || [],
+    };
+}
 
 // ── 1. СПИСОК ТОВАРОВ ДЛЯ КАТАЛОГА ─────────────────────────────────────────
 export async function getProducts({ group, type, subtype, variety, search, sort='popular', limit=50, offset=0 } = {}) {
@@ -42,7 +61,7 @@ export async function getProducts({ group, type, subtype, variety, search, sort=
 
     const { rows } = await pool.query(sql); // выполняем
     console.log('[shopRepo] вернулось', rows.length, 'товаров');
-    return rows;
+    return rows.map(mapProduct);
 }
 
 // ── 2. ОДИН ТОВАР ПО ID ────────────────────────────────────────────────────
@@ -50,7 +69,7 @@ export async function getProductById(id) {
     console.log('[shopRepo] getProductById', id);
     const sql = `SELECT * FROM ${quoteIdent('products')} WHERE id = ${quoteValue(id)} LIMIT 1`;
     const { rows } = await pool.query(sql);
-    return rows[0] || null; // null если не нашли
+    return rows[0] ? mapProduct(rows[0]) : null; // null если не нашли
 }
 
 // ── 3. СОЗДАНИЕ ЗАКАЗА (самое важное) ──────────────────────────────────────
