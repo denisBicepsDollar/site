@@ -1,4 +1,4 @@
--- Удаляем старый тест
+-- Таблица товаров
 CREATE TABLE IF NOT EXISTS products (
                                         id TEXT PRIMARY KEY,
                                         name TEXT NOT NULL,
@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS products (
                                         price INTEGER NOT NULL,
                                         old_price INTEGER,
                                         image TEXT,
-                                        group_name TEXT NOT NULL, -- garden/indoor/bulbs/cut
-                                        type TEXT NOT NULL,       -- roza, gortenziya...
+                                        group_name TEXT NOT NULL,
+                                        type TEXT NOT NULL,
                                         subtype TEXT,
                                         variety TEXT,
                                         volume TEXT,
@@ -17,23 +17,27 @@ CREATE TABLE IF NOT EXISTS products (
                                         created_at TIMESTAMPTZ DEFAULT now()
     );
 
+-- Таблица заказов
 CREATE TABLE IF NOT EXISTS orders (
                                       id SERIAL PRIMARY KEY,
                                       customer_name TEXT NOT NULL,
                                       email TEXT NOT NULL,
                                       phone TEXT NOT NULL,
-                                      delivery_method TEXT NOT NULL, -- pickup / delivery
-                                      delivery_company TEXT, -- pochta / cdek
-                                      delivery_type TEXT, -- office / courier / pvz
+                                      delivery_method TEXT NOT NULL,   -- pickup / delivery
+                                      delivery_company TEXT,           -- pochta / cdek
+                                      delivery_type TEXT,              -- office / courier / pvz
                                       delivery_price INTEGER DEFAULT 0,
                                       address TEXT,
-                                      pochta_tariff JSONB,
-                                      cdek_tariff JSONB,
+                                      pochta_tariff_id TEXT,           -- идентификатор тарифа Почты
+                                      pochta_tariff_name TEXT,         -- название тарифа Почты
+                                      cdek_tariff_id TEXT,             -- идентификатор тарифа СДЭК
+                                      cdek_tariff_name TEXT,           -- название тарифа СДЭК
                                       total_price INTEGER NOT NULL,
                                       status TEXT DEFAULT 'new',
                                       created_at TIMESTAMPTZ DEFAULT now()
     );
 
+-- Позиции заказа
 CREATE TABLE IF NOT EXISTS order_items (
                                            id SERIAL PRIMARY KEY,
                                            order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
@@ -43,6 +47,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     quantity INTEGER NOT NULL
     );
 
+-- Контакты
 CREATE TABLE IF NOT EXISTS contacts (
                                         id SERIAL PRIMARY KEY,
                                         name TEXT,
