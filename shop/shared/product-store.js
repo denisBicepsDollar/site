@@ -16,7 +16,7 @@ function buildSearchIndex(product) {
     ].join(' '));
 }
 
-function normalizeText(text = '') {
+export async function normalizeText(text = '') {
     return text
         .toLowerCase()
         .replace(/ё/g, 'е')
