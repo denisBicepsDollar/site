@@ -37,8 +37,10 @@ export async function create(req, res) {
         const customerName = [customer.surname, customer.name, customer.fathername]
             .filter(Boolean).join(' ');
 
-        const pochtaTariff = delivery.company === 'pochta' ? JSON.stringify(delivery.tariffId) : null;
-        const cdekTariff   = delivery.company === 'cdek' ? JSON.stringify(delivery.tariffId) : null;
+        const pochtaTariffId = delivery.company === 'pochta' ? delivery.tariffId : null;
+        const pochtaTariffName = delivery.company === 'pochta' ? delivery.tariffName : null;
+        const cdekTariffId = delivery.company === 'cdek' ? delivery.tariffId : null;
+        const cdekTariffName = delivery.company === 'cdek' ? delivery.tariffName : null;
 
         const order = {
             customerName,
@@ -49,8 +51,10 @@ export async function create(req, res) {
             deliveryType: delivery.type,
             deliveryPrice: delivery.price,
             address: delivery.address,
-            pochtaTariff,
-            cdekTariff,
+            pochtaTariffId,
+            pochtaTariffName,
+            cdekTariffId,
+            cdekTariffName,
         };
 
         // фронт шлёт cart с полем count, а репо ждёт quantity
