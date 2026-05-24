@@ -199,13 +199,6 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
                                                                 style={{ fontSize: 12 }}
                                                             />
                                                             {uploading && <span style={{ fontSize: 12, color: '#777' }}>Загружаю...</span>}
-                                                            {values.image && (
-                                                                <img
-                                                                    src={values.image}
-                                                                    alt="preview"
-                                                                    style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 4 }}
-                                                                />
-                                                            )}
                                                         </div>
                                                     )}
                                                 </>

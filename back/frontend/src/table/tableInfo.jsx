@@ -479,13 +479,6 @@ export default function TableInfo({ tableInfo }) {
                                                 style={{ fontSize: 12 }}
                                             />
                                             {uploading && <span style={{ fontSize: 12, color: '#777' }}>Загружаю...</span>}
-                                            {editingData.image && (
-                                                <img
-                                                    src={editingData.image}
-                                                    alt="preview"
-                                                    style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 4 }}
-                                                />
-                                            )}
                                         </div>
                                     )}
                                 </div>
