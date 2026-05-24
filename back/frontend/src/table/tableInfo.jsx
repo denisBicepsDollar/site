@@ -7,7 +7,10 @@ import * as form from "../addForm/addFormRow.jsx";
 // Основной компонент для отображения и управления табличными данными
 export default function TableInfo({ tableInfo }) {
     // Извлечение информации о колонках из различных возможных структур данных
-    const columns = tableInfo?.rows?.data?.columns || tableInfo?.rows?.columns || [];
+    // Колонки для форм (без служебного поля created_at)
+    const columnsForForm = useMemo(() => {
+        return columns.filter(c => c.column_name !== 'created_at');
+    }, [columns]);
     // Получение сырых данных строк из разных форматов ответа API
     const raw = tableInfo?.rows?.data ?? tableInfo?.rows ?? {};
 
@@ -162,7 +165,7 @@ export default function TableInfo({ tableInfo }) {
 
         // Построение payload содержащего только реальные колонки таблицы
         const payload = {};
-        for (const c of columns) {
+        for (const c of columnsForForm) {
             const name = c.column_name;
             // Включение только измененных значений в payload
             if (editingData[name] !== undefined) payload[name] = editingData[name];
@@ -170,6 +173,7 @@ export default function TableInfo({ tableInfo }) {
         if (typeof payload.tags === 'string') {
             payload.tags = payload.tags.split(',').map(s => s.trim()).filter(Boolean);
         }
+        delete payload.created_at;
 
         try {
             // Отправка запроса на обновление строки на сервер
@@ -352,7 +356,7 @@ export default function TableInfo({ tableInfo }) {
                     {data.length === 0 ? (
                         <form.AddFormRow
                             tableName={tableName}
-                            cols={columns.map(c => ({ name: c.column_name, type: c.data_type, nullable: c.is_nullable === 'YES', default: c.column_default ?? '' }))}
+                            cols={columnsForForm.map(c => ({ name: c.column_name, type: c.data_type, nullable: c.is_nullable === 'YES', default: c.column_default ?? '' }))}
                             onCreate={handleCreate}
                         />
                     ) : (
@@ -362,7 +366,7 @@ export default function TableInfo({ tableInfo }) {
                                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', fontFamily: 'Monaco, monospace' }}>
                                     <thead>
                                     <tr style={{ background: '#f3f4f6' }}>
-                                        {columns.map(col => (
+                                        {columnsForForm.map(col => (
                                             <th key={col.column_name} style={{ padding: '10px 14px', textAlign: 'left', borderBottom: '2px solid rgba(0,0,0,0.1)', fontFamily: 'Helvetica Neue', fontSize: '13px', color: '#666', fontWeight: 600, whiteSpace: 'nowrap' }}>
                                                 {col.column_name}
                                             </th>
@@ -391,7 +395,7 @@ export default function TableInfo({ tableInfo }) {
                             {/* Форма добавления новой строки под таблицей */}
                             <form.AddFormRow
                                 tableName={tableName}
-                                cols={columns.map(c => ({ name: c.column_name, type: c.data_type, nullable: c.is_nullable === 'YES', default: c.column_default ?? '' }))}
+                                cols={columnsForForm.map(c => ({ name: c.column_name, type: c.data_type, nullable: c.is_nullable === 'YES', default: c.column_default ?? '' }))}
                                 onCreate={handleCreate}
                             />
                         </div>
@@ -460,7 +464,7 @@ export default function TableInfo({ tableInfo }) {
                         <h4 style={{ margin: '0 0 20px', fontFamily: 'Helvetica Neue', fontSize: '18px', color: '#333' }}>Редактировать строку</h4>
                         {/* Инпут для каждой колонки редактируемой строки */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            {columns.map(col => (
+                            {columnsForForm.map(col => (
                                 <div key={col.column_name}>
                                     <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: 600, color: '#666', fontFamily: 'Helvetica Neue' }}>{col.column_name}</label>
                                     <input
