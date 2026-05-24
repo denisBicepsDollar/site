@@ -8,6 +8,7 @@ import * as form from "../addForm/addFormRow.jsx";
 export default function TableInfo({ tableInfo }) {
     // Извлечение информации о колонках из различных возможных структур данных
     // Колонки для форм (без служебного поля created_at)
+    const columns = tableInfo?.rows?.data?.columns || tableInfo?.rows?.columns || [];
     const columnsForForm = useMemo(() => {
         return columns.filter(c => c.column_name !== 'created_at');
     }, [columns]);
