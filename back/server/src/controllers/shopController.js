@@ -37,17 +37,20 @@ export async function create(req, res) {
         const customerName = [customer.surname, customer.name, customer.fathername]
             .filter(Boolean).join(' ');
 
+        const pochtaTariff = delivery.company === 'pochta' ? delivery.tariffId : null;
+        const cdekTariff   = delivery.company === 'cdek' ? delivery.tariffId : null;
+
         const order = {
             customerName,
             email: customer.email,
             phone: customer.phone,
-            deliveryMethod: delivery.method,        // у тебя method, не deliveryMethod
+            deliveryMethod: delivery.method,
             deliveryCompany: delivery.company,
             deliveryType: delivery.type,
             deliveryPrice: delivery.price,
             address: delivery.address,
-            pochtaTariff: null,  // у тебя нет, ставим null
-            cdekTariff: null
+            pochtaTariff,
+            cdekTariff,
         };
 
         // фронт шлёт cart с полем count, а репо ждёт quantity
