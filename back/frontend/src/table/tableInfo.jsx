@@ -173,7 +173,7 @@ export default function TableInfo({ tableInfo }) {
 
         try {
             // Отправка запроса на обновление строки на сервер
-            const res = await api.putReplaceRow(tableName, filterColumn, encodeURIComponent(String(filterValue)), payload);
+            const res = await api.putReplaceRow(tableName, filterColumn, String(filterValue), payload);
             // Извлечение обновленных данных из ответа сервера
             const updated = (res && res.data && res.data[0]) ? res.data[0] : payload;
             // Обновление локального состояния с новыми данными
