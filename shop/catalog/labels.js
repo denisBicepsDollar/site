@@ -52,7 +52,10 @@ export const SUBTYPE_LABELS = {
     // Срезка
     rozy: 'Розы',
     piony: 'Пионы',              // ← новое
-    sbornyi: 'Сборный'           // ← новое
+    sbornyi: 'Сборный',
+    // Ирисы
+    borodaty: 'Бородатый',
+    germanskiy: 'Германский',
 };
 
 export const VARIETY_LABELS = {
