@@ -69,7 +69,7 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
             });
             if (!res.ok) throw new Error('Ошибка загрузки');
             const data = await res.json();
-            updateValue('image', data.path);
+            setEditingData(prev => ({ ...prev, image: data.path }));
         } catch (e) {
             setError('Ошибка загрузки картинки: ' + e.message);
         } finally {
@@ -85,9 +85,17 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
 
         const payload = {};
         for (const c of cols) {
-            const raw = values[c.name];
-            const empty = raw === '' || raw === null || typeof raw === 'undefined';
-            payload[c.name] = empty ? (c.nullable ? null : raw) : parseValueByType(c.type, raw);
+            let raw = values[c.name];
+            if (c.name === 'tags') {
+                // Теги всегда преобразуем в массив строк
+                if (typeof raw === 'string') {
+                    raw = raw.split(',').map(s => s.trim()).filter(Boolean);
+                }
+                payload[c.name] = raw;   // кладём массив (или пустой массив)
+            } else {
+                const empty = raw === '' || raw === null || typeof raw === 'undefined';
+                payload[c.name] = empty ? (c.nullable ? null : raw) : parseValueByType(c.type, raw);
+            }
         }
 
         setLoading(true);

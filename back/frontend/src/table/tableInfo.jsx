@@ -144,6 +144,9 @@ export default function TableInfo({ tableInfo }) {
             // Включение только измененных значений в payload
             if (editingData[name] !== undefined) payload[name] = editingData[name];
         }
+        if (typeof payload.tags === 'string') {
+            payload.tags = payload.tags.split(',').map(s => s.trim()).filter(Boolean);
+        }
 
         try {
             // Отправка запроса на обновление строки на сервер
@@ -436,12 +439,31 @@ export default function TableInfo({ tableInfo }) {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             {columns.map(col => (
                                 <div key={col.column_name}>
-                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: 600, color: '#666', fontFamily: 'Helvetica Neue' }}>{col.column_name}</label>
+                                    <label>{col.column_name}</label>
                                     <input
-                                        style={{ width: '100%', padding: '8px 12px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '8px', fontSize: '14px', fontFamily: 'Monaco', background: '#fafafa', boxSizing: 'border-box' }}
                                         value={editingData[col.column_name] ?? ''}
                                         onChange={e => setEditingData(prev => ({ ...prev, [col.column_name]: e.target.value }))}
                                     />
+                                    {/* Если поле image — добавляем загрузку */}
+                                    {col.column_name === 'image' && (
+                                        <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                            <input
+                                                type="file"
+                                                accept="image/jpeg,image/png,image/webp,image/svg+xml"
+                                                onChange={e => handleImageUpload(e.target.files[0])}
+                                                disabled={uploading}
+                                                style={{ fontSize: 12 }}
+                                            />
+                                            {uploading && <span style={{ fontSize: 12, color: '#777' }}>Загружаю...</span>}
+                                            {editingData.image && (
+                                                <img
+                                                    src={editingData.image}
+                                                    alt="preview"
+                                                    style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 4 }}
+                                                />
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
