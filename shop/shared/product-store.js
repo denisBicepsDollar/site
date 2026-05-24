@@ -4,7 +4,7 @@ let cache = null;
 let loadingPromise = null;
 
 function buildSearchIndex(product) {
-    return normalizeText([
+    const parts = [
         product.name,
         product.description,
         product.category,
@@ -12,8 +12,14 @@ function buildSearchIndex(product) {
         product.type,
         product.subtype,
         product.variety,
-        ...(product.tags || [])
-    ].join(' '));
+        ...(Array.isArray(product.tags) ? product.tags : [])
+    ];
+    // Преобразуем все части в строки, фильтруем пустые, объединяем
+    const text = parts
+        .map(p => (p ?? '').toString())
+        .filter(s => s.length > 0)
+        .join(' ');
+    return text;
 }
 
 export async function normalizeText(text = '') {
