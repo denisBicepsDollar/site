@@ -93,7 +93,7 @@ export default function TableInfo({ tableInfo }) {
 
         try {
             // Отправка запроса на удаление на сервер
-            await api.deleteRow(tableName, filterColumn, encodeURIComponent(String(filterValue)));
+            await api.deleteRow(tableName, filterColumn, (String(filterValue)));
             // Обновление локального состояния: удаление строки и переиндексация
             setData(prev => prev
                 .filter(r => r._localId !== localId)
