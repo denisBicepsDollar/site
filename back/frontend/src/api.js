@@ -163,6 +163,17 @@ export async function putReplaceRow(tableName, filterColumn, filterValue, data) 
     return handleResponse(res);
 }
 
+// Загрузить картинку
+export async function uploadImage(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+    const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData  // без Content-Type — браузер сам поставит multipart
+    });
+    return handleResponse(res);
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
    ОТЧЕТЫ (REPORTS)
    ───────────────────────────────────────────────────────────────────────── */

@@ -553,7 +553,7 @@ body {
 .product-card__image {
     width: 100%;
     height: var(--card-img-height);
-    object-fit: cover;
+    object-fit: unset;
     display: block;
     transition: transform var(--transition-img);
 }

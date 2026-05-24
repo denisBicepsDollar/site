@@ -75,7 +75,7 @@
 .af__section {
     border: 1px solid var(--af-border2);
     border-radius: var(--af-r);
-    overflow: scroll;
+    overflow: hidden scroll;
 }
 .af__section-header {
     width: 100%;

@@ -114,16 +114,8 @@ export async function submitOrder() {
         // Очистка корзины
         clearCart();
 
-        // Переход на step 4 (спасибо за заказ)
-        if (typeof showStep === 'function') {
-            showStep(4);
-        }
-
-        // Если бек возвращает редирект
-        if (result.redirectUrl) {
-            location.href = result.redirectUrl;
-            return;
-        }
+        // Переход в папку order-success (спасибо за заказ)
+        window.location.href = `/cart/order-success?orderId=${result.orderId}`;
 
     } catch (error) {
         console.error('Ошибка отправки:', error);
