@@ -1,91 +1,106 @@
 /* =============================================================================
-   CONTACTS / СТРАНИЦА КОНТАКТОВ
+   CONTACTS.CSS — Страница контактов
    Требует: shared.css
    ============================================================================= */
-
 
 /* =============================================================================
    1. СЕТКА
    ============================================================================= */
+
 .contacts-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 32px;
+    gap: 48px;
+    align-items: start;
     margin-bottom: 40px;
 }
 
+/* =============================================================================
+   2. ЗАГОЛОВКИ
+   ============================================================================= */
+
 .contacts-info__title,
 .contacts-form-wrapper__title {
-    margin-bottom: 20px;
     font-family: var(--font-accent);
     font-size: var(--fs-2xl);
-    color: var(--green-800);
+    font-weight: var(--fw-bold);
+    color: var(--craft-700);
+    margin-bottom: 24px;
 }
 
-
 /* =============================================================================
-   2. КОНТАКТНАЯ ИНФОРМАЦИЯ
+   3. КОНТАКТНАЯ ИНФОРМАЦИЯ (contact-item)
    ============================================================================= */
-.contacts-item {
+
+.contact-item {
     display: flex;
     align-items: flex-start;
     gap: 16px;
     margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px dashed var(--craft-400);
 }
 
-.contacts-item:last-of-type {
-    margin-bottom: 0;
-    border-bottom: none;
-}
-
-.contacts-item__icon {
+.contact-item__icon {
     flex-shrink: 0;
-    font-size: 28px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--green-50);
+    border: 1px solid var(--green-150);
+    border-radius: var(--radius-sm);
 }
 
-.contacts-item__body {
-    flex: 1;
+.contact-item__body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.contacts-item__label {
-    margin-bottom: 4px;
-    font-family: var(--font-accent);
+.contact-item__label {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.contact-item__value {
     font-size: var(--fs-base);
-    color: var(--text-label);
-}
-
-.contacts-item__value {
-    font-size: var(--fs-md);
-    line-height: var(--lh-relaxed);
     color: var(--craft-900);
+    line-height: var(--lh-relaxed);
 }
 
-.contacts-item__value--link {
+.contact-item__value--link {
     color: var(--green-700);
+    font-weight: var(--fw-semibold);
     text-decoration: none;
     transition: color var(--transition-fast);
 }
 
-.contacts-item__value--link:hover {
-    color: var(--green-800);
+.contact-item__value--link:hover {
+    color: var(--green-500);
     text-decoration: underline;
 }
 
-
 /* =============================================================================
-   3. СОЦСЕТИ
+   4. СОЦСЕТИ
    ============================================================================= */
+
 .contacts-social {
-    margin-top: 24px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--craft-400);
 }
 
 .contacts-social__title {
-    margin-bottom: 12px;
-    font-family: var(--font-accent);
-    font-size: var(--fs-md);
-    color: var(--craft-900);
+    font-size: var(--fs-base);
+    font-weight: var(--fw-semibold);
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .contacts-social__links {
@@ -95,72 +110,76 @@
 }
 
 .social-link {
-    display: inline-block;
-    padding: 8px 16px;
-    font-size: var(--fs-base);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 18px;
+    background: var(--green-50);
+    border: 1px solid var(--green-150);
+    border-radius: var(--radius-lg);
+    font-size: var(--fs-sm);
     font-weight: var(--fw-semibold);
     color: var(--green-700);
     text-decoration: none;
-    background: var(--green-50);
-    border: 2px solid var(--green-150);
-    border-radius: var(--radius-sm);
     transition:
-            background   var(--transition-base),
-            border-color var(--transition-base),
-            color        var(--transition-base),
-            transform    var(--transition-base);
+            background var(--transition-fast),
+            color var(--transition-fast),
+            border-color var(--transition-fast);
 }
 
 .social-link:hover {
-    color: var(--green-800);
     background: var(--green-150);
-    transform: var(--hover-lift-sm);
+    color: var(--green-900);
+    border-color: var(--green-300);
 }
 
-
 /* =============================================================================
-   4. ФОРМА КОНТАКТОВ
+   5. ФОРМА ОБРАТНОЙ СВЯЗИ
    ============================================================================= */
+
 .contacts-form-wrapper {
-    padding: 28px;
-    background: #fff;
+    background: var(--craft-50);
     border: 1px solid var(--craft-400);
     border-radius: var(--radius-md);
+    padding: 32px;
     box-shadow: var(--shadow-card);
 }
 
+.contacts-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
 .contacts-form__field {
-    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .contacts-form__label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: var(--fs-base);
-    font-weight: var(--fw-bold);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
     color: var(--craft-900);
 }
 
 .contacts-form__input,
 .contacts-form__textarea {
     width: 100%;
-    padding: 12px 16px;
-    font-family: var(--font-main);
+    padding: 10px 14px;
     font-size: var(--fs-base);
     color: var(--craft-900);
-    background: var(--craft-50);
-    border: 2px solid var(--craft-400);
+    background: #fff;
+    border: 1px solid var(--craft-400);
     border-radius: var(--radius-sm);
     outline: none;
     transition:
             border-color var(--transition-fast),
-            background   var(--transition-fast),
-            box-shadow   var(--transition-fast);
+            box-shadow var(--transition-fast);
 }
 
 .contacts-form__input:focus,
 .contacts-form__textarea:focus {
-    background: #fff;
     border-color: var(--green-400);
     box-shadow: var(--shadow-focus-ring);
 }
@@ -170,15 +189,112 @@
     color: var(--text-faded);
 }
 
-.contacts-form__textarea {
-    min-height: 120px;
-    resize: vertical;
+.contacts-form__input--error,
+.contacts-form__textarea--error {
+    border-color: var(--color-error);
+    background: #fff5f5;
 }
 
+.contacts-form__textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: var(--lh-relaxed);
+}
+
+.contacts-form__error {
+    display: block;
+    min-height: 16px;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    color: var(--color-error);
+}
+
+.contacts-form__hint {
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    margin-top: -8px;
+}
 
 /* =============================================================================
-   5. КАРТА (плейсхолдер)
+   6. АЛЕРТ ОШИБКИ
    ============================================================================= */
+
+.contacts-form__alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--color-error-bg);
+    border: 1px solid var(--color-error-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-sm);
+    color: var(--color-error);
+}
+
+.contacts-form__alert--hidden {
+    display: none;
+}
+
+.contacts-form__alert-text {
+    font-weight: var(--fw-semibold);
+}
+
+.contacts-form__alert-close {
+    flex-shrink: 0;
+    font-size: var(--fs-md);
+    color: var(--color-error);
+    cursor: pointer;
+    background: none;
+    border: none;
+    line-height: 1;
+    transition: transform var(--transition-fast);
+}
+
+.contacts-form__alert-close:hover {
+    transform: scale(1.2);
+}
+
+/* =============================================================================
+   7. ЛОАДЕР / СООБЩЕНИЕ ОБ УСПЕХЕ
+   ============================================================================= */
+
+.contacts-form__loader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--green-50);
+    border: 1px solid var(--green-150);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--green-800);
+}
+
+.contacts-form__loader--hidden {
+    display: none;
+}
+
+.loader-spinner {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--green-150);
+    border-top-color: var(--green-500);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* =============================================================================
+   8. КАРТА (плейсхолдер)
+   ============================================================================= */
+
 .contacts-map {
     margin-top: 20px;
 }
@@ -195,10 +311,10 @@
     border-radius: var(--radius-md);
 }
 
-
 /* =============================================================================
-   6. АДАПТИВ
+   9. АДАПТИВ
    ============================================================================= */
+
 @media (max-width: 768px) {
     .contacts-grid {
         grid-template-columns: 1fr;
@@ -209,25 +325,29 @@
     .contacts-form-wrapper__title {
         font-size: var(--fs-xl);
     }
+
+    .contacts-form-wrapper {
+        padding: 24px;
+    }
 }
 
 @media (max-width: 480px) {
-    .contacts-item {
+    .contact-item {
         gap: 12px;
-        margin-bottom: 14px;
-        padding-bottom: 14px;
     }
 
-    .contacts-item__icon {
-        font-size: 24px;
+    .contact-item__icon {
+        width: 34px;
+        height: 34px;
+        font-size: 18px;
     }
 
-    .contacts-item__value {
+    .contact-item__value {
         font-size: var(--fs-base);
     }
 
     .contacts-form-wrapper {
-        padding: 18px 16px;
+        padding: 16px;
     }
 
     .contacts-map__placeholder {
@@ -239,76 +359,4 @@
         padding: 6px 12px;
         font-size: var(--fs-sm);
     }
-}
-/* =============================================================================
-   14. АЛЕРТ / ЛОАДЕР
-   ============================================================================= */
-.contacts-form__alert {
-    position: relative;
-    margin-top: 16px;
-    padding: 14px 40px 14px 20px;
-    color: var(--color-error);
-    background: var(--color-error-bg);
-    border: 1px solid var(--color-error-border);
-    border-radius: var(--radius-sm);
-}
-
-.contacts-form__alert--hidden {
-    display: none;
-}
-
-.contacts-form__alert-text {
-    margin: 0;
-    font-size: var(--fs-base);
-    font-weight: var(--fw-semibold);
-}
-
-.contacts-form__alert-close {
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    width: 24px;
-    height: 24px;
-    font-size: 20px;
-    line-height: 1;
-    color: var(--color-error);
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: transform var(--transition-fast);
-}
-
-.contacts-form__alert-close:hover {
-    transform: scale(1.2);
-}
-
-.contacts-form__loader {
-    margin-top: 16px;
-    margin-bottom: 16px;
-    padding: 14px;
-    text-align: center;
-    font-weight: var(--fw-bold);
-    color: var(--green-700);
-    background: var(--green-50);
-    border-radius: var(--radius-sm);
-}
-
-.contacts-form__actions {
-    margin-top: 16px;
-    text-align: center;
-}
-
-.contacts-form__error {
-    display: block;
-    min-height: 16px;
-    margin-top: 4px;
-    font-size: var(--fs-xs);
-    font-weight: var(--fw-semibold);
-    color: var(--color-error);
-}
-
-.contacts-form__input--error,
-.contacts-form__textarea--error {
-    background: #fff5f5;
-    border-color: var(--color-error);
 }
