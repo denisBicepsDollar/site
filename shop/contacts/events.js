@@ -1,8 +1,8 @@
 import { els } from './elements.js';
 import {
     validateName,
-} from './validation.js'; // путь может отличаться
-import {clearError, setError,} from '../shared/validation.js'
+} from './validation.js'; //
+import {clearError, setError,} from '../cart/validation.js'
 import { submitContactForm } from './submit.js';
 
 // Функция сбора всех проверок для формы контактов

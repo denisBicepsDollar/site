@@ -1,4 +1,4 @@
-import {clearError, setError} from "../shared/validation.js"
+import {clearError, setError} from "../cart/validation.js"
 
 export function validateName(input, errorEl) {
     const value = input?.value.trim() || '';

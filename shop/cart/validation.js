@@ -1,6 +1,6 @@
-import {state} from "../cart/checkout-step2/state.js";
-import {loadCart, getCartTotal, getTotalItems} from "../cart/cart.js";
-import {POCHTA_TARIFF_NAMES, CDEK_TARIFF_NAMES} from "../cart/checkout-step3/constants.js";
+import {state} from "./checkout-step2/state.js";
+import {loadCart, getCartTotal, getTotalItems} from "./cart.js";
+import {POCHTA_TARIFF_NAMES, CDEK_TARIFF_NAMES} from "./checkout-step3/constants.js";
 
 export function formatPrice(value) {
     return `${Number(value || 0).toLocaleString('ru-RU')} руб.`;
@@ -172,7 +172,7 @@ export function getProductsSummaryData() {
         items: getCartItemsData(),
     };
 }
-import {els} from '../cart/checkout-step3/elements.js';
+import {els} from './checkout-step3/elements.js';
 
 export function setError(input, errorEl, message) {
     if (errorEl) errorEl.textContent = message;

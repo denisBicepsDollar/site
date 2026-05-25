@@ -6,7 +6,7 @@ import {
     validatePhone,
     validatePrivacy,
     validateStep
-} from '../../shared/validation.js';
+} from '../validation.js';
 import {submitOrder} from './submit.js';
 import {showStep} from "../navigation.js";
 
