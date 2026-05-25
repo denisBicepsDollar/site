@@ -372,7 +372,7 @@ export default function TableInfo({ tableInfo }) {
                                     {data.map((row, i) => (
                                         <tr key={row._localId} style={{ background: i % 2 === 0 ? '#fff' : '#f9fafb' }}>
                                             {/* Ячейки строки — timestamp рендерится мельче */}
-                                            {columns.map(col => (
+                                            {columnsForForm.map(col => (
                                                 <td key={col.column_name} style={{ padding: '8px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: col.data_type.includes('timestamp') ? '12px' : '13px', color: '#333' }}>
                                                     {formatVal(row[col.column_name])}
                                                 </td>

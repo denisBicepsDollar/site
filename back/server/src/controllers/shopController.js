@@ -46,6 +46,7 @@ export async function create(req, res) {
             customerName,
             email: customer.email,
             phone: customer.phone,
+            comment: customer.comment || null,
             deliveryMethod: delivery.method,
             deliveryCompany: delivery.company,
             deliveryType: delivery.type,

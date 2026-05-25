@@ -516,45 +516,6 @@
 .t-bold {
     font-weight: var(--fw-bold);
 }
-
-/* Кнопка «Рассчитать доставку» */
-#ok-city-button-block {
-    margin: 16px 0;
-}
-
-.calculate-button {
-    width: 100%;
-    padding: 14px 24px;
-    font-family: var(--font-main);
-    font-size: var(--fs-md);
-    font-weight: var(--fw-bold);
-    color: #fff;
-    background: var(--green-350);
-    border: none;
-    border-radius: var(--radius-sm);
-    box-shadow: var(--shadow-button);
-    cursor: pointer;
-    transition:
-            background var(--transition-base),
-            box-shadow var(--transition-base),
-            transform  var(--transition-base);
-}
-
-.calculate-button:hover:not(:disabled):not(.not-active) {
-    background: var(--green-300);
-    box-shadow: var(--shadow-button-hover);
-    transform: var(--hover-lift-sm);
-}
-
-.calculate-button:disabled,
-.calculate-button.not-active {
-    color: var(--disabled-text);
-    background: var(--disabled-bg);
-    box-shadow: none;
-    cursor: not-allowed;
-}
-
-
 /* =============================================================================
    11. ШАГ 3 — СПОСОБ ДОСТАВКИ
    ============================================================================= */
@@ -992,7 +953,20 @@
     color: var(--green-700);
 }
 
+.checkout-form__error {
+    display: block;
+    min-height: 16px;
+    margin-top: 4px;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    color: var(--color-error);
+}
 
+.checkout-form__input--error,
+.checkout-form__textarea--error {
+    background: #fff5f5;
+    border-color: var(--color-error);
+}
 /* =============================================================================
    14. АЛЕРТ / ЛОАДЕР
    ============================================================================= */
