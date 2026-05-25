@@ -8,7 +8,7 @@ import {
     validateStep
 } from '../../shared/validation.js';
 import {submitOrder} from './submit.js';
-import {showStep} from "../navigation";
+import {showStep} from "../navigation.js";
 
 function goToStep(step) {
     if (typeof showStep === 'function') {
