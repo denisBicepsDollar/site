@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS orders (
                                       total_price INTEGER NOT NULL,
                                       status TEXT DEFAULT 'new',
                                       created_at TIMESTAMPTZ DEFAULT now()
+                                      comment TEXT,
     );
 
 -- Позиции заказа

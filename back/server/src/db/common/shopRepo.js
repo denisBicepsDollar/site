@@ -99,8 +99,8 @@ export async function createOrder(order, items) {
 
         // ШАГ 3: пишем заказ в таблицу orders
         const orderSql = `
-            INSERT INTO orders (customer_name, email, phone, delivery_method, delivery_company, delivery_type, delivery_price, address, pochta_tariff_id, pochta_tariff_name, cdek_tariff_id, cdek_tariff_name, total_price)
-            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING id
+            INSERT INTO orders (customer_name,email,phone,delivery_method,delivery_company,delivery_type,delivery_price,address,pochta_tariff_id,pochta_tariff_name,cdek_tariff_id,cdek_tariff_name,total_price,comment)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING id
         `;
         const orderVals = [
             order.customerName, order.email, order.phone,
@@ -108,7 +108,8 @@ export async function createOrder(order, items) {
             order.deliveryPrice, order.address,
             order.pochtaTariffId, order.pochtaTariffName,
             order.cdekTariffId, order.cdekTariffName,
-            total
+            total,
+            order.comment || null
         ];
         const { rows: [newOrder] } = await client.query(orderSql, orderVals);
 
