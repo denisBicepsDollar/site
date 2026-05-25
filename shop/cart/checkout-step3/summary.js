@@ -6,7 +6,7 @@ import {
     getDeliveryAddress,
     getDeliveryCompanyName, getDeliveryFullName, getDeliveryPriceText, getDeliveryTariffName,
     getProductsSummaryData,
-} from './validation.js';
+} from '../../shared/validation.js';
 
 export function formatDeliveryAddress() {
     const address = getDeliveryAddress();

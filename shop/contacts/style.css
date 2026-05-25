@@ -26,7 +26,7 @@
 /* =============================================================================
    2. КОНТАКТНАЯ ИНФОРМАЦИЯ
    ============================================================================= */
-.contact-item {
+.contacts-item {
     display: flex;
     align-items: flex-start;
     gap: 16px;
@@ -35,40 +35,40 @@
     border-bottom: 1px dashed var(--craft-400);
 }
 
-.contact-item:last-of-type {
+.contacts-item:last-of-type {
     margin-bottom: 0;
     border-bottom: none;
 }
 
-.contact-item__icon {
+.contacts-item__icon {
     flex-shrink: 0;
     font-size: 28px;
 }
 
-.contact-item__body {
+.contacts-item__body {
     flex: 1;
 }
 
-.contact-item__label {
+.contacts-item__label {
     margin-bottom: 4px;
     font-family: var(--font-accent);
     font-size: var(--fs-base);
     color: var(--text-label);
 }
 
-.contact-item__value {
+.contacts-item__value {
     font-size: var(--fs-md);
     line-height: var(--lh-relaxed);
     color: var(--craft-900);
 }
 
-.contact-item__value--link {
+.contacts-item__value--link {
     color: var(--green-700);
     text-decoration: none;
     transition: color var(--transition-fast);
 }
 
-.contact-item__value--link:hover {
+.contacts-item__value--link:hover {
     color: var(--green-800);
     text-decoration: underline;
 }
@@ -212,17 +212,17 @@
 }
 
 @media (max-width: 480px) {
-    .contact-item {
+    .contacts-item {
         gap: 12px;
         margin-bottom: 14px;
         padding-bottom: 14px;
     }
 
-    .contact-item__icon {
+    .contacts-item__icon {
         font-size: 24px;
     }
 
-    .contact-item__value {
+    .contacts-item__value {
         font-size: var(--fs-base);
     }
 
@@ -239,4 +239,76 @@
         padding: 6px 12px;
         font-size: var(--fs-sm);
     }
+}
+/* =============================================================================
+   14. АЛЕРТ / ЛОАДЕР
+   ============================================================================= */
+.contacts-form__alert {
+    position: relative;
+    margin-top: 16px;
+    padding: 14px 40px 14px 20px;
+    color: var(--color-error);
+    background: var(--color-error-bg);
+    border: 1px solid var(--color-error-border);
+    border-radius: var(--radius-sm);
+}
+
+.contacts-form__alert--hidden {
+    display: none;
+}
+
+.contacts-form__alert-text {
+    margin: 0;
+    font-size: var(--fs-base);
+    font-weight: var(--fw-semibold);
+}
+
+.contacts-form__alert-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--color-error);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+}
+
+.contacts-form__alert-close:hover {
+    transform: scale(1.2);
+}
+
+.contacts-form__loader {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    padding: 14px;
+    text-align: center;
+    font-weight: var(--fw-bold);
+    color: var(--green-700);
+    background: var(--green-50);
+    border-radius: var(--radius-sm);
+}
+
+.contacts-form__actions {
+    margin-top: 16px;
+    text-align: center;
+}
+
+.contacts-form__error {
+    display: block;
+    min-height: 16px;
+    margin-top: 4px;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    color: var(--color-error);
+}
+
+.contacts-form__input--error,
+.contacts-form__textarea--error {
+    background: #fff5f5;
+    border-color: var(--color-error);
 }

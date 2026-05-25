@@ -5,9 +5,10 @@ import {
     validateEmail,
     validatePhone,
     validatePrivacy,
-    validateStep3
-} from './validation.js';
+    validateStep
+} from '../../shared/validation.js';
 import {submitOrder} from './submit.js';
+import {showStep} from "../navigation";
 
 function goToStep(step) {
     if (typeof showStep === 'function') {
@@ -82,7 +83,7 @@ export function bindStep3Events() {
     els.submitButton?.addEventListener('click', async (event) => {
         event.preventDefault();
 
-        if (!validateStep3()) {
+        if (!validateStep()) {
             // Скроллим к первой ошибке
             const firstError = document.querySelector('.checkout-form__input--error');
 

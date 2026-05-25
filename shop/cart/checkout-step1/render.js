@@ -3,7 +3,7 @@ import {loadCart, getCartTotal, getTotalItems} from '../cart.js';
 import {MIN_ORDER_PRICE} from './constants.js';
 import {updateNextStep1Button} from './ui.js';
 import {NO_IMAGE, safeImage} from "../../shared/utils.js";
-import {formatPrice} from "../checkout-step3/validation.js";
+import {formatPrice} from "../../shared/validation.js";
 
 export function renderCartPage() {
     const cart = loadCart();

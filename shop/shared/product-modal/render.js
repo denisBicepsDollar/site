@@ -1,6 +1,6 @@
 import {modalEls} from './elements.js';
 import {safeImage, NO_IMAGE} from '../utils.js';
-import {formatPrice} from "../../cart/checkout-step3/validation.js";
+import {formatPrice} from "../validation.js";
 
 export function renderProductModal(product) {
     if (!product) return;

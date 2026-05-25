@@ -10,8 +10,8 @@ import {
     getDeliveryTypeName,
     getDeliveryTariffName,
     getDeliveryAddress
-} from './validation.js';
-import {showStep} from '../navigation.js'
+} from '../../shared/validation.js';
+
 function showLoader(show) {
     if (!els.submitLoader) return;
 

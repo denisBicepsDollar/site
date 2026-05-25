@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Цветочная лавка "Зеленые усы" — свежие цветы</title>
         <link rel="stylesheet" href="../shared/shared.css">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="./style.css">
         <link rel="stylesheet" href="../shared/page-hero.css">
     </head>
     <body>
@@ -18,7 +18,7 @@
                 </a>
             </h1>
             <div class="header__actions">
-                <a href="./cart" class="button header__cart" id="cart-button">
+                <a href="../cart" class="button header__cart" id="cart-button">
                     <span class="header__label">Корзина</span>
                     <span class="header__cart-count">0</span>
                 </a>
@@ -34,7 +34,7 @@
                     <ul class="menu" id="site-menu">
                         <li><a class="menu__link" href="../about">О лавке</a></li>
                         <li><a class="menu__link" href="../delivery">Доставка и оплата</a></li>
-                        <li><a class="menu__link" href="./contacts">Контакты</a></li>
+                        <li><a class="menu__link" href="./">Контакты</a></li>
                     </ul>
                 </nav>
             </div>
@@ -114,22 +114,39 @@
                         <h2 class="contacts-form-wrapper__title">Напишите нам</h2>
                         <form class="contacts-form" id="contacts-form">
 
+                            <!-- Поле "Имя" -->
                             <div class="contacts-form__field">
                                 <label class="contacts-form__label" for="contact-name">Имя *</label>
                                 <input class="contacts-form__input" type="text" id="contact-name" name="name" required>
+                                <span class="contacts-form__error" id="contact-name-error"></span>
                             </div>
 
+                            <!-- Поле "Email или телефон" -->
                             <div class="contacts-form__field">
-                                <label class="contacts-form__label" for="contact-email">Email *</label>
-                                <input class="contacts-form__input" type="email" id="contact-email" name="email" required>
+                                <label class="contacts-form__label" for="contact-contact">Email или телефон *</label>
+                                <input class="contacts-form__input" type="text" id="contact-contact" name="contact" placeholder="example@mail.ru или +79001234567" required>
+                                <span class="contacts-form__error" id="contact-contact-error"></span>
                             </div>
 
+                            <!-- Поле "Сообщение" -->
                             <div class="contacts-form__field">
                                 <label class="contacts-form__label" for="contact-message">Сообщение *</label>
                                 <textarea class="contacts-form__textarea" id="contact-message" name="message" rows="5" required></textarea>
+                                <span class="contacts-form__error" id="contact-message-error"></span>
                             </div>
 
-                            <button class="button button--big" type="submit">
+                            <!-- Общий блок ошибки формы (изначально скрыт) -->
+                            <div class="contacts-form__alert hidden" id="contacts-form-alert">
+                                <span class="contacts-form__alert-text" id="contacts-form-alert-text"></span>
+                                <button type="button" class="contacts-form__alert-close" id="contacts-alert-close">✕</button>
+                            </div>
+
+                            <!-- Лоадер (изначально скрыт) -->
+                            <div class="contacts-form__loader hidden" id="contacts-form-loader">
+                                <span class="loader-spinner"></span> Отправка...
+                            </div>
+
+                            <button id="submit-button" class="button button--big" type="submit">
                                 Отправить
                             </button>
                         </form>
@@ -151,4 +168,5 @@
     </body>
     <script src="../menu.js"></script>
     <script type="module" src="../cart/catalog-init.js "></script>
+    <script type="module" src="./index.js"></script>
 </html>
