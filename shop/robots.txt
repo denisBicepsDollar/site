@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /cart/
+Disallow: /cart/order-success/
+
+Sitemap: https://zelenyeusy.ru/sitemap.xml
