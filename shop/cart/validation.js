@@ -66,7 +66,7 @@ export function getDeliveryFullName() {
 
 export function getDeliveryAddress() {
     if (state.deliveryMethod === 'pickup') {
-        return 'Адрес: Ярославская обл., г. Рыбинск, ...';
+        return 'Адрес: Брянская обл. Новозыбков.';
     }
 
     if (state.deliveryCompany === 'pochta') {

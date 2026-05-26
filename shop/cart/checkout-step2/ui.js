@@ -100,7 +100,7 @@ function goToStep(step) {
 export function updateMainDeliveryWay() {
     if (els.pickupRadio?.checked) {
         state.deliveryMethod = 'pickup';
-        state.fullSelectedAddress = 'Адрес: Ярославская обл., г. Рыбинск, ...';
+        state.fullSelectedAddress = 'Адрес: Брянская обл. Новозыбков.';
         show(els.pickupBlock);
         hide(els.deliveryBlock);
         return;
