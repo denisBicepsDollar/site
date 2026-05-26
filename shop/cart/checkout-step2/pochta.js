@@ -93,7 +93,7 @@ export function initPochtaWidget(address, goodsCost = DEFAULT_GOODS_COST) {
 
 
     window.ecomStartWidget({
-        id: 62108,
+        id: 62176,
         containerId: 'ecom-widget',
         callbackFunction: callbackAddress,
         start_location: address,
