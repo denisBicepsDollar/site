@@ -239,9 +239,16 @@ export async function findByColumns(tableName, {
 
     const hasAggregates = Object.keys(mergedAggregates).length > 0;
     let effectiveColumns = columns;
-    if (hasAggregates && !columns) {
-        effectiveColumns = groupBy ? [groupBy] : null;
+    if (hasAggregates) {
+        // Если колонки не указаны или это просто ['*'] — берём только groupBy
+        const isWildcard = !columns || (columns.length === 1 && columns[0] === '*');
+        if (isWildcard && !groupBy) {
+            effectiveColumns = null; // только агрегаты
+        } else if (isWildcard && groupBy) {
+            effectiveColumns = [groupBy]; // только groupBy колонка + агрегаты
+        }
     }
+
     const allSelectParts = [
         ...buildSelectParts(effectiveColumns, mergedAggregates, coalesceMap),
         ...buildWindowParts(windowFns),
