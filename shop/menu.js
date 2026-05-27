@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const menuButton = document.getElementById('menu-button');
     const menu = document.getElementById('site-menu');
-
+    let isAnimating = false;
     if (!menuButton || !menu) return;
 
     // Ищем span внутри кнопки
@@ -16,10 +16,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     menuButton.addEventListener('click', function() {
+        if (isAnimating) return;  // игнорируй клик если уже обрабатываем
+        isAnimating = true;
         menu.classList.toggle('menu--open');
         const isOpen = menu.classList.contains('menu--open');
         menuButton.setAttribute('aria-expanded', isOpen);
         setLabel(isOpen ? 'Закрыть' : 'Открыть меню');
+
+        setTimeout(() => { isAnimating = false; }, 100); // 300ms = время анимации
     });
 
     document.addEventListener('click', function(event) {
