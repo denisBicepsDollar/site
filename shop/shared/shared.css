@@ -285,6 +285,7 @@ a {
 }
 .header__logo {
     display: flex;
+    flex-shrink: 0;
 }
 .header__icon {
     height: 50px;
@@ -299,7 +300,7 @@ a {
 .header__wrapper {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch;
 }
 
 .header__title {
