@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Страница не найдена — Зелёные усы</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="/shared/shared.css">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <style>
+        .not-found {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .not-found__emoji {
+            font-size: 80px;
+            margin-bottom: 24px;
+            animation: sway 3s ease-in-out infinite;
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(-5deg); }
+            50%       { transform: rotate(5deg); }
+        }
+
+        .not-found__code {
+            font-family: var(--font-accent);
+            font-size: 96px;
+            font-weight: var(--fw-bold);
+            color: var(--green-150);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .not-found__title {
+            font-family: var(--font-accent);
+            font-size: var(--fs-3xl);
+            font-weight: var(--fw-bold);
+            color: var(--craft-700);
+            margin-bottom: 12px;
+        }
+
+        .not-found__subtitle {
+            font-size: var(--fs-md);
+            color: var(--text-muted);
+            max-width: 420px;
+            line-height: var(--lh-relaxed);
+            margin-bottom: 32px;
+        }
+
+        .not-found__actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        @media (max-width: 480px) {
+            .not-found__code {
+                font-size: 72px;
+            }
+            .not-found__title {
+                font-size: var(--fs-2xl);
+            }
+            .not-found__actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            .not-found__actions .button {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="wrapper header__wrapper">
+        <h1 class="header__logo">
+            <a href="/" class="header__title">
+                <span class="header__title-full">Цветочная лавка "Зелёные усы"</span>
+                <span class="header__title-short">Зелёные усы</span>
+            </a>
+        </h1>
+        <div class="header__actions">
+            <a href="/cart" class="button header__cart" id="cart-button">
+                Корзина<span class="header__cart-count">0</span>
+            </a>
+            <nav class="header__nav">
+                <button type="button" class="button header__button" id="menu-button"
+                        aria-expanded="false" aria-controls="site-menu">
+                    Открыть меню
+                </button>
+                <ul class="menu" id="site-menu">
+                    <li><a class="menu__link" href="/catalog">Каталог</a></li>
+                    <li><a class="menu__link" href="/about">О лавке</a></li>
+                    <li><a class="menu__link" href="/delivery">Доставка и оплата</a></li>
+                    <li><a class="menu__link" href="/contacts">Контакты</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="not-found">
+        <div class="not-found__emoji">🌿</div>
+        <div class="not-found__code">404</div>
+        <h2 class="not-found__title">Страница не найдена</h2>
+        <p class="not-found__subtitle">
+            Похоже, этот цветок уже завял или его никогда не было.
+            Но в нашем каталоге есть много других!
+        </p>
+        <div class="not-found__actions">
+            <a href="/" class="button button--big">На главную</a>
+            <a href="/catalog" class="button button--big button--outline">В каталог</a>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="wrapper footer__wrapper">
+        <p class="footer__copyright">© 2026 Цветочная лавка "Зелёные усы"</p>
+        <div class="footer__links">
+            <a class="footer__link" href="/privacy">Политика конфиденциальности</a>
+            <a class="footer__link" href="/ps">Пользовательское соглашение</a>
+        </div>
+    </div>
+</footer>
+
+<script src="/menu.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a024c80aafdc1c10',t:'MTc3OTg4MjQxMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
