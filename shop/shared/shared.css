@@ -1037,10 +1037,21 @@ a {
         --wrapper-padding:  8px;
         --header-padding-y: 10px;
     }
-
+    .header__logo{
+        width: 160px;
+    }
     .header__title {
         font-size: var(--fs-sm);
         padding: 6px 12px;
+    }
+    .header__actions{
+        width: 190px;
+    }
+    .header__nav{
+        flex:1;
+    }
+    .header__button{
+        flex:1;
     }
 
     .product-card__name {
