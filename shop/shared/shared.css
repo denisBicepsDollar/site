@@ -1037,6 +1037,9 @@ a {
         --wrapper-padding:  8px;
         --header-padding-y: 10px;
     }
+    .wrapper header__wrapper{
+        align-items: stretch;
+    }
     .header__logo{
         width: 160px;
     }
