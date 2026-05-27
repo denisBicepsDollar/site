@@ -102,10 +102,6 @@ function buildCoalesceMap(coalesceObj) {
     return map;
 }
 
-// Строит массив SELECT-выражений из списка колонок и агрегатов.
-// Если columns пустой и агрегатов нет — добавляет SELECT *.
-// Колонки из coalesceMap заменяются на COALESCE-выражения.
-// Агрегаты: { alias: { fn, col, distinct } } — поддерживает MEDIAN через PERCENTILE_CONT.
 function buildSelectParts(columns, aggregates, coalesceMap) {
     const parts = [];
 
@@ -121,10 +117,24 @@ function buildSelectParts(columns, aggregates, coalesceMap) {
 
     if (aggregates && typeof aggregates === 'object') {
         for (const [alias, agg] of Object.entries(aggregates)) {
-            const { fn, col, distinct } = agg;
+            const { fn, col, distinct, expression } = agg;  // ← добавили expression
+
             const upperFn    = fn.toUpperCase();
-            const colExpr    = (!col || col === '*') ? '*' : quoteIdent(col);
             const distinctKw = distinct ? 'DISTINCT ' : '';
+
+            // expression приоритетнее col — позволяет писать stock * price
+            let colExpr;
+            if (expression) {
+                // expression передаётся как есть — заменяем имена колонок на quoted
+                // простая замена: stock*price → "stock"*"price"
+                colExpr = expression.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (match) => {
+                    // не трогаем числа и SQL ключевые слова
+                    const SQL_KEYWORDS = new Set(['AND', 'OR', 'NOT', 'NULL', 'TRUE', 'FALSE', 'DISTINCT']);
+                    return SQL_KEYWORDS.has(match.toUpperCase()) ? match : quoteIdent(match);
+                });
+            } else {
+                colExpr = (!col || col === '*') ? '*' : quoteIdent(col);
+            }
 
             const expr = upperFn === 'MEDIAN'
                 ? `PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ${colExpr})`
@@ -136,7 +146,6 @@ function buildSelectParts(columns, aggregates, coalesceMap) {
 
     return parts;
 }
-
 // Карта поддерживаемых оконных функций: ключ фронта → SQL-выражение или функция-генератор.
 // Функции-генераторы принимают аргументы (col, n) и возвращают готовое SQL-выражение.
 const WIN_FN_SQL = {

@@ -57,3 +57,18 @@ CREATE TABLE IF NOT EXISTS contacts (
                                         message TEXT NOT NULL,
                                         created_at TIMESTAMPTZ DEFAULT now()
     );
+
+CREATE OR REPLACE FUNCTION restore_stock_on_order_delete()
+RETURNS TRIGGER AS $$
+BEGIN
+UPDATE products
+SET stock = stock + OLD.quantity
+WHERE id = OLD.product_id;
+RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER restore_stock_after_delete
+    AFTER DELETE ON order_items
+    FOR EACH ROW
+    EXECUTE FUNCTION restore_stock_on_order_delete();
