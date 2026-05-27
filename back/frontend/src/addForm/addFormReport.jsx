@@ -67,6 +67,11 @@ function buildPayload({ title, selectedCols, filters, aggregates, groupBy, havin
     const aggObj = {};
     aggregates.forEach(a => {
         if (!a.fn) return;
+        if (a.expression) {
+            const alias = a.alias || `${a.fn.toLowerCase()}_expr`;
+            aggObj[alias] = { fn: a.fn, expression: a.expression, distinct: a.distinct };
+            return;
+        }
         const col = a.fn === 'COUNT' && !a.col ? '*' : a.col;
         if (a.fn !== 'COUNT' && !col) return;
         const alias = a.alias || `${a.fn.toLowerCase()}_${col}`.replace(/[^a-zA-Z0-9_]/g, '_');
@@ -260,10 +265,11 @@ export function AddFormReport({ tableName = '', disabled = false, onCreate }) {
     };
 
     // ─── Aggregates ────────────────────────────────────────────────
-    const addAggregate    = () => setAggregates(a => [...a, { id: uid(), fn: 'COUNT', col: '', distinct: false, alias: '' }]);
+    const addAggregate    = () => setAggregates(a => [...a, { id: uid(), fn: 'COUNT', col: '', distinct: false, alias: '', expresssion: ''}]);
     const removeAggregate = id  => setAggregates(a => a.filter(x => x.id !== id));
     const updateAggregate = (id, field, val) =>
         setAggregates(a => a.map(x => x.id === id ? { ...x, [field]: val } : x));
+
 
     // ─── Window fns ────────────────────────────────────────────────
     const addWinFn    = () => setWindowConfig(w => ({ ...w, fns: [...w.fns, { id: uid(), key: 'rowNumber', col: '', n: '4', alias: '' }] }));
@@ -398,10 +404,20 @@ export function AddFormReport({ tableName = '', disabled = false, onCreate }) {
                                         <select className="af__input" value={a.fn} onChange={e => updateAggregate(a.id, 'fn', e.target.value)} disabled={loading}>
                                             {AGGREGATE_FNS.map(fn => <option key={fn} value={fn}>{fn}</option>)}
                                         </select>
-                                        <select className="af__input af__input--sm" value={a.col} onChange={e => updateAggregate(a.id, 'col', e.target.value)} disabled={loading}>
+                                        <select className="af__input af__input--sm" value={a.col}
+                                                onChange={e => updateAggregate(a.id, 'col', e.target.value)}
+                                                disabled={loading || !!a.expression}
+                                        >
                                             <option value="">* (все)</option>
                                             {columns.map(col => <option key={col} value={col}>{col}</option>)}
                                         </select>
+                                        <input
+                                            className="af__input af__input--sm"
+                                            placeholder="Выражение: stock * price"
+                                            value={a.expression}
+                                            onChange={e => updateAggregate(a.id, 'expression', e.target.value)}
+                                            disabled={loading}
+                                        />
                                         <label className="af__checkbox-inline">
                                             <input type="checkbox" checked={a.distinct} onChange={e => updateAggregate(a.id, 'distinct', e.target.checked)} disabled={loading} />
                                             DISTINCT
