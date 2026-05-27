@@ -56,17 +56,40 @@
     <div class="wrapper header__wrapper">
         <h1 class="header__logo">
             <a href="../" class="header__title">
-                <span class="header__title-full">Цветочная лавка "Зелёные усы"</span>
+                <img src="../favicon.png" class="header__icon">
+                <span class="header__title-full">Цветочная лавка "Зеленые усы"</span>
                 <span class="header__title-short">Зелёные усы</span>
             </a>
         </h1>
+        <div class="header__actions">
+            <a href="../cart" class="button header__cart" id="cart-button">
+                <span class="header__label">Корзина</span>
+                <span class="header__cart-count">0</span>
+            </a>
+            <nav class="header__nav">
+                <button type="button"
+                        class="button header__button"
+                        id="menu-button"
+                        aria-expanded="false"
+                        aria-controls="site-menu"
+                        aria-label="Открыть меню">
+                    <span class="header__label">Открыть меню</span>
+                </button>
+                <ul class="menu" id="site-menu">
+                    <li><a class="menu__link" href="../catalog">Каталог</a></li>
+                    <li><a class="menu__link" href="../about">О лавке</a></li>
+                    <li><a class="menu__link" href="../delivery">Доставка и оплата</a></li>
+                    <li><a class="menu__link" href="../contacts">Контакты</a></li>
+                </ul>
+            </nav>
+        </div>
     </div>
 </header>
 
 <main>
     <div class="legal">
         <h1>Политика конфиденциальности персональных данных</h1>
-        <p class="legal__date">Обновлено: 1 мая 2026 года</p>
+        <p class="legal__date">Обновлено: 26 мая 2026 года</p>
 
         <p>Настоящая Политика конфиденциальности персональных данных (далее — «Политика») действует в отношении всей информации, которую сайт <strong>zelenyeusy.ru</strong> (далее — «Сайт» цветочной лавки «Зелёные усы») может получить о Пользователе во время использования Сайта.</p>
 
@@ -148,8 +171,8 @@
     <div class="wrapper footer__wrapper">
         <p class="footer__copyright">© 2026 Цветочная лавка "Зелёные усы"</p>
         <div class="footer__links">
-            <a class="footer__link" href="/privacy">Политика конфиденциальности</a>
-            <a class="footer__link" href="/ps">Пользовательское соглашение</a>
+            <a class="footer__link" href="./">Политика конфиденциальности</a>
+            <a class="footer__link" href="../ps">Пользовательское соглашение</a>
         </div>
     </div>
 </footer>
