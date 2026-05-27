@@ -237,8 +237,9 @@ export async function findByColumns(tableName, {
     if (count) mergedAggregates['count_result'] = { fn: 'COUNT', col: count === '*' ? null : count };
     if (avg)   mergedAggregates['avg_result']   = { fn: 'AVG',   col: avg };
 
+    const hasAggregates = Object.keys(mergedAggregates).length > 0;
     const allSelectParts = [
-        ...buildSelectParts(columns, mergedAggregates, coalesceMap),
+        ...buildSelectParts(hasAggregates && !groupBy ? null : columns, mergedAggregates, coalesceMap),
         ...buildWindowParts(windowFns),
     ];
 

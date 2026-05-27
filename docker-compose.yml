@@ -32,6 +32,7 @@ services:
       DATABASE_URL: postgres://denisbiceps:12345678@db:5432/zelenyeusy
     volumes:
       - ./shop:/app/shop
+      - ./storage:/app/src/storage
     depends_on:
       - db
     networks:
@@ -70,6 +71,8 @@ services:
     env_file: .env
     environment:
       NODE_ENV: production
+    volumes:
+      - ./storage:/app/src/storage
     command: ["node", "src/bin/worker.js"]
     depends_on:
       - db
