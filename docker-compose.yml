@@ -61,6 +61,21 @@ services:
     networks:
       - app-net
 
+  worker:
+    build:
+      context: ./back/server
+      dockerfile: Dockerfile
+    container_name: worker
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+    command: ["node", "src/bin/worker.js"]
+    depends_on:
+      - db
+    networks:
+      - app-net
+
 networks:
   app-net:
     driver: bridge
