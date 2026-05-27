@@ -238,8 +238,12 @@ export async function findByColumns(tableName, {
     if (avg)   mergedAggregates['avg_result']   = { fn: 'AVG',   col: avg };
 
     const hasAggregates = Object.keys(mergedAggregates).length > 0;
+    let effectiveColumns = columns;
+    if (hasAggregates && !columns) {
+        effectiveColumns = groupBy ? [groupBy] : null;
+    }
     const allSelectParts = [
-        ...buildSelectParts(hasAggregates && !groupBy ? null : columns, mergedAggregates, coalesceMap),
+        ...buildSelectParts(effectiveColumns, mergedAggregates, coalesceMap),
         ...buildWindowParts(windowFns),
     ];
 
