@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS orders (
                                       cdek_tariff_name TEXT,           -- название тарифа СДЭК
                                       total_price INTEGER NOT NULL,
                                       status TEXT DEFAULT 'new',
-                                      created_at TIMESTAMPTZ DEFAULT now()
+                                      created_at TIMESTAMPTZ DEFAULT now(),
                                       comment TEXT,
     );
 
