@@ -842,7 +842,7 @@ a {
         --section-padding-y: 32px;
         --wrapper-padding:   16px;
     }
-    .wrapper header__wrapper{
+    .header__wrapper{
         align-items: stretch;
     }
     .header__logo{
