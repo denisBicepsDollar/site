@@ -412,7 +412,7 @@ export function AddFormReport({ tableName = '', disabled = false, onCreate }) {
                                             {columns.map(col => <option key={col} value={col}>{col}</option>)}
                                         </select>
                                         <input
-                                            className="af__input af__input--sm"
+                                            className="af__input af__input--md"
                                             placeholder="Выражение: stock * price"
                                             value={a.expression}
                                             onChange={e => updateAggregate(a.id, 'expression', e.target.value)}
