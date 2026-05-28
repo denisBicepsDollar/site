@@ -11,14 +11,14 @@ async function renderHomePageCards() {
             container: '.section--popular .section__cards',
             products: products,
             sort: 'popular',
-            limit: 4,
+            limit: 5,
         });
 
         renderCards({
             container: '.section--new .section__cards',
             products: products,
             sort: 'new',
-            limit: 4,
+            limit: 5,
         });
     } catch (err) {
         console.error('Не удалось загрузить товары:', err);
