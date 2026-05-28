@@ -30,7 +30,7 @@ function mapProduct(row) {
 }
 
 // ── 1. СПИСОК ТОВАРОВ ДЛЯ КАТАЛОГА ─────────────────────────────────────────
-export async function getProducts({ group, type, subtype, variety, search, sort='popular', limit=50, offset=0 } = {}) {
+export async function getProducts({ group, type, subtype, variety, search, sort='popular', limit=1000, offset=0 } = {}) {
     console.log('[shopRepo] getProducts', {group,type,search});
 
     // собираем WHERE по частям
