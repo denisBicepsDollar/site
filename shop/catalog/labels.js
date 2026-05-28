@@ -2,31 +2,22 @@ export const GROUP_LABELS = {
     all: 'Все группы',
     garden: 'Садовые',
     indoor: 'Комнатные',
-    bulbs: 'Луковичные',
-    cut: 'Срезка'
 };
 
 export const TYPE_LABELS = {
     all: 'Все виды',
-    roza: 'Роза',
     gortenziya: 'Гортензия',
     pion: 'Пион',
-    fialka: 'Фиалка',
-    orhideya: 'Орхидея',
-    tulpan: 'Тюльпан',
-    lily: 'Лилия',
     iris: 'Ирис',
-    narciss: 'Нарцисс',
     filodendron: 'Филодендрон',
+    syngonium : 'Сингониум',
+    epipremnum : 'Эпипремнум',
+    hoya : 'Хойя',
+    scindapsus: 'Сциндапсус',
 };
 
 export const SUBTYPE_LABELS = {
     all: 'Все подвиды',
-    // Розы
-    parkovaya: 'Парковая',
-    chayno: 'Чайно-гибридная',
-    pletistaya: 'Плетистая',
-    floribunda: 'Флорибунда',
     // Гортензии
     drevovidnaya: 'Древовидная',
     metelchataya: 'Метельчатая',
@@ -35,24 +26,19 @@ export const SUBTYPE_LABELS = {
     travyanistyi: 'Травянистый',
     drevovidnyi: 'Древовидный',
     ito: 'ИТО-гибрид',
+    // Сингониум
+    Arrow : 'Арроу',
+    red_spot_tricolor: 'Ред Спот Триколор',
+    Orm_Nak_Green_splash : 'Орм Нак Грин Сплеш',
+    Mottled_Mojito : 'Моттлед Мохито',
+
+
     // Комнатные
     senpoliya: 'Сенполия',
-    khimera: 'Химера',           // ← новое
+    khimera: 'Химера',
     falenopsis: 'Фаленопсис',
     dendrobium: 'Дендробиум',
-    sodiroy: 'Содирой',    // ← новое
-    // Луковичные
-    triumf: 'Триумф',
-    pozdniy: 'Поздний',
-    popugayniy: 'Попугайный',   // ← новое
-    vostochnaya: 'Восточная',
-    aziatskaya: 'Азиатская',
-    'ot-gibrid': 'ОТ-гибрид',   // ← новое
-    trubchatyi: 'Трубчатый',    // ← новое
-    // Срезка
-    rozy: 'Розы',
-    piony: 'Пионы',              // ← новое
-    sbornyi: 'Сборный',
+    sodiroy: 'Содирой',
     // Ирисы
     borodaty: 'Бородатый',
     germanskiy: 'Германский',
