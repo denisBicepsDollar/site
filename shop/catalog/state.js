@@ -5,10 +5,10 @@ export const state = {
     currentVariety: 'all',
     currentSort: 'default',
     currentSearch: '',
-    currentLimit: 15,
+    currentLimit: 16,
 };
 
-export const STEP = 15;
+export const STEP = 16;
 
 export function resetLimit() {
     state.currentLimit = STEP;
