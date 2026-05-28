@@ -119,7 +119,7 @@
     /* --- Размеры / Отступы --- */
     --wrapper-max-width:  1200px;
     --wrapper-padding:    20px;
-    --header-padding-y:   16px;
+    --header-padding-y:   6px;
     --hero-padding-y:     80px;
     --section-padding-y:  50px;
     --footer-padding-y:   25px;
@@ -288,7 +288,7 @@ a {
     flex-shrink: 0;
 }
 .header__icon {
-    height: 50px;
+    height: 40px;
 }
 
 /* Модификатор для checkout-страницы (вместо :has) */
@@ -308,7 +308,7 @@ a {
     align-items: center;
     justify-content: center;
     margin: 0;
-    padding: 12px 32px;
+    padding: 10px 32px;
     font-family: var(--font-accent);
     font-size: var(--fs-2xl);
     font-weight: var(--fw-bold);
