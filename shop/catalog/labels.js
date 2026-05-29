@@ -27,12 +27,13 @@ export const SUBTYPE_LABELS = {
     drevovidnyi: 'Древовидный',
     ito: 'ИТО-гибрид',
     // Сингониум
-    Arrow : 'Арроу',
-    red_spot_tricolor: 'Ред Спот Триколор',
-    Orm_Nak_Green_splash : 'Орм Нак Грин Сплеш',
+    green:      'Зелёные',
+    variegated: 'Вариегатные',
+    red:        'Красные и розовые',
+    // Epipremnum
     Mottled_Mojito : 'Моттлед Мохито',
-
-
+    pinnatum:   'Пиннатум',
+    aureum:     'Ауреум',
     // Комнатные
     senpoliya: 'Сенполия',
     khimera: 'Химера',

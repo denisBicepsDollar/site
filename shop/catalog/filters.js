@@ -158,6 +158,10 @@ export async function renderVarietyFilters() {
         els.varietyBlock.classList.add('hidden');
         return;
     }
+    if (state.currentGroup === 'indoor') {
+        els.varietyBlock.classList.add('hidden');
+        return;
+    }
     const PRODUCTS = await loadProductsData();
 
     let filteredProducts = PRODUCTS

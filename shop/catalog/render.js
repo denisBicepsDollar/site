@@ -32,6 +32,11 @@ export async function updateCatalog() {
     if (state.currentVariety !== 'all') {
         filtered = filtered.filter(p => p.variety === state.currentVariety);
     }
+    filtered = filtered.sort((a, b) => {
+        const aIn = a.stock > 0 ? 0 : 1;
+        const bIn = b.stock > 0 ? 0 : 1;
+        return aIn - bIn;
+    });
 
     const result = renderCards({
         container: els.catalogGrid,
