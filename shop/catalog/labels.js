@@ -39,6 +39,11 @@ export const SUBTYPE_LABELS = {
     falenopsis: 'Фаленопсис',
     dendrobium: 'Дендробиум',
     sodiroy: 'Содирой',
+    hederaceum: 'Сердцелистные',
+    erubescens:  'Красночерешковые',
+    velvet:      'Бархатистые',
+    hastatum:    'Стреловидные',
+    xanadu:      'Кустовые',
     // Ирисы
     borodaty: 'Бородатый',
     germanskiy: 'Германский',
