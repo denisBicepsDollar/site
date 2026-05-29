@@ -3,7 +3,6 @@ import {state} from './state.js';
 import {getProducts} from '../shared/api.js';
 import {
     GROUP_LABELS,
-    TYPE_LABELS,
     SUBTYPE_LABELS,
     VARIETY_LABELS
 } from './labels.js';
@@ -29,12 +28,26 @@ function createFilterButtonHTML(value, activeValue, label, filterType) {
 }
 
 function getUniqueValues(products, field) {
-    return [...new Set(products.map(p => p[field]).filter(Boolean))];
+    if (Array.isArray(field)) {
+        const values = products.map(p => {
+            let current = [];
+            for (const key of field) {
+                if (p[key] !== undefined) {
+                    current.push(p[key]);
+                }
+            }
+            return current;
+        })
+        return (values.filter(Boolean));
+    }
+    const values = products.map(p => p[field])
+    let result = [...new Set(values)]
+    return result;
 }
 
 
 // =============================================
-// 1. ГРУППЫ (Садовые, Комнатные...)
+// 1. ГРУППЫ (Садовые, Комнатные)
 // =============================================
 export async function renderGroupFilters() {
     if (!els.groupFilters) return;
@@ -55,7 +68,7 @@ export async function renderGroupFilters() {
 
 
 // =============================================
-// 2. ВИДЫ (Гортензия, Роза, ...)
+// 2. ВИДЫ
 // =============================================
 export async function renderTypeFilters() {
     if (!els.typeFilters || !els.typeBlock) return;
@@ -67,26 +80,41 @@ export async function renderTypeFilters() {
     const PRODUCTS = await loadProductsData();
 
     let filteredProducts = PRODUCTS.filter(p => p.group === state.currentGroup);
-    const types = ['all', ...getUniqueValues(filteredProducts, 'type')];
+    const names = [['all'], ...getUniqueValues(filteredProducts, ['name','type'])];
 
-    if (types.length <= 2) {
+    const uniqueTypes = new Set(
+        names
+            .map(row => {
+                const token = row[0].split(/\s+/)[0] ?? '';
+                // убрать обрамляющие кавычки и нежелательные символы с концов
+                const cleaned = token.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '');
+                return cleaned;
+            })
+    )
+
+    const rawTypes = new Set(names.map(nameArray =>
+        nameArray.at(-1)
+    ))
+
+    if (names.length <= 2) {
         els.typeBlock.classList.add('hidden');
         return;
     }
 
     els.typeBlock.classList.remove('hidden');
-    els.typeFilters.innerHTML = types
-        .map(type => createFilterButtonHTML(
-            type,
-            state.currentType,
-            TYPE_LABELS[type] || type,
-            'type'
-        ))
-        .join('');
+    const uniqueArr = Array.from(uniqueTypes);
+    const rawArr = Array.from(rawTypes);
+    const len = Math.min(uniqueArr.length, rawArr.length);
+
+    els.typeFilters.innerHTML = Array.from({ length: len }, (_, i) => {
+        const label = String(uniqueArr[i] === 'all' ? 'Все виды' : uniqueArr[i]);               // метка из uniqueTypes
+        const rawValue = rawArr[i];                       // значение из rawTypes
+        return createFilterButtonHTML(rawValue, state.currentType, label, 'type');
+    }).join('');
 }
 
 // =============================================
-// 3. ПОДВИДЫ (Метельчатая, Древовидная...)
+// 3. ПОДВИДЫ
 // =============================================
 export async function renderSubtypeFilters() {
     if (!els.subtypeFilters || !els.subtypeBlock) return;
