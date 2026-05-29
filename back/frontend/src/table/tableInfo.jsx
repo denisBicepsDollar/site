@@ -139,6 +139,7 @@ export default function TableInfo({ tableInfo }) {
 
 
 
+    // Загрузка одного файла для поля image
     const handleImageUpload = async (file) => {
         if (!file) return;
         setUploading(true);
@@ -146,10 +147,42 @@ export default function TableInfo({ tableInfo }) {
             const data = await api.uploadImage(file);
             setEditingData(prev => ({ ...prev, image: data.path }));
         } catch (e) {
-            alert('Ошибка загрузки картинки: ' + e.message);
+            alert('Ошибка загрузки: ' + e.message);
         } finally {
             setUploading(false);
         }
+    };
+
+// Загрузка нескольких файлов для поля images
+    const handleImagesUpload = async (files) => {
+        if (!files?.length) return;
+        setUploading(true);
+        try {
+            const paths = [];
+            for (const file of files) {
+                const data = await api.uploadImage(file);
+                paths.push(data.path);
+            }
+            // добавляем к существующим
+            setEditingData(prev => {
+                const existing = Array.isArray(prev.images)
+                    ? prev.images
+                    : (prev.images ? String(prev.images).replace(/^\{|\}$/g, '').split(',').map(s => s.trim()).filter(Boolean) : []);
+                return { ...prev, images: [...existing, ...paths] };
+            });
+        } catch (e) {
+            alert('Ошибка загрузки: ' + e.message);
+        } finally {
+            setUploading(false);
+        }
+    };
+
+// Удалить одно фото из images
+    const removeImage = (index) => {
+        setEditingData(prev => {
+            const existing = Array.isArray(prev.images) ? prev.images : [];
+            return { ...prev, images: existing.filter((_, i) => i !== index) };
+        });
     };
     // Обработчик отправки отредактированных данных на сервер
     const submitEdit = async () => {
@@ -477,6 +510,46 @@ export default function TableInfo({ tableInfo }) {
                                                 style={{ fontSize: 12 }}
                                             />
                                             {uploading && <span style={{ fontSize: 12, color: '#777' }}>Загружаю...</span>}
+                                        </div>
+                                    )}
+                                    {/* Загрузка дополнительных фото */}
+                                    {col.column_name === 'images' && (
+                                        <div style={{ marginTop: 6 }}>
+                                            <input
+                                                type="file"
+                                                accept="image/jpeg,image/png,image/webp,image/svg+xml"
+                                                multiple
+                                                onChange={e => handleImagesUpload(Array.from(e.target.files))}
+                                                disabled={uploading}
+                                                style={{ fontSize: 12 }}
+                                            />
+                                            {uploading && <span style={{ fontSize: 12, color: '#777' }}>Загружаю...</span>}
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+                                                {(Array.isArray(editingData.images)
+                                                        ? editingData.images
+                                                        : String(editingData.images || '').replace(/^\{|\}$/g, '').split(',').map(s => s.trim()).filter(Boolean)
+                                                ).map((src, i) => (
+                                                    <div key={i} style={{ position: 'relative' }}>
+                                                        <img src={src} alt=""
+                                                             style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 4 }}
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const imgs = Array.isArray(editingData.images) ? editingData.images : [];
+                                                                setEditingData(prev => ({ ...prev, images: imgs.filter((_, idx) => idx !== i) }));
+                                                            }}
+                                                            style={{
+                                                                position: 'absolute', top: -5, right: -5,
+                                                                width: 16, height: 16, borderRadius: '50%',
+                                                                background: '#e53e3e', color: '#fff',
+                                                                border: 'none', cursor: 'pointer', fontSize: 10,
+                                                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                            }}
+                                                        >✕</button>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
                                 </div>

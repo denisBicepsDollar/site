@@ -71,6 +71,26 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
         }
     };
 
+    const handleImagesUpload = async (files) => {
+        if (!files?.length) return;
+        setUploading(true);
+        try {
+            const paths = [];
+            for (const file of files) {
+                const formData = new FormData();
+                formData.append('image', file);
+                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                const data = await res.json();
+                paths.push(data.path);
+            }
+            updateValue('images', [...(Array.isArray(values.images) ? values.images : []), ...paths]);
+        } catch (e) {
+            setError('Ошибка загрузки: ' + e.message);
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const submit = async () => {
         setError(null);
         if (!tableName?.trim()) { setError('Требуется имя таблицы'); return; }
@@ -193,6 +213,45 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
                                                                 style={{ fontSize: 12 }}
                                                             />
                                                             {uploading && <span style={{ fontSize: 12, color: '#777' }}>Загружаю...</span>}
+                                                        </div>
+                                                    )}
+                                                    {c.name === 'images' && (
+                                                        <div style={{ marginTop: 6 }}>
+                                                            <input
+                                                                type="file"
+                                                                accept="image/jpeg,image/png,image/webp,image/svg+xml"
+                                                                multiple
+                                                                onChange={e => handleImagesUpload(Array.from(e.target.files))}
+                                                                disabled={loading || uploading}
+                                                                style={{ fontSize: 12 }}
+                                                            />
+                                                            {uploading && <span style={{ fontSize: 12, color: '#777' }}>Загружаю...</span>}
+                                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+                                                                {(Array.isArray(values.images)
+                                                                        ? values.images
+                                                                        : String(values.images || '').replace(/^\{|\}$/g, '').split(',').map(s => s.trim()).filter(Boolean)
+                                                                ).map((src, i) => (
+                                                                    <div key={i} style={{ position: 'relative' }}>
+                                                                        <img src={src} alt=""
+                                                                             style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 4 }}
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                const imgs = Array.isArray(values.images) ? values.images : [];
+                                                                                updateValue('images', imgs.filter((_, idx) => idx !== i));
+                                                                            }}
+                                                                            style={{
+                                                                                position: 'absolute', top: -5, right: -5,
+                                                                                width: 16, height: 16, borderRadius: '50%',
+                                                                                background: '#e53e3e', color: '#fff',
+                                                                                border: 'none', cursor: 'pointer', fontSize: 10,
+                                                                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                                            }}
+                                                                        >✕</button>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
                                                         </div>
                                                     )}
                                                 </>
