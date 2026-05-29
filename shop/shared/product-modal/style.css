@@ -4,10 +4,7 @@
 
 .product-modal {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -25,11 +22,8 @@
 /* Оверлей */
 .product-modal__overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(4px);
 }
 
@@ -38,10 +32,10 @@
     position: relative;
     background: var(--craft-50);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-card-hover);
-    max-width: 750px;
-    width: 90%;
-    max-height: 90vh;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+    max-width: 820px;
+    width: 92%;
+    max-height: 88vh;
     overflow-y: auto;
     z-index: 1;
     transform: translateY(20px);
@@ -57,12 +51,12 @@
     position: absolute;
     top: 14px;
     right: 14px;
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     background: white;
     border: 1px solid var(--craft-400);
     border-radius: 50%;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -74,35 +68,73 @@
 .product-modal__close:hover {
     background: #fbe9e7;
     border-color: #ef9a9a;
-    transform: scale(1.1);
 }
 
 /* Body: картинка + инфо */
 .product-modal__body {
-    display: flex;
-    gap: 24px;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 28px;
     padding: 28px;
 }
 
-/* Картинка */
+/* ── ЛЕВАЯ КОЛОНКА: фото + миниатюры ── */
 .product-modal__image-wrapper {
-    flex-shrink: 0;
-    width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
+/* Главное фото */
 .product-modal__image {
     width: 100%;
-    height: auto;
-    border-radius: var(--radius-sm);
+    height: 300px;
     object-fit: cover;
+    border-radius: var(--radius-sm);
+    cursor: zoom-in;
+    transition: opacity var(--transition-fast);
 }
 
-/* Инфо */
+.product-modal__image:hover {
+    opacity: 0.92;
+}
+
+/* Миниатюры под главным фото */
+.product-modal__thumbs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.product-modal__thumb {
+    width: 58px;
+    height: 58px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    opacity: 0.65;
+    transition: opacity 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+}
+
+.product-modal__thumb--active,
+.product-modal__thumb:hover {
+    opacity: 1;
+    border-color: var(--green-400);
+}
+
+/* Стрелки — скрыты (листалка через миниатюры) */
+.product-modal__img-prev,
+.product-modal__img-next {
+    display: none;
+}
+
+/* ── ПРАВАЯ КОЛОНКА: инфо ── */
 .product-modal__info {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    flex: 1;
 }
 
 /* Название */
@@ -113,6 +145,7 @@
     color: var(--craft-900);
     line-height: var(--lh-tight);
     margin: 0;
+    padding-right: 32px; /* место под крестик */
 }
 
 /* Цены */
@@ -155,7 +188,7 @@
 
 .product-modal__volume-label {
     font-weight: var(--fw-semibold);
-    color: #686868;
+    color: var(--text-label);
 }
 
 /* Количество */
@@ -163,13 +196,12 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin: 8px 0;
 }
 
 .product-modal__quantity-label {
     font-size: var(--fs-base);
     font-weight: var(--fw-semibold);
-    color: #686868;
+    color: var(--text-label);
 }
 
 .product-modal__quantity-controls {
@@ -214,32 +246,27 @@
 
 /* Описание */
 .product-modal__description {
-    font-size: var(--fs-base);
+    font-size: var(--fs-sm);
     color: #555;
     line-height: var(--lh-relaxed);
-    margin-top: 8px;
-    padding-top: 12px;
+    margin-top: 4px;
+    padding-top: 14px;
     border-top: 1px solid var(--craft-400);
 }
 
 /* =============================================
    АДАПТИВ МОДАЛКИ
    ============================================= */
-@media (max-width: 768px) {
+
+@media (max-width: 700px) {
     .product-modal__body {
-        flex-direction: column;
+        grid-template-columns: 1fr;
         padding: 20px;
         gap: 16px;
     }
 
-    .product-modal__image-wrapper {
-        width: 100%;
-    }
-
     .product-modal__image {
-        max-height: 250px;
-        width: 100%;
-        object-fit: cover;
+        height: 240px;
     }
 
     .product-modal__name {
@@ -249,13 +276,17 @@
 
 @media (max-width: 480px) {
     .product-modal__content {
-        width: 95%;
+        width: 96%;
         max-height: 95vh;
     }
 
     .product-modal__body {
         padding: 16px;
         gap: 12px;
+    }
+
+    .product-modal__image {
+        height: 200px;
     }
 
     .product-modal__name {
@@ -276,5 +307,172 @@
 
     .product-modal__cart-btn {
         width: 100%;
+    }
+
+    .product-modal__thumb {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* =============================================
+   ЛАЙТБОКС
+   ============================================= */
+
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.lightbox__overlay {
+    position: absolute;
+    inset: 0;
+}
+
+/* Основное фото */
+.lightbox__img {
+    position: relative;
+    max-width: calc(100vw - 120px);
+    max-height: calc(100vh - 150px);
+    object-fit: contain;
+    border-radius: 8px;
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+/* Закрыть */
+.lightbox__close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.lightbox__close:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+/* Стрелки */
+.lightbox__prev,
+.lightbox__next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: #fff;
+    font-size: 28px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+    margin-top: -36px;
+}
+
+.lightbox__prev { left: 16px; }
+.lightbox__next { right: 16px; }
+
+.lightbox__prev:hover,
+.lightbox__next:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-50%) scale(1.08);
+}
+
+.lightbox__prev.hidden,
+.lightbox__next.hidden {
+    display: none;
+}
+
+/* Миниатюры внизу */
+.lightbox__thumbs {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    max-width: 90vw;
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex-shrink: 0;
+}
+
+.lightbox__thumbs::-webkit-scrollbar {
+    display: none;
+}
+
+.lightbox__thumb {
+    width: 54px;
+    height: 54px;
+    object-fit: cover;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0.45;
+    border: 2px solid transparent;
+    transition: opacity 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+}
+
+.lightbox__thumb--active,
+.lightbox__thumb:hover {
+    opacity: 1;
+    border-color: rgba(255,255,255,0.8);
+}
+
+/* Счётчик */
+.lightbox__counter {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.65);
+    font-size: 13px;
+    z-index: 3;
+    background: rgba(0,0,0,0.5);
+    padding: 3px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+/* Мобильный */
+@media (max-width: 600px) {
+    .lightbox__prev { left: 8px; }
+    .lightbox__next { right: 8px; }
+
+    .lightbox__img {
+        max-width: calc(100vw - 80px);
+        max-height: calc(100vh - 160px);
+    }
+
+    .lightbox__thumb {
+        width: 44px;
+        height: 44px;
     }
 }

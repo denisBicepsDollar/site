@@ -136,16 +136,6 @@ export function updateDeliveryCompanyWay() {
 
     if (els.cdekRadio?.checked) {
         state.deliveryCompany = 'cdek';
-        console.log(state.deliveryMethod);
-        console.log(state.deliveryCompany);
-        console.log(state.deliveryType);
-        console.log(state.deliveryType);
-        console.log(state.selectedPochtaOffice);
-        console.log(state.selectedPochtaTariff);
-        console.log(state.selectedCdekOffice);
-        console.log(state.selectedCdekTariff);
-        console.log(state.deliveryPrice);
-        console.log(state.fullSelectedAddress);
         if (els.pochtaOfficeRadio) els.pochtaOfficeRadio.checked = false;
         if (els.pochtaCourierRadio) els.pochtaCourierRadio.checked = false;
 
@@ -188,15 +178,6 @@ export function updateDeliveryPostWay() {
     if (els.pochtaRadio?.checked) {
         if (els.pochtaOfficeRadio?.checked) {
             state.deliveryType = 'office';
-            console.log(state.deliveryMethod);
-            console.log(state.deliveryCompany);
-            console.log(state.deliveryType);
-            console.log(state.selectedPochtaOffice);
-            console.log(state.selectedPochtaTariff);
-            console.log(state.selectedCdekOffice);
-            console.log(state.selectedCdekTariff);
-            console.log(state.deliveryPrice);
-            console.log(state.fullSelectedAddress);
             show(els.pochtaOfficeBlock);
 
             state.selectedSdekOffice = null;
@@ -210,15 +191,6 @@ export function updateDeliveryPostWay() {
 
         if (els.pochtaCourierRadio?.checked) {
             state.deliveryType = 'courier';
-            console.log(state.deliveryMethod);
-            console.log(state.deliveryCompany);
-            console.log(state.deliveryType);
-            console.log(state.selectedPochtaOffice);
-            console.log(state.selectedPochtaTariff);
-            console.log(state.selectedCdekOffice);
-            console.log(state.selectedCdekTariff);
-            console.log(state.deliveryPrice);
-            console.log(state.fullSelectedAddress);
             show(els.pochtaCourierBlock);
 
             if (els.pochtaOfficeRadio) els.pochtaOfficeRadio.checked = false;

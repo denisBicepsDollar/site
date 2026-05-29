@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS products (
                                         full_description TEXT,
                                         price INTEGER NOT NULL,
                                         old_price INTEGER,
-                                        image TEXT,
+                                        image TEXT[] DEFAULT '{}',
                                         group_name TEXT NOT NULL,
                                         type TEXT NOT NULL,
                                         subtype TEXT,

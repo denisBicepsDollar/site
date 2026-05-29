@@ -9,8 +9,26 @@ function quoteIdent(name) {
 function quoteValue(val) {
     return `'${String(val).replace(/'/g, "''")}'`;
 }
+
+function parsePostgresArray(val) {
+    if (!val) return [];
+    if (Array.isArray(val)) return val;
+    // PostgreSQL возвращает {item1,item2}
+    return String(val)
+        .replace(/^\{|\}$/g, '')  // убираем { и }
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+}
+
 // ── helpers ────────────────────────────────────────────────────────────────
 function mapProduct(row) {
+    const images = parsePostgresArray(row.images);
+
+    // image берём из отдельного поля, images — дополнительные фото
+    const mainImage = row.image || null;
+    // объединяем: главное + дополнительные (без дублей)
+    const allImages = [mainImage, ...images].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
     return {
         id:              row.id,
         name:            row.name,
@@ -18,7 +36,8 @@ function mapProduct(row) {
         fullDescription: row.full_description,   // ← snake → camel
         price:           row.price,
         oldPrice:        row.old_price,           // ← snake → camel
-        image:           row.image,
+        image:           mainImage,  // первый как главный
+        images:          allImages,
         group:           row.group_name,
         type:            row.type,
         subtype:         row.subtype,
