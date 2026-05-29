@@ -7,16 +7,22 @@ async function renderHomePageCards() {
     try {
         const products = await loadProductsData();
 
+        const filtered = products.sort((a, b) => {
+            const aIn = a.stock > 0 ? 0 : 1;
+            const bIn = b.stock > 0 ? 0 : 1;
+            return aIn - bIn;
+        });
+
         renderCards({
             container: '.section--popular .section__cards',
-            products: products,
+            products: filtered,
             sort: 'popular',
             limit: 5,
         });
 
         renderCards({
             container: '.section--new .section__cards',
-            products: products,
+            products: filtered,
             sort: 'new',
             limit: 5,
         });
