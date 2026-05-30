@@ -152,6 +152,7 @@ export function getCartItemsData() {
     return cart.map((item) => ({
         id: item.id,
         name: item.name,
+        volume: item.volume || null,
         count: Number(item.count || 0),
         price: Number(item.price || 0),
         subtotal: Number(item.price || 0) * Number(item.count || 0),

@@ -665,6 +665,7 @@ a {
 .product-card__image-wrapper {
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .product-card__image {

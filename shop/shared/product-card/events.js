@@ -5,6 +5,8 @@ export function bindProductCardEvents() {
     document.addEventListener('click', function (event) {
         const addToCartButton = event.target.closest('.product-card__btn');
         const aboutButton = event.target.closest('.button__about');
+        const cardImage = event.target.closest('.product-card__image-wrapper');
+        const productCard = event.target.closest('.product-card');
 
         if (addToCartButton && !addToCartButton.disabled) {
             const productId = addToCartButton.dataset.productId;
@@ -23,8 +25,8 @@ export function bindProductCardEvents() {
             return;
         }
 
-        if (aboutButton) {
-            const productId = aboutButton.dataset.productId;
+        if (aboutButton || cardImage) {
+            const productId = aboutButton?.dataset?.productId ?? productCard.dataset.productId;
             openModal(productId);
         }
     });

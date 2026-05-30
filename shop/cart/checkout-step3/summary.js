@@ -74,7 +74,7 @@ export function renderProductsList() {
 
     els.finalProductsList.innerHTML = items.map((item) => `
         <div class="checkout-products-item">
-            <span>${item.name} × ${item.count}</span>
+            <span>${item.name}${item.volume ? ` (${item.volume})` : ''}    × ${item.count}</span>
             <span>${item.subtotalText}</span>
         </div>
     `).join('');

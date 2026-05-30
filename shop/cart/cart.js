@@ -56,37 +56,39 @@ export function updateCartCount() {
 // ОПЕРАЦИИ С КОРЗИНОЙ
 // =============================================
 
-export async function addToCart(productId) {
-
+export async function addToCart(productId, variantId = null, selectedPrice = null, selectedVolume = null, maxStock = null) {
     const products = await loadProductsData();
-
-
     const product = products.find((p) => p.id === productId);
-
     if (!product) return;
 
+    const price = selectedPrice ?? product.price;
+    const volume = selectedVolume ?? product.volume;
+    const cartKey = variantId ? `${productId}_${variantId}` : productId;
+    const stock = maxStock ?? product.stock; // ← берём переданный stock
 
-    if (product.stock <= 0) {
+    if (stock <= 0) {
         alert('Товара нет в наличии');
         return;
     }
 
-    const cartItem = cart.find((item) => item.id === productId);
-
+    const cartItem = cart.find((item) => item.cartKey === cartKey);
     if (cartItem) {
-        if (cartItem.count >= product.stock) {
+        if (cartItem.count >= stock) {
             alert('Нельзя добавить больше, чем есть в наличии');
             return;
         }
-
         cartItem.count += 1;
     } else {
         cart.push({
+            cartKey,
             id: product.id,
+            variantId: variantId || null,
+            price,
+            volume,
             name: product.name,
-            price: product.price,
             image: product.image,
             count: 1,
+            maxStock: maxStock || product.stock,
         });
     }
 
@@ -94,28 +96,21 @@ export async function addToCart(productId) {
     updateCartCount();
 }
 
-export function decreaseItem(productId) {
-    const cartItem = cart.find((item) => item.id === productId);
-
-    if (!cartItem) return;
-
-    cartItem.count -= 1;
-
-    if (cartItem.count <= 0) {
-        cart = cart.filter((item) => item.id !== productId);
+export function decreaseItem(cartKey) {
+    const item = cart.find(i => (i.cartKey || i.id) === cartKey);
+    if (!item) return;
+    if (item.count > 1) {
+        item.count -= 1;
+    } else {
+        cart.splice(cart.indexOf(item), 1);
     }
-
     saveCart();
     updateCartCount();
 }
 
-export function removeFromCart(productId) {
-    const cartIndex = cart.findIndex((item) => item.id === productId);
-
-    if (cartIndex === -1) return;
-
-    cart.splice(cartIndex, 1);
-
+export function removeFromCart(cartKey) {
+    const idx = cart.findIndex(i => (i.cartKey || i.id) === cartKey);
+    if (idx !== -1) cart.splice(idx, 1);
     saveCart();
     updateCartCount();
 }

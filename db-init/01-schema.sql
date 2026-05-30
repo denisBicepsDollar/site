@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS products (
                                         full_description TEXT,
                                         price INTEGER NOT NULL,
                                         old_price INTEGER,
-                                        image TEXT[] DEFAULT '{}',
+                                        image TEXT,
                                         group_name TEXT NOT NULL,
                                         type TEXT NOT NULL,
                                         subtype TEXT,
@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS products (
                                         volume TEXT,
                                         stock INTEGER DEFAULT 0,
                                         tags TEXT[] DEFAULT '{}',
-                                        created_at TIMESTAMPTZ DEFAULT now()
+                                        created_at TIMESTAMPTZ DEFAULT now(),
+                                        images TEXT[] DEFAULT '{}'
     );
 
 -- Таблица заказов
@@ -57,13 +58,40 @@ CREATE TABLE IF NOT EXISTS contacts (
                                         message TEXT NOT NULL,
                                         created_at TIMESTAMPTZ DEFAULT now()
     );
+-- Варианты товара
+CREATE TABLE IF NOT EXISTS product_variants (
+                                                id          SERIAL PRIMARY KEY,
+                                                product_id  TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    volume      TEXT NOT NULL,
+    price       INTEGER NOT NULL,
+    old_price   INTEGER,
+    stock       INTEGER NOT NULL DEFAULT 0,
+    created_at  TIMESTAMPTZ DEFAULT now()
+    );
 
+CREATE INDEX IF NOT EXISTS product_variants_product_id_idx ON product_variants(product_id);
+
+-- Триггер: возврат stock при удалении заказа (с поддержкой вариантов)
 CREATE OR REPLACE FUNCTION restore_stock_on_order_delete()
 RETURNS TRIGGER AS $$
 BEGIN
+    IF OLD.variant_id IS NOT NULL THEN
+UPDATE product_variants
+SET stock = stock + OLD.quantity
+WHERE id = OLD.variant_id;
+
+UPDATE products
+SET stock = (
+    SELECT COALESCE(SUM(stock), 0)
+    FROM product_variants
+    WHERE product_id = OLD.product_id
+)
+WHERE id = OLD.product_id;
+ELSE
 UPDATE products
 SET stock = stock + OLD.quantity
 WHERE id = OLD.product_id;
+END IF;
 RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;

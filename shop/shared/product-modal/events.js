@@ -7,7 +7,26 @@ import {getProductById, loadProductsData} from "../product-store.js";
 let currentQty = 1;
 
 export async function openModal(productId) {
-    let product = getProductById(productId);
+    let product;
+
+    try {
+        // Запрашиваем полный товар с вариантами
+        const res = await fetch(`/api/products/${productId}`);
+        if (res.ok) {
+            product = await res.json();
+        }
+    } catch (err) {
+        console.error('Ошибка загрузки товара:', err);
+    }
+
+    // Фолбэк — берём из кэша если API недоступен
+    if (!product) {
+        product = getProductById(productId);
+        if (!product) {
+            const products = await loadProductsData();
+            product = products.find(p => String(p.id) === String(productId));
+        }
+    }
 
     if (!product) {
         try {
@@ -63,8 +82,13 @@ export function bindModalEvents() {
         const productId = modalEls.addToCartBtn.dataset.productId;
         if (!productId) return;
 
+        const variantId = modalEls.addToCartBtn.dataset.variantId || null;
+        const price = modalEls.addToCartBtn.dataset.price ? +modalEls.addToCartBtn.dataset.price : null;
+        const volume = modalEls.addToCartBtn.dataset.volume || null;
+        const maxStock = +modalEls.addToCartBtn.dataset.maxStock || 0;
+
         for (let i = 0; i < currentQty; i++) {
-            addToCart(productId);
+            addToCart(productId, variantId, price, volume, maxStock);
         }
 
         modalEls.addToCartBtn.textContent = 'Добавлено!';
@@ -74,16 +98,5 @@ export function bindModalEvents() {
             modalEls.addToCartBtn.textContent = 'В корзину';
             modalEls.addToCartBtn.disabled = false;
         }, 1500);
-    });
-
-    // ✅ Правильный селектор
-    document.addEventListener('click', (event) => {
-        const detailBtn = event.target.closest('.button__about');
-        if (!detailBtn) return;
-
-        const productId = detailBtn.dataset.productId;
-        if (!productId) return;
-
-        openModal(productId);
     });
 }

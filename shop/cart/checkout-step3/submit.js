@@ -67,6 +67,8 @@ function collectFormData() {
 
         cart: cart.map((item) => ({
             id: item.id,
+            variantId: item.variantId || null,
+            volume: item.volume || null,
             name: item.name,
             price: item.price,
             count: item.count,

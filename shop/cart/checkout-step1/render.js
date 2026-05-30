@@ -22,7 +22,13 @@ export function renderCartPage() {
 
     cart.forEach(function (item) {
         const itemHTML = `
-            <div class="cart-item" data-product-id="${item.id}">
+            <div class="cart-item"
+                 data-product-id="${item.id}"
+                 data-cart-key="${item.cartKey || item.id}"
+                 data-variant-id="${item.variantId || ''}"
+                 data-price="${item.price}"
+                 data-volume="${item.volume || ''}"
+                 data-max-stock="${item.maxStock || 99}">
   
                 <img class="cart-item__image"
                      src="${safeImage(item.image)}" 
@@ -33,6 +39,7 @@ export function renderCartPage() {
                 <div class="cart-item__info">
                     <h3 class="cart-item__name">${item.name}</h3>
                     <p class="cart-item__price">${formatPrice(item.price)}</p>
+                ${item.volume ? `<p class="cart-item__volume">${item.volume}</p>` : ''}
                 </div>
 
                 <div class="cart-item__controls">
@@ -42,7 +49,6 @@ export function renderCartPage() {
                 </div>
 
                 <p class="cart-item__subtotal">${formatPrice(item.price * item.count)}</p>
-
                 <button class="cart-item__remove" type="button" title="Удалить">✕</button>
             </div>
         `;

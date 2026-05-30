@@ -342,3 +342,9 @@ VALUES (
            'bulbs', 'tulpan', 'makrovye', 'double-peach',
            'Луковица 1 шт', 70, ARRAY['popular', 'new']
        ) ON CONFLICT (id) DO NOTHING;
+
+
+INSERT INTO product_variants (product_id, volume, price, old_price, stock)
+VALUES
+    ('iris-indian-chief', 'Контейнер P9', 850, 1000, 15),
+    ('iris-indian-chief', 'Контейнер C2', 1200, NULL, 8);

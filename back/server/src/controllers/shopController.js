@@ -61,7 +61,9 @@ export async function create(req, res) {
         // фронт шлёт cart с полем count, а репо ждёт quantity
         const items = cart.map(i => ({
             productId: i.id,
-            quantity: i.count
+            variantId: i.variantId || null,
+            quantity: i.count,
+            volume: i.volume || null,
         }));
 
         const result = await shopService.createOrder(order, items);
