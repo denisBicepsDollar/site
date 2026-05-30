@@ -88,6 +88,7 @@ export async function getProducts({ group, type, subtype, variety, search, sort=
     `;
 
     const { rows } = await pool.query(sql);
+    console.log('first row min_price:', rows[0]?.min_price);
     return rows.map(r => mapProduct(r, []));
 }
 
