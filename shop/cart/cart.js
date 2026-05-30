@@ -127,7 +127,7 @@ export function clearCart() {
 function bindAddToCartButtons() {
     if (isCartEventsBound) return;
 
-    document.addEventListener('click', function (event) {
+    document.addEventListener('click', async function (event) {
         const cartBtn = event.target.closest('.card__cart-button');
         if (!cartBtn) return;
         if (cartBtn.disabled) return;
@@ -138,7 +138,20 @@ function bindAddToCartButtons() {
         const productId = card.dataset.productId;
         if (!productId) return;
 
-        addToCart(productId);
+        // Получаем полный товар с вариантами
+        const res = await fetch(`/api/products/${productId}`);
+        const product = await res.json();
+
+        // Берём первый доступный вариант
+        const variant = product.variants?.find(v => v.stock > 0);
+
+        if (!variant) {
+            alert('Нет в наличии');
+            return;
+        }
+
+        const cartKey = `${productId}_${variant.id}`;
+        addToCart(productId, variant.id, variant.price, variant.volume, variant.stock);
 
         cartBtn.textContent = 'Добавлено';
         cartBtn.disabled = true;
