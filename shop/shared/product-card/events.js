@@ -7,6 +7,7 @@ export function bindProductCardEvents() {
         const aboutButton = event.target.closest('.button__about');
         const cardImage = event.target.closest('.product-card__image-wrapper');
         const productCard = event.target.closest('.product-card');
+        const productCardName = event.target.closest('.product-card__name');
 
         if (addToCartButton && !addToCartButton.disabled) {
             const productId = addToCartButton.dataset.productId;
@@ -25,7 +26,7 @@ export function bindProductCardEvents() {
             return;
         }
 
-        if (aboutButton || cardImage) {
+        if (aboutButton || cardImage || productCardName) {
             const productId = aboutButton?.dataset?.productId ?? productCard.dataset.productId;
             openModal(productId);
         }
