@@ -29,13 +29,19 @@ function mapProduct(row, variants= []) {
     const mainImage = row.image || null;
     // объединяем: главное + дополнительные (без дублей)
     const allImages = [mainImage, ...images].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
+
+    // Минимальная цена из вариантов в наличии
+    const availableVariants = variants.filter(v => v.stock > 0);
+    const minPrice = availableVariants.length > 0
+        ? Math.min(...availableVariants.map(v => v.price))
+        : (variants[0]?.price ?? 0);
     return {
         id:              row.id,
         name:            row.name,
         description:     row.description,
         fullDescription: row.full_description,
-        price:           row.display_price ?? row.price,
-        oldPrice:        row.old_price,
+        price:           minPrice,
+        oldPrice:        null,
         image:           mainImage,  // первый как главный
         images:          allImages,
         group:           row.group_name,
@@ -66,17 +72,15 @@ export async function getProducts({ group, type, subtype, variety, search, sort=
 
     // сортировка
     let order = `${quoteIdent('created_at')} DESC`; // по умолчанию новые
-    if (sort === 'price_asc')  order = `${quoteIdent('price')} ASC`;
-    if (sort === 'price_desc') order = `${quoteIdent('price')} DESC`;
+    if (sort === 'price_asc')  order = `(SELECT MIN(v.price) FROM product_variants v WHERE v.product_id = p.id AND v.stock > 0) ASC NULLS LAST`;
+    if (sort === 'price_desc') order = `(SELECT MIN(v.price) FROM product_variants v WHERE v.product_id = p.id AND v.stock > 0) DESC NULLS LAST`;
     if (sort === 'popular')    order = `CASE WHEN 'popular' = ANY(tags) THEN 0 ELSE 1 END, created_at DESC`;
 
     // финальный SQL
     const sql = `
         SELECT p.*,
-               COALESCE(
-                       (SELECT MIN(v.price) FROM product_variants v WHERE v.product_id = p.id),
-                       p.price
-               ) AS display_price
+               (SELECT MIN(v.price) FROM product_variants v
+                WHERE v.product_id = p.id AND v.stock > 0) AS min_price
         FROM "products" p
             ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
         ORDER BY ${order}
