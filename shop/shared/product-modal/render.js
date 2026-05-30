@@ -28,6 +28,11 @@ function renderVariants(product) {
         </button>
     `).join('');
 
+    if (!product.variants.some(v => v.stock > 0)) {
+        container.classList.add('hidden');
+        return;
+    }
+
     container.classList.remove('hidden');
 
     // При клике на вариант — обновляем цену и stock
