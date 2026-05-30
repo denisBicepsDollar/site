@@ -736,6 +736,7 @@ a {
     font-weight: var(--fw-bold);
     color: var(--craft-900);
     line-height: var(--lh-tight);
+    cursor: pointer;
 }
 
 .product-card__description {
