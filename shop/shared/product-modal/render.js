@@ -12,7 +12,9 @@ function renderVariants(product) {
 
     if (!product.variants?.length) return;
 
-    container.innerHTML = product.variants.map((v, i) => `
+    container.innerHTML = product.variants
+        .filter(v => v.stock > 0)  // ← только в наличии
+        .map((v, i) => `
         <button 
             class="product-modal__variant ${i === 0 ? 'product-modal__variant--active' : ''}"
             data-variant-id="${v.id}"
@@ -20,11 +22,9 @@ function renderVariants(product) {
             data-old-price="${v.old_price || ''}"
             data-stock="${v.stock}"
             data-volume="${v.volume}"
-            ${v.stock <= 0 ? 'disabled' : ''}
         >
             ${v.volume}
             <span class="product-modal__variant-price">${formatPrice(v.price)}</span>
-            ${v.stock <= 0 ? '<span class="product-modal__variant-sold">нет</span>' : ''}
         </button>
     `).join('');
 
