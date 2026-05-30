@@ -392,7 +392,13 @@ export default function TableInfo({ tableInfo }) {
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             {/* Таблица строк с кнопками редактирования и удаления */}
-                            <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)' }}>
+                            <div style={{
+                                overflowX: 'auto',
+                                overflowY: 'auto',
+                                maxHeight: 'calc(100vh - 200px)',
+                                borderRadius: '8px',
+                                border: '1px solid rgba(0,0,0,0.1)'
+                            }}>
                                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', fontFamily: 'Monaco, monospace' }}>
                                     <thead>
                                     <tr style={{ background: '#f3f4f6' }}>
