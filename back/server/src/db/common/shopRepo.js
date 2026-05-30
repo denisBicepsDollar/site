@@ -22,33 +22,35 @@ function parsePostgresArray(val) {
 }
 
 // ── helpers ────────────────────────────────────────────────────────────────
-function mapProduct(row, variants= []) {
+function mapProduct(row, variants = []) {
     const images = parsePostgresArray(row.images);
-
-    // image берём из отдельного поля, images — дополнительные фото
     const mainImage = row.image || null;
-    // объединяем: главное + дополнительные (без дублей)
     const allImages = [mainImage, ...images].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
 
-    // Минимальная цена из вариантов в наличии
-    const availableVariants = variants.filter(v => v.stock > 0);
-    const minPrice = availableVariants.length > 0
-        ? Math.min(...availableVariants.map(v => v.price))
-        : (variants[0]?.price ?? 0);
+    // Если варианты переданы — считаем из них, иначе берём из SQL подзапроса
+    let price;
+    if (variants.length > 0) {
+        const availableVariants = variants.filter(v => v.stock > 0);
+        price = availableVariants.length > 0
+            ? Math.min(...availableVariants.map(v => v.price))
+            : (variants[0]?.price ?? 0);
+    } else {
+        price = row.min_price ?? 0;  // ← из SQL подзапроса
+    }
+
     return {
         id:              row.id,
         name:            row.name,
         description:     row.description,
         fullDescription: row.full_description,
-        price:           minPrice,
+        price,
         oldPrice:        null,
-        image:           mainImage,  // первый как главный
+        image:           mainImage,
         images:          allImages,
         group:           row.group_name,
         type:            row.type,
         subtype:         row.subtype,
         variety:         row.variety,
-        volume:          row.volume,
         stock:           row.stock,
         tags:            row.tags || [],
         variants:        variants,
