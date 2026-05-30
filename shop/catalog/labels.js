@@ -3,51 +3,12 @@ export const GROUP_LABELS = {
     garden: 'Садовые',
     indoor: 'Комнатные',
 };
-
-export const TYPE_LABELS = {
-    all: 'Все виды',
-    gortenziya: 'Гортензия',
-    pion: 'Пион',
-    iris: 'Ирис',
-    filodendron: 'Филодендрон',
-    syngonium : 'Сингониум',
-    epipremnum : 'Эпипремнум',
-    hoya : 'Хойя',
-    scindapsus: 'Сциндапсус',
-};
-
 export const SUBTYPE_LABELS = {
     all: 'Все подвиды',
     // Гортензии
     drevovidnaya: 'Древовидная',
     metelchataya: 'Метельчатая',
     krupnolistnaya: 'Крупнолистная',
-    // Пионы
-    travyanistyi: 'Травянистый',
-    drevovidnyi: 'Древовидный',
-    ito: 'ИТО-гибрид',
-    // Сингониум
-    green:      'Зелёные',
-    variegated: 'Вариегатные',
-    red:        'Красные и розовые',
-    // Epipremnum
-    Mottled_Mojito : 'Моттлед Мохито',
-    pinnatum:   'Пиннатум',
-    aureum:     'Ауреум',
-    // Комнатные
-    senpoliya: 'Сенполия',
-    khimera: 'Химера',
-    falenopsis: 'Фаленопсис',
-    dendrobium: 'Дендробиум',
-    sodiroy: 'Содирой',
-    hederaceum: 'Сердцелистные',
-    erubescens:  'Красночерешковые',
-    velvet:      'Бархатистые',
-    hastatum:    'Стреловидные',
-    xanadu:      'Кустовые',
-    // Ирисы
-    borodaty: 'Бородатый',
-    germanskiy: 'Германский',
 };
 
 export const VARIETY_LABELS = {

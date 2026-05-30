@@ -123,6 +123,13 @@ export async function renderSubtypeFilters() {
         els.subtypeBlock.classList.add('hidden');
         return;
     }
+
+    // Подвид только для гортензий
+    if (state.currentType !== 'gortenziya') {
+        els.subtypeBlock.classList.add('hidden');
+        return;
+    }
+
     const PRODUCTS = await loadProductsData();
 
     let filteredProducts = PRODUCTS
@@ -137,6 +144,7 @@ export async function renderSubtypeFilters() {
     }
 
     els.subtypeBlock.classList.remove('hidden');
+
     els.subtypeFilters.innerHTML = subtypes
         .map(subtype => createFilterButtonHTML(
             subtype,
@@ -154,20 +162,33 @@ export async function renderSubtypeFilters() {
 export async function renderVarietyFilters() {
     if (!els.varietyFilters || !els.varietyBlock) return;
 
-    if (state.currentSubtype === 'all') {
+    // Для гортензий — нужен выбранный subtype
+    if (state.currentType === 'gortenziya' && state.currentSubtype === 'all') {
         els.varietyBlock.classList.add('hidden');
         return;
     }
+
+    // Для остальных — нужен выбранный type
+    if (state.currentType === 'all') {
+        els.varietyBlock.classList.add('hidden');
+        return;
+    }
+
     if (state.currentGroup === 'indoor') {
         els.varietyBlock.classList.add('hidden');
         return;
     }
+
     const PRODUCTS = await loadProductsData();
 
     let filteredProducts = PRODUCTS
         .filter(p => p.group === state.currentGroup)
-        .filter(p => p.type === state.currentType)
-        .filter(p => p.subtype === state.currentSubtype);
+        .filter(p => p.type === state.currentType);
+
+    // Для гортензий фильтруем ещё по subtype
+    if (state.currentType === 'gortenziya' && state.currentSubtype !== 'all') {
+        filteredProducts = filteredProducts.filter(p => p.subtype === state.currentSubtype);
+    }
 
     const varieties = ['all', ...getUniqueValues(filteredProducts, 'variety')];
 
@@ -177,6 +198,7 @@ export async function renderVarietyFilters() {
     }
 
     els.varietyBlock.classList.remove('hidden');
+
     els.varietyFilters.innerHTML = varieties
         .map(variety => createFilterButtonHTML(
             variety,
