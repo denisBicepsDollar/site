@@ -59,26 +59,38 @@ function mapProduct(row, variants = []) {
 
 // ── 1. СПИСОК ТОВАРОВ ДЛЯ КАТАЛОГА ─────────────────────────────────────────
 export async function getProducts({ group, type, subtype, variety, search, sort='popular', limit=1000, offset=0 } = {}) {
-    console.log('[shopRepo] getProducts', {group,type,search});
+    console.log('[shopRepo] getProducts', {group, type, search});
 
-    // собираем WHERE по частям
     const where = [];
-    if (group)   where.push(`${quoteIdent('group_name')} = ${quoteValue(group)}`);
-    if (type)    where.push(`${quoteIdent('type')} = ${quoteValue(type)}`);
-    if (subtype) where.push(`${quoteIdent('subtype')} = ${quoteValue(subtype)}`);
-    if (variety) where.push(`${quoteIdent('variety')} = ${quoteValue(variety)}`);
+    const params = [];
+
+    if (group) {
+        params.push(group);
+        where.push(`"group_name" = $${params.length}`);
+    }
+    if (type) {
+        params.push(type);
+        where.push(`"type" = $${params.length}`);
+    }
+    if (subtype) {
+        params.push(subtype);
+        where.push(`"subtype" = $${params.length}`);
+    }
+    if (variety) {
+        params.push(variety);
+        where.push(`"variety" = $${params.length}`);
+    }
     if (search) {
-        const p = `%${search}%`; // LIKE '%роза%'
-        where.push(`(${quoteIdent('name')} ILIKE ${quoteValue(p)} OR ${quoteIdent('description')} ILIKE ${quoteValue(p)})`);
+        params.push(`%${search}%`);
+        where.push(`("name" ILIKE $${params.length} OR "description" ILIKE $${params.length})`);
     }
 
     // сортировка
-    let order = `${quoteIdent('created_at')} DESC`; // по умолчанию новые
-    if (sort === 'price_asc')  order = `(SELECT MIN(v.price) FROM product_variants v WHERE v.product_id = p.id AND v.stock > 0) ASC NULLS LAST`;
-    if (sort === 'price_desc') order = `(SELECT MIN(v.price) FROM product_variants v WHERE v.product_id = p.id AND v.stock > 0) DESC NULLS LAST`;
+    let order = `"created_at" DESC`;
+    if (sort === 'price_asc')  order = `(SELECT MIN(v.price) FROM product_variants v WHERE v.product_id = p.id) ASC NULLS LAST`;
+    if (sort === 'price_desc') order = `(SELECT MIN(v.price) FROM product_variants v WHERE v.product_id = p.id) DESC NULLS LAST`;
     if (sort === 'popular')    order = `CASE WHEN 'popular' = ANY(tags) THEN 0 ELSE 1 END, created_at DESC`;
 
-    // финальный SQL
     const sql = `
         SELECT p.*,
                (SELECT MIN(v.price) FROM product_variants v
@@ -89,7 +101,10 @@ export async function getProducts({ group, type, subtype, variety, search, sort=
             LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}
     `;
 
-    const { rows } = await pool.query(sql);
+    console.log('[shopRepo] SQL:\n' + sql);
+
+    const { rows } = await pool.query(sql, params);
+    console.log('[shopRepo] вернулось', rows.length, 'товаров');
     return rows.map(r => mapProduct(r, []));
 }
 
@@ -207,6 +222,9 @@ export async function createOrder(order, items) {
 }
 export async function createContact({ name, email, phone, message }) {
     console.log('[shopRepo] createContact', {name,email});
+    if (!name?.trim()) throw new Error('Укажите имя');
+    if (!message?.trim()) throw new Error('Укажите сообщение');
+    if (!email?.trim() && !phone?.trim()) throw new Error('Укажите email или телефон');
     // тут всё просто — один INSERT, без транзакции
     const sql = `
         INSERT INTO ${quoteIdent('contacts')} (name,email,phone,message)

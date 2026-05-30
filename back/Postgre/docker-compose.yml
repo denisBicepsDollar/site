@@ -4,9 +4,9 @@ services:
     container_name: postgresDataBase
     restart: unless-stopped
     environment:
-       POSTGRES_USER: denisbiceps
-       POSTGRES_PASSWORD: 12345678
-       POSTGRES_DB: defaultDb
+       POSTGRES_USER: ${POSTGRES_USER}
+       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:

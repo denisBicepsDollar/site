@@ -9,6 +9,7 @@ import errorHandler from './middleware/errorHandler.js';
 import { registerRoutes } from './routes.js';
 import path from 'path';
 import {fileURLToPath} from "url";
+import rateLimit from 'express-rate-limit';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -38,6 +39,13 @@ async function startServer() {
         console.log(`Магазин: http://localhost:${port}`);
         console.log(`API:    http://localhost:${port}/tables`);
     });
+    const limiter = rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 минут
+        max: 100,                  // макс запросов
+        message: { error: 'Слишком много запросов, попробуйте позже' }
+    });
+
+    app.use('/api/', limiter);
 }
 
 startServer().catch(err => {

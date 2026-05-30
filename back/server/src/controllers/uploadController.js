@@ -50,6 +50,12 @@ export const upload = multer({
 
 // POST /api/upload
 export async function uploadImage(req, res) {
+    const referer = req.headers.referer || '';
+    const host = req.headers.host || '';
+
+    if (!referer.includes('admin.zelenyeusy.ru') && !host.includes('admin.zelenyeusy.ru')) {
+        return res.status(403).json({ error: 'Доступ запрещён' });
+    }
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'Файл не загружен' });
