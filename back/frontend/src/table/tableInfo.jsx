@@ -200,6 +200,9 @@ export default function TableInfo({ tableInfo }) {
         if (typeof payload.tags === 'string') {
             payload.tags = payload.tags.split(',').map(s => s.trim()).filter(Boolean);
         }
+        if (typeof payload.images === 'string') {
+            payload.images = payload.images.split(',').map(s => s.trim()).filter(Boolean);
+        }
         delete payload.created_at;
 
         try {
