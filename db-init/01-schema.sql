@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     price      INTEGER NOT NULL,
     quantity   INTEGER NOT NULL,
     volume     TEXT
-);
+    );
 
 -- Контакты
 CREATE TABLE IF NOT EXISTS contacts (
