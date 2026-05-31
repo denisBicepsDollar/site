@@ -38,13 +38,15 @@ CREATE TABLE IF NOT EXISTS orders (
 
 -- Позиции заказа
 CREATE TABLE IF NOT EXISTS order_items (
-                                           id SERIAL PRIMARY KEY,
-                                           order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
+    id         SERIAL PRIMARY KEY,
+    order_id   INTEGER REFERENCES orders(id) ON DELETE CASCADE,
     product_id TEXT REFERENCES products(id),
-    name TEXT NOT NULL,
-    price INTEGER NOT NULL,
-    quantity INTEGER NOT NULL
-    );
+    variant_id INTEGER REFERENCES product_variants(id) ON DELETE SET NULL,
+    name       TEXT NOT NULL,
+    price      INTEGER NOT NULL,
+    quantity   INTEGER NOT NULL,
+    volume     TEXT
+);
 
 -- Контакты
 CREATE TABLE IF NOT EXISTS contacts (
