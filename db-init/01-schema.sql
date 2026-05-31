@@ -97,3 +97,23 @@ CREATE TRIGGER restore_stock_after_delete
     AFTER DELETE ON order_items
     FOR EACH ROW
     EXECUTE FUNCTION restore_stock_on_order_delete();
+
+CREATE OR REPLACE FUNCTION create_default_variants()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.group_name = 'garden' THEN
+        INSERT INTO product_variants (product_id, volume, price, stock)
+        VALUES 
+            (NEW.id, 'Контейнер P9', 0, 0),
+            (NEW.id, 'Контейнер C1', 0, 0),
+            (NEW.id, 'Контейнер C2', 0, 0);
+    ELSIF NEW.group_name = 'indoor' THEN
+        INSERT INTO product_variants (product_id, volume, price, stock)
+        VALUES 
+            (NEW.id, 'Горшок D5', 0, 0),
+            (NEW.id, 'Горшок P7', 0, 0),
+            (NEW.id, 'Горшок D10', 0, 0);
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
