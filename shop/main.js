@@ -2,7 +2,8 @@ import {initProductCards} from './shared/product-card/index.js';
 import {initProductModal} from './shared/product-modal/index.js';
 import {renderCards, renderSkeletons} from './shared/product-card/render.js';
 import {loadProductsData} from "./shared/product-store.js";
-
+const popularContainer = document.querySelector('.section--popular .section__cards');
+const newContainer = document.querySelector('.section--new .section__cards');
 async function renderHomePageCards() {
 
     try {
@@ -37,8 +38,7 @@ async function renderHomePageCards() {
 document.addEventListener('DOMContentLoaded',() => {
     initProductCards();
     initProductModal();
-    const popularContainer = document.querySelector('.section--popular .section__cards');
-    const newContainer = document.querySelector('.section--new .section__cards');
+
     renderSkeletons(popularContainer, 5);
     renderSkeletons(newContainer, 5);
     renderHomePageCards();
