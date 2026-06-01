@@ -11,17 +11,32 @@ export function bindProductCardEvents() {
 
         if (addToCartButton && !addToCartButton.disabled) {
             const productId = addToCartButton.dataset.productId;
-            addToCart(productId);
 
-            addToCartButton.classList.remove('button--outline');
-            addToCartButton.textContent = 'В корзине';
-            addToCartButton.style.pointerEvents = 'none';
+            // Получаем товар с вариантами
+            fetch(`/api/products/${productId}`)
+                .then(res => res.json())
+                .then(product => {
+                    const variant = product.variants
+                        ?.filter(v => v.stock > 0)
+                        .sort((a, b) => a.price - b.price)[0];
 
-            setTimeout(() => {
-                addToCartButton.classList.add('button--outline');
-                addToCartButton.textContent = 'В корзину';
-                addToCartButton.style.pointerEvents = '';
-            }, 2000);
+                    if (!variant) {
+                        alert('Нет в наличии');
+                        return;
+                    }
+
+                    addToCart(productId, variant.id, variant.price, variant.volume, variant.stock, variant.image);
+
+                    addToCartButton.classList.remove('button--outline');
+                    addToCartButton.textContent = 'В корзине';
+                    addToCartButton.style.pointerEvents = 'none';
+
+                    setTimeout(() => {
+                        addToCartButton.classList.add('button--outline');
+                        addToCartButton.textContent = 'В корзину';
+                        addToCartButton.style.pointerEvents = '';
+                    }, 2000);
+                });
 
             return;
         }
