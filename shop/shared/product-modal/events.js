@@ -86,9 +86,10 @@ export function bindModalEvents() {
         const price = modalEls.addToCartBtn.dataset.price ? +modalEls.addToCartBtn.dataset.price : null;
         const volume = modalEls.addToCartBtn.dataset.volume || null;
         const maxStock = +modalEls.addToCartBtn.dataset.maxStock || 0;
+        const variantImage = modalEls.addToCartBtn.dataset.image || null;
 
         for (let i = 0; i < currentQty; i++) {
-            addToCart(productId, variantId, price, volume, maxStock);
+            addToCart(productId, variantId, price, volume, maxStock, variantImage);
         }
 
         modalEls.addToCartBtn.textContent = 'Добавлено!';

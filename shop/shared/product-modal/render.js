@@ -22,6 +22,7 @@ function renderVariants(product) {
             data-old-price="${v.old_price || ''}"
             data-stock="${v.stock}"
             data-volume="${v.volume}"
+            data-image="${v.image || ''}"
         >
             ${v.volume}
             <span class="product-modal__variant-price">${formatPrice(v.price)}</span>
@@ -45,6 +46,26 @@ function renderVariants(product) {
             b.classList.remove('product-modal__variant--active')
         );
         btn.classList.add('product-modal__variant--active');
+
+        if (btn.dataset.image) {
+            // Находим индекс фото варианта в currentImages
+            const imgIndex = currentImages.indexOf(btn.dataset.image);
+            if (imgIndex !== -1) {
+                setModalImage(imgIndex);
+            } else {
+                // Если фото нет в массиве — добавляем и показываем
+                currentImages.push(btn.dataset.image);
+                setModalImage(currentImages.length - 1);
+            }
+            // Обновляем миниатюры
+            if (modalEls.thumbs) {
+                modalEls.thumbs.querySelectorAll('.product-modal__thumb').forEach((t, i) => {
+                    t.classList.toggle('product-modal__thumb--active', i === currentImages.indexOf(btn.dataset.image));
+                });
+            }
+            modalEls.addToCartBtn.dataset.image = btn.dataset.image || '';
+        }
+
 
         // Обновляем цену
         if (modalEls.price) modalEls.price.textContent = formatPrice(+btn.dataset.price);
@@ -107,11 +128,22 @@ export function setModalImage(index) {
 export function renderProductModal(product) {
     if (!product) return;
 
+    // Сброс предыдущего состояния
+    currentImages = [];
+    currentIndex = 0;
+    if (modalEls.thumbs) {
+        modalEls.thumbs.innerHTML = '';
+        modalEls.thumbs.onclick = null;
+    }
 
-    // Собираем массив фото: основное + дополнительные
-    currentImages = Array.isArray(product.images) && product.images.length > 0
-        ? product.images
-        : [product.image].filter(Boolean);
+    // Собираем фото: основное + фото вариантов
+    const variantImages = (product.variants || [])
+        .filter(v => v.image && v.stock > 0)
+        .map(v => v.image);
+
+    currentImages = [...new Set([product.image, ...variantImages])]
+        .filter(img => img && !img.includes('no-image'));
+
     if (currentImages.length === 0) currentImages = [NO_IMAGE];
 
     // Главное фото
@@ -126,19 +158,21 @@ export function renderProductModal(product) {
     // Миниатюры
     if (modalEls.thumbs) {
         if (currentImages.length > 1) {
-            modalEls.thumbs.innerHTML = currentImages.map((src, i) => `
+            modalEls.thumbs.innerHTML = currentImages.map((src, i) => {
+                // Находим вариант у которого такое фото
+                const variant = (product.variants || []).find(v => v.image === src && v.stock > 0);
+                return `
                 <img 
                     class="product-modal__thumb ${i === 0 ? 'product-modal__thumb--active' : ''}"
                     src="${src}"
                     alt=""
                     data-index="${i}"
+                    data-variant-id="${variant?.id || ''}"
                     onerror="this.onerror=null;this.src='${NO_IMAGE}'"
                 >
-            `).join('');
+            `;
+            }).join('');
             modalEls.thumbs.classList.remove('hidden');
-        } else {
-            modalEls.thumbs.innerHTML = '';
-            modalEls.thumbs.classList.add('hidden');
         }
     }
 
@@ -151,10 +185,19 @@ export function renderProductModal(product) {
     }
 
     // Клики по миниатюрам
-    modalEls.thumbs?.addEventListener('click', e => {
+    modalEls.thumbs.onclick = (e) => {
         const thumb = e.target.closest('[data-index]');
-        if (thumb) setModalImage(+thumb.dataset.index);
-    });
+        if (!thumb) return;
+
+        setModalImage(+thumb.dataset.index);
+
+        if (thumb.dataset.variantId) {
+            const variantBtn = document.querySelector(
+                `#modal-variants [data-variant-id="${thumb.dataset.variantId}"]`
+            );
+            if (variantBtn) variantBtn.click();
+        }
+    };
 
     // Остальные поля
     if (modalEls.name) modalEls.name.textContent = product.name || '';

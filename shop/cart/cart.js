@@ -56,7 +56,7 @@ export function updateCartCount() {
 // ОПЕРАЦИИ С КОРЗИНОЙ
 // =============================================
 
-export async function addToCart(productId, variantId = null, selectedPrice = null, selectedVolume = null, maxStock = null) {
+export async function addToCart(productId, variantId = null, selectedPrice = null, selectedVolume = null, maxStock = null, selectedImage = null) {
     const products = await loadProductsData();
     const product = products.find((p) => p.id === productId);
     if (!product) return;
@@ -86,7 +86,7 @@ export async function addToCart(productId, variantId = null, selectedPrice = nul
             price,
             volume,
             name: product.name,
-            image: product.image,
+            image: selectedImage || product.image,
             count: 1,
             maxStock: maxStock || product.stock,
         });

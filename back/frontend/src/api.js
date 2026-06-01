@@ -7,7 +7,7 @@
    ───────────────────────────────────────────────────────────────────────── */
 
 /* Базовый URL для всех API запросов */
-const BASE = '';
+const BASE = 'http://localhost:3000';
 
 /* ─────────────────────────────────────────────────────────────────────────
    ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
@@ -167,7 +167,7 @@ export async function putReplaceRow(tableName, filterColumn, filterValue, data) 
 export async function uploadImage(file) {
     const formData = new FormData();
     formData.append('image', file);
-    const res = await fetch('/api/upload', {
+    const res = await fetch('http://localhost:3000/api/upload', {
         method: 'POST',
         body: formData  // без Content-Type — браузер сам поставит multipart
     });

@@ -4,15 +4,13 @@ CREATE TABLE IF NOT EXISTS products (
                                         name          TEXT NOT NULL,
                                         description   TEXT,
                                         full_description TEXT,
-                                        image         TEXT,
                                         group_name    TEXT NOT NULL,
                                         type          TEXT NOT NULL,
                                         subtype       TEXT,
                                         variety       TEXT,
                                         stock         INTEGER DEFAULT 0,
                                         tags          TEXT[] DEFAULT '{}',
-                                        created_at    TIMESTAMPTZ DEFAULT now(),
-    images        TEXT[] DEFAULT '{}'
+                                        created_at    TIMESTAMPTZ DEFAULT now()
     );
 
 -- Таблица заказов
@@ -44,6 +42,7 @@ CREATE TABLE IF NOT EXISTS product_variants (
     price       INTEGER NOT NULL DEFAULT 0,
     old_price   INTEGER,
     stock       INTEGER NOT NULL DEFAULT 0,
+    image TEXT,
     created_at  TIMESTAMPTZ DEFAULT now()
     );
 
@@ -134,9 +133,9 @@ BEGIN
     ELSIF NEW.group_name = 'indoor' THEN
         INSERT INTO product_variants (product_id, volume, price, stock)
         VALUES
-            (NEW.id, 'Горшок P5', 0, 0),
+            (NEW.id, 'Горшок D5', 0, 0),
             (NEW.id, 'Горшок P7', 0, 0),
-            (NEW.id, 'Горшок P10', 0, 0);
+            (NEW.id, 'Горшок D10', 0, 0);
 END IF;
 RETURN NEW;
 END;
