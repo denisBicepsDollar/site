@@ -124,9 +124,23 @@ export async function getProducts({ group, type, subtype, variety, search, sort=
 export async function getProductById(id) {
     console.log('[shopRepo] getProductById', id);
     const { rows } = await pool.query(
-        `SELECT * FROM products WHERE id = $1 LIMIT 1`, [id]
+        `SELECT p.*,
+                (SELECT v.image FROM product_variants v
+                 WHERE v.product_id = p.id AND v.image IS NOT NULL
+                 ORDER BY
+                     CASE v.volume
+                         WHEN 'Контейнер C2' THEN 1
+                         WHEN 'Контейнер C1' THEN 2
+                         WHEN 'Контейнер P9' THEN 3
+                         WHEN 'Горшок D10'   THEN 1
+                         WHEN 'Горшок P7'    THEN 2
+                         WHEN 'Горшок D5'    THEN 3
+                         ELSE 4
+                         END
+                    LIMIT 1) AS variant_image
+         FROM products p
+         WHERE p.id = $1 LIMIT 1`, [id]
     );
-    if (!rows[0]) return null;
 
     const { rows: variants } = await pool.query(
         `SELECT id, volume, price, old_price, stock, image
