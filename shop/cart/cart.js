@@ -143,7 +143,9 @@ function bindAddToCartButtons() {
         const product = await res.json();
 
         // Берём первый доступный вариант
-        const variant = product.variants?.find(v => v.stock > 0);
+        const variant = product.variants
+            ?.filter(v => v.stock > 0)
+            .sort((a, b) => a.price - b.price)[0];
 
         if (!variant) {
             alert('Нет в наличии');
