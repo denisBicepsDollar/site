@@ -27,7 +27,7 @@ export function updateNextStep1Button() {
 }
 
 export function bindCartStep1Events() {
-    els.cartItemsContainer?.addEventListener('click', function (event) {
+    els.cartItemsContainer?.addEventListener('click',  async function (event) {
         const cartItem = event.target.closest('.cart-item');
         if (!cartItem) return;
 
@@ -39,7 +39,7 @@ export function bindCartStep1Events() {
             const price = +cartItem.dataset.price || null;
             const volume = cartItem.dataset.volume || null;
             const maxStock = +cartItem.dataset.maxStock || null;
-            addToCart(productId, variantId, price, volume, maxStock);
+            await addToCart(productId, variantId, price, volume, maxStock);
             renderCartPage();
             return;
         }
