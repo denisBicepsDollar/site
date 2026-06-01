@@ -1,10 +1,13 @@
 import {els} from './elements.js';
 import {state} from './state.js';
-import {renderCards} from '../shared/product-card/render.js';
+import {renderCards, renderSkeletons} from '../shared/product-card/render.js';
 import {loadProductsData} from "../shared/product-store.js";
 
 export async function updateCatalog() {
     if (!els.catalogGrid) return;
+
+    renderSkeletons(els.catalogGrid, state.currentLimit);
+
 
     // Фильтруем по всем уровням
     let filtered;
@@ -37,6 +40,7 @@ export async function updateCatalog() {
         const bIn = b.stock > 0 ? 0 : 1;
         return aIn - bIn;
     });
+
 
     const result = renderCards({
         container: els.catalogGrid,

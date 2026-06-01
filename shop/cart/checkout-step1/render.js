@@ -8,6 +8,9 @@ import {formatPrice} from "../validation.js";
 export function renderCartPage() {
     const cart = loadCart();
 
+    const skeleton = document.getElementById('cart-skeleton');
+    if (skeleton) skeleton.style.display = 'none';
+
     if (cart.length === 0) {
         els.cartEmptyBlock?.classList.remove('hidden');
         els.cartPageBlock?.classList.add('hidden');
@@ -68,6 +71,7 @@ export function renderCartPage() {
             els.minOrderText.classList.remove('hidden');
         }
     }
+
 
     updateNextStep1Button();
 }

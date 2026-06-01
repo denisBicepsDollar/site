@@ -1,10 +1,16 @@
 import {initProductCards} from './shared/product-card/index.js';
 import {initProductModal} from './shared/product-modal/index.js';
-import {renderCards} from './shared/product-card/render.js';
+import {renderCards, renderSkeletons} from './shared/product-card/render.js';
 import {loadProductsData} from "./shared/product-store.js";
 
 async function renderHomePageCards() {
+    const popularContainer = document.querySelector('.section--popular .section__cards');
+    const newContainer = document.querySelector('.section--new .section__cards');
+    renderSkeletons(popularContainer, 5);
+    renderSkeletons(newContainer, 5);
+
     try {
+
         const products = await loadProductsData();
 
         const filtered = products.sort((a, b) => {
@@ -14,18 +20,19 @@ async function renderHomePageCards() {
         });
 
         renderCards({
-            container: '.section--popular .section__cards',
+            container: popularContainer,
             products: filtered,
             sort: 'popular',
             limit: 5,
         });
 
         renderCards({
-            container: '.section--new .section__cards',
+            container: newContainer,
             products: filtered,
             sort: 'new',
             limit: 5,
         });
+
     } catch (err) {
         console.error('Не удалось загрузить товары:', err);
     }

@@ -165,7 +165,27 @@ function createCardHTML(product) {
         </div>
     `;
 }
+export function renderSkeletons(container, count = 6) {
+    const containerEl = typeof container === 'string'
+        ? document.querySelector(container)
+        : container;
+    if (!containerEl) return;
 
+    containerEl.innerHTML = Array.from({ length: count }, () => `
+        <div class="product-card product-card--skeleton">
+            <div class="product-card__image-wrapper skeleton-box"></div>
+            <div class="product-card__info">
+                <div class="skeleton-line skeleton-line--wide"></div>
+                <div class="skeleton-line skeleton-line--medium"></div>
+                <div class="skeleton-line skeleton-line--short"></div>
+                <div class="product-card__footer">
+                    <div class="skeleton-btn"></div>
+                    <div class="skeleton-btn"></div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
 // =============================================
 // ХЕЛПЕР
 // =============================================

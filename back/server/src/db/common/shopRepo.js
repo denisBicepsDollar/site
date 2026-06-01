@@ -94,7 +94,7 @@ export async function getProducts({ group, type, subtype, variety, search, sort=
     const sql = `
         SELECT p.*,
                (SELECT MIN(v.price) FROM product_variants v
-                WHERE v.product_id = p.id) AS min_price
+                WHERE v.product_id = p.id AND v.price > 0) AS min_price
         FROM "products" p
             ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
         ORDER BY ${order}
@@ -104,7 +104,7 @@ export async function getProducts({ group, type, subtype, variety, search, sort=
     console.log('[shopRepo] SQL:\n' + sql);
 
     const { rows } = await pool.query(sql, params);
-    console.log('[shopRepo] вернулось', rows.length, 'товаров');
+    console.log('first row:', rows[0]?.id, 'min_price:', rows[0]?.min_price);
     return rows.map(r => mapProduct(r, []));
 }
 

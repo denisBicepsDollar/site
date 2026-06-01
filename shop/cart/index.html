@@ -65,14 +65,17 @@
             <div class="wrapper">
                 <h2 class="section__title">Корзина</h2>
 
+                <div class="cart-skeleton" id="cart-skeleton">
+                    <div class="skeleton-cart-item"></div>
+                </div>
                 <!-- Если корзина пуста -->
-                <div class="cart-empty" id="cart-empty">
+                <div class="cart-empty hidden" id="cart-empty">
                     <p class="cart-empty__text">Корзина пуста</p>
                     <a class="button" href="../catalog">Перейти к покупкам</a>
                 </div>
 
                 <!-- Если есть товары -->
-                <div class="cart-page" id="cart-page">
+                <div class="cart-page hidden" id="cart-page">
 
                     <!-- ================== -->
                     <!-- ШАГ 1: Корзина -->

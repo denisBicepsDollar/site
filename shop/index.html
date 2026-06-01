@@ -86,10 +86,21 @@
                     <button class="product-modal__close" id="product-modal-close" type="button">✕</button>
 
                     <div class="product-modal__body">
+                        <!-- Картинка + галерея -->
                         <div class="product-modal__image-wrapper">
                             <img class="product-modal__image" id="modal-product-image" src="" alt="">
+
+                            <!-- Кнопки листалки -->
+                            <button class="product-modal__img-prev hidden" id="modal-img-prev" type="button">‹</button>
+                            <button class="product-modal__img-next hidden" id="modal-img-next" type="button">›</button>
+
+                            <!-- Миниатюры -->
+                            <div class="product-modal__thumbs" id="modal-thumbs"></div>
                         </div>
 
+
+
+                        <!-- Инфо -->
                         <div class="product-modal__info">
                             <h2 class="product-modal__name" id="modal-product-name"></h2>
 
@@ -100,11 +111,15 @@
 
                             <div class="product-modal__badge" id="modal-product-badge"></div>
 
+                            <div class="product-modal__variants hidden" id="modal-variants"></div>
+
+                            <!-- Объём -->
                             <div class="product-modal__volume">
                                 <span class="product-modal__volume-label">Объём:</span>
                                 <span class="product-modal__volume-value" id="modal-product-volume"></span>
                             </div>
 
+                            <!-- Количество -->
                             <div class="product-modal__quantity">
                                 <span class="product-modal__quantity-label">Количество:</span>
                                 <div class="product-modal__quantity-controls">
@@ -114,10 +129,12 @@
                                 </div>
                             </div>
 
+                            <!-- Кнопка в корзину -->
                             <button class="button button--big product-modal__cart-btn" id="modal-add-to-cart" type="button">
                                 В корзину
                             </button>
 
+                            <!-- Описание -->
                             <div class="product-modal__description" id="modal-product-description"></div>
                         </div>
                     </div>
