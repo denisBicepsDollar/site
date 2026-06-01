@@ -22,7 +22,7 @@ function parsePostgresArray(val) {
 }
 
 // ── helpers ────────────────────────────────────────────────────────────────
-const NO_IMAGE_PATH = '/images/no-image.jpg'; // или какой у тебя путь к заглушке
+const NO_IMAGE_PATH = '/images/no-image.png'; // или какой у тебя путь к заглушке
 
 function mapProduct(row, variants = []) {
     const mainImage = row.variant_image || row.image || null;
