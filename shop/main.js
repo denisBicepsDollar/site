@@ -1,6 +1,6 @@
 import {initProductCards} from './shared/product-card/index.js';
 import {initProductModal} from './shared/product-modal/index.js';
-import {renderCards, renderSkeletons} from './shared/product-card/render.js';
+import {renderCards} from './shared/product-card/render.js';
 import {loadProductsData} from "./shared/product-store.js";
 
 async function renderHomePageCards(popularContainer, newContainer) {
@@ -28,10 +28,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initProductCards();
     initProductModal();
 
-    // Сразу показываем скелетоны
-    renderSkeletons(popularContainer, 5);
-    renderSkeletons(newContainer, 5);
-
-    // Загружаем данные
     renderHomePageCards(popularContainer, newContainer);
 });

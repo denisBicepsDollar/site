@@ -47,6 +47,7 @@ export function renderCards(options = {}) {
     }
 
     // Копируем массив
+
     let filtered = [...products];
 
     // 1. Фильтр по категории
@@ -95,8 +96,11 @@ export function renderCards(options = {}) {
     const shown = filtered.length;
 
     if (shown === 0) {
-        containerEl.classList.add('hidden');
+        if (containerEl && containerEl.id === 'catalog-grid') {
+            containerEl.classList.add('hidden');
+        }
         if (emptyEl) emptyEl.classList.remove('hidden');
+
         return {total, shown};
     }
     containerEl.classList.remove('hidden');
