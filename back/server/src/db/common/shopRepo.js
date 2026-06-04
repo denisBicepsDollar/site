@@ -181,6 +181,8 @@ export async function createOrder(order, items) {
         let total = Number(order.deliveryPrice || 0);
 
         for (const it of items) {
+            if (!Number.isInteger(it.quantity) || it.quantity <= 0) {
+                throw new Error('Некорректное количество товаров.');
             const p = map[it.productId];
             if (!p) throw new Error('Товар не найден: ' + it.productId);
 
