@@ -1,4 +1,9 @@
 #1
+shop/images/
+backups/
+pgdata/
+storage/
+.env
 # Зависимости
 node_modules/
 
