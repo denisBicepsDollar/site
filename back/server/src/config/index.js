@@ -1,9 +1,10 @@
 import {config as dotenvConfig} from 'dotenv';
 import path from 'path';
 
-const envPath = path.resolve(import.meta.dirname, '../../../../.env');
-
-dotenvConfig({path: envPath});
+if (process.env.NODE_ENV !== 'production') {
+    const envPath = path.resolve(import.meta.dirname, '../../../../.env');
+    dotenvConfig({path: envPath});
+}
 
 export default {
     port: process.env.PORT || 3000,
