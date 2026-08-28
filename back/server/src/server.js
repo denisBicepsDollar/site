@@ -6,7 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import config from './config/index.js';
 import errorHandler from './middleware/errorHandler.js';
-import { registerRoutes } from './routes.js';
+import {registerRoutes} from './routes.js';
 import path from 'path';
 import {fileURLToPath} from "url";
 import rateLimit from 'express-rate-limit';
@@ -18,12 +18,12 @@ async function startServer() {
 
     app.use(cors({
         origin: ['http://localhost:5173',
-                 'http://127.0.0.1:5173',
+            'http://127.0.0.1:5173',
         ],
-        credentials: true
+        credentials: true,
     }));
     app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
+    app.use(express.urlencoded({extended: true}));
 
     const shopPath = path.join(__dirname, '../../../', 'shop');
     app.use(express.static(shopPath));
@@ -42,7 +42,7 @@ async function startServer() {
     const limiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 минут
         max: 100,                  // макс запросов
-        message: { error: 'Слишком много запросов, попробуйте позже' }
+        message: {error: 'Слишком много запросов, попробуйте позже'},
     });
 
     app.use('/api/', limiter);

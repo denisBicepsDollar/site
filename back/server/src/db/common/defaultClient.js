@@ -1,14 +1,25 @@
 import pg from 'pg';
 import config from '../../config/index.js';
 
-const pool = process.env.DATABASE_URL
-    ? new pg.Pool({ connectionString: process.env.DATABASE_URL })
-    : new pg.Pool({
-        host: config.db.host,
-        port: config.db.port,
-        user: config.db.user,
-        password: config.db.password,
-        database: config.db.database,
-    });
+if (!config.db.dbConnectionString) {
+    throw new Error('Ошибка в строке подключения главной бд при создании пула');
+}
+
+const pool = new pg.Pool
+(
+    {
+        connectionString: config.db.dbConnectionString,
+    },
+);
+
+pool.on('connect', () => {
+    console.log('Открыто соединение с главной БД');
+});
+
+
+pool.on('error', (err) => {
+    console.error('Ошибка пула главной БД:', err.message);
+});
+
 
 export default pool;
