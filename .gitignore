@@ -20,7 +20,7 @@ back/Postgre/pgdata/
 *.log
 logs/
 
-# Окружение (секреты!)
+# Окружение
 .env
 .env.prod
 .env.local
@@ -30,6 +30,5 @@ logs/
 .vscode/
 .DS_Store
 
-# Если не хочешь хранить сертификаты в репозитории (опционально)
 # nginx/certs/
 nginx/certs/
