@@ -61,6 +61,14 @@ services:
       - ./nginx/www:/var/www/certbot
     networks:
       - app-net
+    entrypoint: |
+      /bin/sh -c '
+      trap exit TERM;
+      while :; do
+        certbot renew --webroot -w /var/www/certbot;
+        sleep 12h & wait $${!};
+      done;
+      '
 
   worker:
     build:
