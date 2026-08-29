@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      [ main ]
+  push:
+    branches:
+      [ main ]
+
+jobs:
+  admin_frontend:
+    name: Админ панель lint & build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: back/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: back/frontend/package-lock.json
+      - name: Установка зависимостей
+        run: npm ci
+      - name: Проверка линтером (Lint)
+        run: npm run lint
+      - name: Тестовая сборка проекта (Build)
+        run: npm run build
+
+  shop_frontend:
+    name: Фронт магазина lint & build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: shop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: shop/package-lock.json
+
+      - name: Установка зависимостей
+        run: npm ci
+
+      - name: Проверка линтером (Lint)
+        run: npm run lint
+
+  api_backend:
+    name: Апи
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: back/server/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: back/server/package-lock.json
+
+      - name: Установка зависимостей
+        run: npm ci
+
+      - name: Проверка линтером (Lint)
+        run: npm run lint
+
+  docker_api:
+    name: Докерфайл апи
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Билд апи образа
+        run: docker build -t docker_api_test back/server
+
+  nginx:
+    name: Nginx
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Сборка и автоматический тест конфига
+        run: docker build -t nginx_test nginx
+  
+  docker_compose:
+    name: Докер
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Подготовка файла окружения (.env)
+        run: cp .env.dev .env
+
+      - name: Проверка сборки Docker Compose
+        run: docker compose build
+  deploy:
+    name: Деплой
+    runs-on: ubuntu-latest
+
+    # КЛЮЧЕВОЙ МОМЕНТ: Ждем успешного завершения ВСЕХ проверок
+    needs: [ admin_frontend, shop_frontend, api_backend, docker_api, nginx, docker_compose ]
+
+    # ДОПОЛНИТЕЛЬНОЕ УСЛОВИЕ: Физически отправляем код на сервер ТОЛЬКО при пуше в main.
+    # При обычном Pull Request (до слияния) деплой запускаться НЕ БУДЕТ.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Выполнить деплой-скрипт на сервере
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: bash ~/zelenyeusy/deploy.sh

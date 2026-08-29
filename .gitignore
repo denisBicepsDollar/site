@@ -21,7 +21,7 @@ logs/
 # Окружение
 .env
 .env.prod
-.env.local
+
 
 # IDE
 .idea/
