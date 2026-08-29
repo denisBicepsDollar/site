@@ -29,9 +29,9 @@ async function handleResponse(res) {
     let json;
     try {
         json = text ? JSON.parse(text) : {};
-    } catch (e) {
+    } catch {
         /* Если парсинг не удался, оборачиваем текст в объект */
-        json = { raw: text };
+        json = {raw: text};
     }
 
     /* Проверяем успешность ответа */
@@ -68,7 +68,7 @@ export async function getListTables() {
  */
 export async function deleteTable(tableName) {
     const res = await fetch(`${BASE}/tables/${encodeURIComponent(tableName)}`, {
-        method: 'DELETE'
+        method: 'DELETE',
     });
     return handleResponse(res);
 }
@@ -83,12 +83,12 @@ export async function deleteTable(tableName) {
  * @param {Object} options - Дополнительные опции
  * @param {string} options.base - Альтернативный базовый URL (по умолчанию BASE)
  */
-export async function postCreateTable({ tableName, columns }, { base = BASE } = {}) {
-    const body = { params: { tableName, columns } };
+export async function postCreateTable({tableName, columns}, {base = BASE} = {}) {
+    const body = {params: {tableName, columns}};
 
     const res = await fetch(`${base}/tables`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),
     });
 
@@ -120,7 +120,7 @@ export async function getTable(tableName) {
 export async function postCreateRow(tableName, payload) {
     const res = await fetch(`${BASE}/tables/${encodeURIComponent(tableName)}/rows`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(payload),
     });
     return handleResponse(res);
@@ -137,7 +137,7 @@ export async function postCreateRow(tableName, payload) {
 export async function deleteRow(tableName, filterColumn, filterValue) {
     const res = await fetch(
         `${BASE}/tables/${encodeURIComponent(tableName)}/rows/${encodeURIComponent(filterColumn)}/${encodeURIComponent(filterValue)}`,
-        { method: 'DELETE' }
+        {method: 'DELETE'},
     );
     return handleResponse(res);
 }
@@ -156,9 +156,9 @@ export async function putReplaceRow(tableName, filterColumn, filterValue, data) 
         `${BASE}/tables/${encodeURIComponent(tableName)}/rows/${encodeURIComponent(filterColumn)}/${encodeURIComponent(filterValue)}`,
         {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data),
+        },
     );
     return handleResponse(res);
 }
@@ -169,7 +169,7 @@ export async function uploadImage(file) {
     formData.append('image', file);
     const res = await fetch('/api/upload', {
         method: 'POST',
-        body: formData  // без Content-Type — браузер сам поставит multipart
+        body: formData,  // без Content-Type — браузер сам поставит multipart
     });
     return handleResponse(res);
 }
@@ -188,8 +188,8 @@ export async function uploadImage(file) {
 export async function postCreateReport(tableName, payload = {}) {
     const res = await fetch(`${BASE}/tables/${encodeURIComponent(tableName)}/reports`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload),
     });
     return handleResponse(res);
 }
@@ -214,7 +214,7 @@ export async function getListReports(tableName) {
  */
 export async function getStatusReport(tableName, reportId) {
     const res = await fetch(
-        `${BASE}/tables/${encodeURIComponent(tableName)}/reports/${encodeURIComponent(reportId)}/status`
+        `${BASE}/tables/${encodeURIComponent(tableName)}/reports/${encodeURIComponent(reportId)}/status`,
     );
     return handleResponse(res);
 }
@@ -231,7 +231,7 @@ export async function getStatusReport(tableName, reportId) {
  */
 export async function getDownloadReport(tableName, reportId) {
     const res = await fetch(
-        `${BASE}/tables/${encodeURIComponent(tableName)}/reports/${encodeURIComponent(reportId)}/download`
+        `${BASE}/tables/${encodeURIComponent(tableName)}/reports/${encodeURIComponent(reportId)}/download`,
     );
 
     /* Проверяем успешность ответа */
@@ -254,7 +254,7 @@ export async function getDownloadReport(tableName, reportId) {
 export async function deleteReport(tableName, reportId) {
     const res = await fetch(
         `${BASE}/tables/${encodeURIComponent(tableName)}/reports/${encodeURIComponent(reportId)}`,
-        { method: 'DELETE' }
+        {method: 'DELETE'},
     );
     return handleResponse(res);
 }
