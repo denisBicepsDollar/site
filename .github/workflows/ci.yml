@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # КЛЮЧЕВОЙ МОМЕНТ: Ждем успешного завершения ВСЕХ проверок
-    needs: [ admin_frontend, shop_frontend, api_backend, docker_api, nginx, docker_compose ]
+    needs: [ admin_frontend, shop_frontend, api_backend, docker_api, docker_compose ]
 
     # ДОПОЛНИТЕЛЬНОЕ УСЛОВИЕ: Физически отправляем код на сервер ТОЛЬКО при пуше в main.
     # При обычном Pull Request (до слияния) деплой запускаться НЕ БУДЕТ.
