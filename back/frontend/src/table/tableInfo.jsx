@@ -1,11 +1,11 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, {useState, useMemo, useEffect} from 'react';
 import '../index.css';
 import * as api from '../api';
 import SidebarTable from "../sidebars/sideBarTable.jsx";
-import * as form from "../addForm/addFormRow.jsx";
+
 
 // Основной компонент для отображения и управления табличными данными
-export default function TableInfo({ tableInfo }) {
+export default function TableInfo({tableInfo}) {
     // Извлечение информации о колонках из различных возможных структур данных
     // Колонки для форм (без служебного поля created_at)
     const columns = tableInfo?.rows?.data?.columns || tableInfo?.rows?.columns || [];
@@ -41,7 +41,7 @@ export default function TableInfo({ tableInfo }) {
 
     // Добавление уникального локального идентификатора к каждой строке для отслеживания
     const initialData = useMemo(() => {
-        return initialDataRaw.map((r, idx) => ({ ...r, _localId: idx }));
+        return initialDataRaw.map((r, idx) => ({...r, _localId: idx}));
     }, [initialDataRaw]);
 
     // Получение имени таблицы из объекта с информацией
@@ -73,16 +73,16 @@ export default function TableInfo({ tableInfo }) {
     // Функция определения фильтра для идентификации строки при запросе к API
     function getFilterForRow(row, columnsList) {
         // Приоритет 1: использовать id если существует
-        if (row.id !== undefined) return { col: 'id', val: row.id };
+        if (row.id !== undefined) return {col: 'id', val: row.id};
         // Приоритет 2: найти первую непустую колонку для фильтрации
         for (const c of columnsList) {
             const name = c.column_name;
             if (row[name] !== undefined && row[name] !== null && row[name] !== '') {
-                return { col: name, val: row[name] };
+                return {col: name, val: row[name]};
             }
         }
         // Приоритет 3: использовать локальный идентификатор как последний вариант
-        return { col: 'id', val: row._localId };
+        return {col: 'id', val: row._localId};
     }
 
     // Обработчик удаления строки из таблицы
@@ -94,7 +94,7 @@ export default function TableInfo({ tableInfo }) {
         const rowToDelete = data.find(r => r._localId === localId);
         if (!rowToDelete) return alert('Строка не найдена');
         // Определение фильтра для API запроса
-        const { col: filterColumn, val: filterValue } = getFilterForRow(rowToDelete, columns);
+        const {col: filterColumn, val: filterValue} = getFilterForRow(rowToDelete, columns);
 
         try {
             // Отправка запроса на удаление на сервер
@@ -102,7 +102,7 @@ export default function TableInfo({ tableInfo }) {
             // Обновление локального состояния: удаление строки и переиндексация
             setData(prev => prev
                 .filter(r => r._localId !== localId)
-                .map((r, i) => ({ ...r, _localId: i }))
+                .map((r, i) => ({...r, _localId: i})),
             );
         } catch (err) {
             // Логирование ошибки и оповещение пользователя
@@ -118,16 +118,16 @@ export default function TableInfo({ tableInfo }) {
         // Вычисление следующего локального идентификатора
         const nextId = data.length ? Math.max(...data.map(d => d._localId)) + 1 : 0;
         // Добавление локального идентификатора к новой строке
-        const withLocal = { ...serverRow, _localId: nextId };
+        const withLocal = {...serverRow, _localId: nextId};
         // Обновление состояния и переиндексация локальных идентификаторов
-        setData(prev => [...prev, withLocal].map((r, i) => ({ ...r, _localId: i })));
+        setData(prev => [...prev, withLocal].map((r, i) => ({...r, _localId: i})));
     };
 
     // Открытие модального окна редактирования для выбранной строки
     const openEdit = (row) => {
         setEditingRow(row);
         // Создание копии строки для редактирования
-        setEditingData({ ...row });
+        setEditingData({...row});
     };
 
     // Закрытие модального окна редактирования
@@ -137,15 +137,13 @@ export default function TableInfo({ tableInfo }) {
     };
 
 
-
-
     // Загрузка одного файла для поля image
     const handleImageUpload = async (file) => {
         if (!file) return;
         setUploading(true);
         try {
             const data = await api.uploadImage(file);
-            setEditingData(prev => ({ ...prev, image: data.path }));
+            setEditingData(prev => ({...prev, image: data.path}));
         } catch (e) {
             alert('Ошибка загрузки: ' + e.message);
         } finally {
@@ -168,7 +166,7 @@ export default function TableInfo({ tableInfo }) {
                 const existing = Array.isArray(prev.images)
                     ? prev.images
                     : (prev.images ? String(prev.images).replace(/^\{|\}$/g, '').split(',').map(s => s.trim()).filter(Boolean) : []);
-                return { ...prev, images: [...existing, ...paths] };
+                return {...prev, images: [...existing, ...paths]};
             });
         } catch (e) {
             alert('Ошибка загрузки: ' + e.message);
@@ -177,18 +175,12 @@ export default function TableInfo({ tableInfo }) {
         }
     };
 
-// Удалить одно фото из images
-    const removeImage = (index) => {
-        setEditingData(prev => {
-            const existing = Array.isArray(prev.images) ? prev.images : [];
-            return { ...prev, images: existing.filter((_, i) => i !== index) };
-        });
-    };
+
     // Обработчик отправки отредактированных данных на сервер
     const submitEdit = async () => {
         if (!editingRow) return;
         // Определение фильтра для идентификации строки при обновлении
-        const { col: filterColumn, val: filterValue } = getFilterForRow(editingRow, columns);
+        const {col: filterColumn, val: filterValue} = getFilterForRow(editingRow, columns);
 
         // Построение payload содержащего только реальные колонки таблицы
         const payload = {};
@@ -211,7 +203,10 @@ export default function TableInfo({ tableInfo }) {
             // Извлечение обновленных данных из ответа сервера
             const updated = (res && res.data && res.data[0]) ? res.data[0] : payload;
             // Обновление локального состояния с новыми данными
-            setData(prev => prev.map(r => (r._localId === editingRow._localId ? { ...updated, _localId: r._localId } : r)));
+            setData(prev => prev.map(r => (r._localId === editingRow._localId ? {
+                ...updated,
+                _localId: r._localId,
+            } : r)));
             // Закрытие модального окна после успешного обновления
             closeEdit();
         } catch (err) {
@@ -245,7 +240,9 @@ export default function TableInfo({ tableInfo }) {
     };
 
     // Загрузка отчетов при монтировании компонента или изменении имени таблицы
-    useEffect(() => { loadReports(); }, [tableName]);
+    useEffect(() => {
+        loadReports();
+    }, [tableName]);
 
     // Функция удаления отчета с сервера
     const removeReport = async (id) => {
@@ -288,7 +285,10 @@ export default function TableInfo({ tableInfo }) {
             if (ct.includes('application/json')) {
                 const j = await res.json();
                 // Если JSON содержит URL, открыть его в новой вкладке
-                if (j.url) { window.open(j.url, '_blank'); return; }
+                if (j.url) {
+                    window.open(j.url, '_blank');
+                    return;
+                }
                 // Иначе отобразить JSON ответ
                 alert('Ответ JSON: ' + JSON.stringify(j));
                 return;
@@ -326,51 +326,96 @@ export default function TableInfo({ tableInfo }) {
         <>
             <h2 className="header-title">{tableName}</h2>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', padding: '12px 0' }}>
+            <div style={{display: 'flex', flexDirection: 'column', gap: '24px', padding: '12px 0'}}>
 
                 {/* КОЛОНКИ */}
-                <div className="body-content" style={{ gap: '0' }}>
+                <div className="body-content" style={{gap: '0'}}>
                     {/* Заголовок секции + кнопка действий над таблицей */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(0,0,0,0.08)', paddingBottom: '10px', marginBottom: '12px' }}>
-                        <h3 className="body-content-title" style={{ padding: 0, margin: 0, background: 'none', border: 'none', textAlign: 'left' }}>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderBottom: '1px solid rgba(0,0,0,0.08)',
+                        paddingBottom: '10px',
+                        marginBottom: '12px',
+                    }}>
+                        <h3 className="body-content-title"
+                            style={{padding: 0, margin: 0, background: 'none', border: 'none', textAlign: 'left'}}>
                             Колонки
                         </h3>
                         {/* Кнопка сайдбара — перезагружает отчёты после действия */}
                         <SidebarTable
                             tableName={tableName}
                             disabled={loading}
-                            onClickTable={() => {}}
+                            onClickTable={() => {
+                            }}
                             onActionComplete={async () => {
                                 setReportsLoading(true);
-                                try { await loadReports(tableName); }
-                                finally { setReportsLoading(false); }
+                                try {
+                                    await loadReports(tableName);
+                                } finally {
+                                    setReportsLoading(false);
+                                }
                             }}
                         />
                     </div>
 
                     {/* Таблица колонок с их типами, nullable и дефолтными значениями */}
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Monaco, monospace', fontSize: '14px' }}>
+                    <div style={{overflowX: 'auto'}}>
+                        <table style={{
+                            width: '100%',
+                            borderCollapse: 'collapse',
+                            fontFamily: 'Monaco, monospace',
+                            fontSize: '14px',
+                        }}>
                             <thead>
-                            <tr style={{ background: '#f3f4f6' }}>
+                            <tr style={{background: '#f3f4f6'}}>
                                 {['Имя', 'Тип', 'Nullable', 'По умолчанию'].map(h => (
-                                    <th key={h} style={{ padding: '10px 14px', textAlign: 'left', borderBottom: '2px solid rgba(0,0,0,0.1)', fontFamily: 'Helvetica Neue, Helvetica', fontSize: '13px', color: '#666', fontWeight: 600 }}>{h}</th>
+                                    <th key={h} style={{
+                                        padding: '10px 14px',
+                                        textAlign: 'left',
+                                        borderBottom: '2px solid rgba(0,0,0,0.1)',
+                                        fontFamily: 'Helvetica Neue, Helvetica',
+                                        fontSize: '13px',
+                                        color: '#666',
+                                        fontWeight: 600,
+                                    }}>{h}</th>
                                 ))}
                             </tr>
                             </thead>
                             <tbody>
                             {columns.map((col, i) => (
-                                <tr key={col.column_name} style={{ background: i % 2 === 0 ? '#fff' : '#f9fafb' }}>
-                                    <td style={{ padding: '9px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)', fontWeight: 600, color: '#0062ca' }}>{col.column_name}</td>
-                                    <td style={{ padding: '9px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)', color: '#555' }}>{col.data_type}</td>
+                                <tr key={col.column_name} style={{background: i % 2 === 0 ? '#fff' : '#f9fafb'}}>
+                                    <td style={{
+                                        padding: '9px 14px',
+                                        borderBottom: '1px solid rgba(0,0,0,0.06)',
+                                        fontWeight: 600,
+                                        color: '#0062ca',
+                                    }}>{col.column_name}</td>
+                                    <td style={{
+                                        padding: '9px 14px',
+                                        borderBottom: '1px solid rgba(0,0,0,0.06)',
+                                        color: '#555',
+                                    }}>{col.data_type}</td>
                                     {/* Бейдж: зелёный если nullable, красный если нет */}
-                                    <td style={{ padding: '9px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                                    <span style={{ padding: '2px 8px', borderRadius: '99px', fontSize: '12px', background: col.is_nullable === 'YES' ? '#d1fae5' : '#ffe6ed', color: col.is_nullable === 'YES' ? '#047857' : '#d63855', fontWeight: 600 }}>
+                                    <td style={{padding: '9px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)'}}>
+                                    <span style={{
+                                        padding: '2px 8px',
+                                        borderRadius: '99px',
+                                        fontSize: '12px',
+                                        background: col.is_nullable === 'YES' ? '#d1fae5' : '#ffe6ed',
+                                        color: col.is_nullable === 'YES' ? '#047857' : '#d63855',
+                                        fontWeight: 600,
+                                    }}>
                                         {col.is_nullable === 'YES' ? 'Да' : 'Нет'}
                                     </span>
                                     </td>
                                     {/* Если дефолтного значения нет — показываем тире */}
-                                    <td style={{ padding: '9px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)', color: '#777' }}>{col.column_default ?? '—'}</td>
+                                    <td style={{
+                                        padding: '9px 14px',
+                                        borderBottom: '1px solid rgba(0,0,0,0.06)',
+                                        color: '#777',
+                                    }}>{col.column_default ?? '—'}</td>
                                 </tr>
                             ))}
                             </tbody>
@@ -379,49 +424,94 @@ export default function TableInfo({ tableInfo }) {
                 </div>
 
                 {/* ДАННЫЕ */}
-                <div className="body-content" style={{ gap: '0' }}>
-                    <h3 className="body-content-title" style={{ marginBottom: '12px' }}>Данные</h3>
+                <div className="body-content" style={{gap: '0'}}>
+                    <h3 className="body-content-title" style={{marginBottom: '12px'}}>Данные</h3>
 
                     {/* Если данных нет — сразу показываем форму добавления */}
                     {data.length === 0 ? (
                         <form.AddFormRow
                             tableName={tableName}
-                            cols={columnsForForm.map(c => ({ name: c.column_name, type: c.data_type, nullable: c.is_nullable === 'YES', default: c.column_default ?? '' }))}
+                            cols={columnsForForm.map(c => ({
+                                name: c.column_name,
+                                type: c.data_type,
+                                nullable: c.is_nullable === 'YES',
+                                default: c.column_default ?? '',
+                            }))}
                             onCreate={handleCreate}
                         />
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
                             {/* Таблица строк с кнопками редактирования и удаления */}
                             <div style={{
                                 overflowX: 'auto',
                                 overflowY: 'auto',
                                 maxHeight: 'calc(100vh - 200px)',
                                 borderRadius: '8px',
-                                border: '1px solid rgba(0,0,0,0.1)'
+                                border: '1px solid rgba(0,0,0,0.1)',
                             }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', fontFamily: 'Monaco, monospace' }}>
+                                <table style={{
+                                    width: '100%',
+                                    borderCollapse: 'collapse',
+                                    fontSize: '13px',
+                                    fontFamily: 'Monaco, monospace',
+                                }}>
                                     <thead>
-                                    <tr style={{ background: '#f3f4f6' }}>
+                                    <tr style={{background: '#f3f4f6'}}>
                                         {columnsForForm.map(col => (
-                                            <th key={col.column_name} style={{ padding: '10px 14px', textAlign: 'left', borderBottom: '2px solid rgba(0,0,0,0.1)', fontFamily: 'Helvetica Neue', fontSize: '13px', color: '#666', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                            <th key={col.column_name} style={{
+                                                padding: '10px 14px',
+                                                textAlign: 'left',
+                                                borderBottom: '2px solid rgba(0,0,0,0.1)',
+                                                fontFamily: 'Helvetica Neue',
+                                                fontSize: '13px',
+                                                color: '#666',
+                                                fontWeight: 600,
+                                                whiteSpace: 'nowrap',
+                                            }}>
                                                 {col.column_name}
                                             </th>
                                         ))}
-                                        <th style={{ padding: '10px 14px', textAlign: 'left', borderBottom: '2px solid rgba(0,0,0,0.1)', fontFamily: 'Helvetica Neue', fontSize: '13px', color: '#666', fontWeight: 600 }}>Действия</th>
+                                        <th style={{
+                                            padding: '10px 14px',
+                                            textAlign: 'left',
+                                            borderBottom: '2px solid rgba(0,0,0,0.1)',
+                                            fontFamily: 'Helvetica Neue',
+                                            fontSize: '13px',
+                                            color: '#666',
+                                            fontWeight: 600,
+                                        }}>Действия
+                                        </th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {data.map((row, i) => (
-                                        <tr key={row._localId} style={{ background: i % 2 === 0 ? '#fff' : '#f9fafb' }}>
+                                        <tr key={row._localId} style={{background: i % 2 === 0 ? '#fff' : '#f9fafb'}}>
                                             {/* Ячейки строки — timestamp рендерится мельче */}
                                             {columnsForForm.map(col => (
-                                                <td key={col.column_name} style={{ padding: '8px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: col.data_type.includes('timestamp') ? '12px' : '13px', color: '#333' }}>
+                                                <td key={col.column_name} style={{
+                                                    padding: '8px 14px',
+                                                    borderBottom: '1px solid rgba(0,0,0,0.06)',
+                                                    maxWidth: '200px',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
+                                                    fontSize: col.data_type.includes('timestamp') ? '12px' : '13px',
+                                                    color: '#333',
+                                                }}>
                                                     {formatVal(row[col.column_name])}
                                                 </td>
                                             ))}
-                                            <td style={{ padding: '8px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)', whiteSpace: 'nowrap' }}>
-                                                <button type="button" onClick={() => openEdit(row)} className="btn-warning">Заменить</button>
-                                                <button type="button" onClick={() => handleDelete(row._localId)} className="btn-danger">Удалить</button>
+                                            <td style={{
+                                                padding: '8px 14px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.06)',
+                                                whiteSpace: 'nowrap',
+                                            }}>
+                                                <button type="button" onClick={() => openEdit(row)}
+                                                        className="btn-warning">Заменить
+                                                </button>
+                                                <button type="button" onClick={() => handleDelete(row._localId)}
+                                                        className="btn-danger">Удалить
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
@@ -431,7 +521,12 @@ export default function TableInfo({ tableInfo }) {
                             {/* Форма добавления новой строки под таблицей */}
                             <form.AddFormRow
                                 tableName={tableName}
-                                cols={columnsForForm.map(c => ({ name: c.column_name, type: c.data_type, nullable: c.is_nullable === 'YES', default: c.column_default ?? '' }))}
+                                cols={columnsForForm.map(c => ({
+                                    name: c.column_name,
+                                    type: c.data_type,
+                                    nullable: c.is_nullable === 'YES',
+                                    default: c.column_default ?? '',
+                                }))}
                                 onCreate={handleCreate}
                             />
                         </div>
@@ -439,48 +534,104 @@ export default function TableInfo({ tableInfo }) {
                 </div>
 
                 {/* ОТЧЁТЫ */}
-                <div className="body-content" style={{ gap: '0' }}>
-                    <h3 className="body-content-title" style={{ marginBottom: '12px' }}>Отчёты</h3>
+                <div className="body-content" style={{gap: '0'}}>
+                    <h3 className="body-content-title" style={{marginBottom: '12px'}}>Отчёты</h3>
 
                     {/* Спиннер на время загрузки отчётов */}
                     {reportsLoading ? (
-                        <div style={{ padding: '20px', textAlign: 'center', color: '#777', fontFamily: 'Helvetica Neue' }}>Загрузка...</div>
+                        <div style={{
+                            padding: '20px',
+                            textAlign: 'center',
+                            color: '#777',
+                            fontFamily: 'Helvetica Neue',
+                        }}>Загрузка...</div>
                     ) : (
-                        <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                        <div style={{overflowX: 'auto', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)'}}>
+                            <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '13px'}}>
                                 <thead>
-                                <tr style={{ background: '#f3f4f6' }}>
+                                <tr style={{background: '#f3f4f6'}}>
                                     {['ID', 'Заголовок', 'Статус', 'Создан', 'Действия'].map(h => (
-                                        <th key={h} style={{ padding: '10px 14px', textAlign: 'left', borderBottom: '2px solid rgba(0,0,0,0.1)', fontFamily: 'Helvetica Neue', fontSize: '13px', color: '#666', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</th>
+                                        <th key={h} style={{
+                                            padding: '10px 14px',
+                                            textAlign: 'left',
+                                            borderBottom: '2px solid rgba(0,0,0,0.1)',
+                                            fontFamily: 'Helvetica Neue',
+                                            fontSize: '13px',
+                                            color: '#666',
+                                            fontWeight: 600,
+                                            whiteSpace: 'nowrap',
+                                        }}>{h}</th>
                                     ))}
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {reports.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} style={{ padding: '20px', textAlign: 'center', color: '#777', fontFamily: 'Helvetica Neue' }}>Нет отчётов</td>
+                                        <td colSpan={5} style={{
+                                            padding: '20px',
+                                            textAlign: 'center',
+                                            color: '#777',
+                                            fontFamily: 'Helvetica Neue',
+                                        }}>Нет отчётов
+                                        </td>
                                     </tr>
                                 ) : (
                                     reports.map((r, i) => (
-                                        <tr key={r.id ?? r.reportId} style={{ background: i % 2 === 0 ? '#fff' : '#f9fafb' }}>
-                                            <td style={{ padding: '8px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)', fontFamily: 'Monaco', color: '#0062ca', fontWeight: 600 }}>{r.id ?? r.reportId}</td>
-                                            <td style={{ padding: '8px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.title ?? r.name ?? '—'}</td>
+                                        <tr key={r.id ?? r.reportId}
+                                            style={{background: i % 2 === 0 ? '#fff' : '#f9fafb'}}>
+                                            <td style={{
+                                                padding: '8px 14px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.06)',
+                                                fontFamily: 'Monaco',
+                                                color: '#0062ca',
+                                                fontWeight: 600,
+                                            }}>{r.id ?? r.reportId}</td>
+                                            <td style={{
+                                                padding: '8px 14px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.06)',
+                                                maxWidth: '200px',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                            }}>{r.title ?? r.name ?? '—'}</td>
                                             {/* Цветной бейдж статуса: зелёный/красный/жёлтый */}
-                                            <td style={{ padding: '8px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                                            <td style={{
+                                                padding: '8px 14px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.06)',
+                                            }}>
                                             <span style={{
-                                                padding: '2px 8px', borderRadius: '99px', fontSize: '12px', fontWeight: 600,
+                                                padding: '2px 8px',
+                                                borderRadius: '99px',
+                                                fontSize: '12px',
+                                                fontWeight: 600,
                                                 background: r.status === 'done' || r.status === 'completed' ? '#d1fae5' : r.status === 'error' ? '#ffe6ed' : '#fef3c7',
-                                                color: r.status === 'done' || r.status === 'completed' ? '#047857' : r.status === 'error' ? '#d63855' : '#d97706'
+                                                color: r.status === 'done' || r.status === 'completed' ? '#047857' : r.status === 'error' ? '#d63855' : '#d97706',
                                             }}>
                                                 {r.status ?? r.state ?? '—'}
                                             </span>
                                             </td>
                                             {/* Дата создания — поддерживаем несколько вариантов поля */}
-                                            <td style={{ padding: '8px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)', fontFamily: 'Monaco', fontSize: '12px', color: '#777' }}>{formatVal(r.createdAt ?? r.created_at ?? r.created ?? null)}</td>
-                                            <td style={{ padding: '8px 14px', borderBottom: '1px solid rgba(0,0,0,0.06)', whiteSpace: 'nowrap' }}>
-                                                <button type="button" className="btn-accent2" onClick={() => downloadReport(r.id ?? r.reportId)}>Скачать</button>
-                                                <button type="button" className="btn-outline" onClick={() => checkStatus(r.id ?? r.reportId)}>Статус</button>
-                                                <button type="button" className="btn-danger" onClick={() => removeReport(r.id ?? r.reportId)}>Удалить</button>
+                                            <td style={{
+                                                padding: '8px 14px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.06)',
+                                                fontFamily: 'Monaco',
+                                                fontSize: '12px',
+                                                color: '#777',
+                                            }}>{formatVal(r.createdAt ?? r.created_at ?? r.created ?? null)}</td>
+                                            <td style={{
+                                                padding: '8px 14px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.06)',
+                                                whiteSpace: 'nowrap',
+                                            }}>
+                                                <button type="button" className="btn-accent2"
+                                                        onClick={() => downloadReport(r.id ?? r.reportId)}>Скачать
+                                                </button>
+                                                <button type="button" className="btn-outline"
+                                                        onClick={() => checkStatus(r.id ?? r.reportId)}>Статус
+                                                </button>
+                                                <button type="button" className="btn-danger"
+                                                        onClick={() => removeReport(r.id ?? r.reportId)}>Удалить
+                                                </button>
                                             </td>
                                         </tr>
                                     ))
@@ -495,67 +646,128 @@ export default function TableInfo({ tableInfo }) {
             {/* МОДАЛКА РЕДАКТИРОВАНИЯ строки */}
             {editingRow && (
                 /* Полупрозрачный оверлей на весь экран */
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-                    <div style={{ background: '#fff', borderRadius: '12px', padding: '24px', width: '480px', maxWidth: '90vw', maxHeight: '80vh', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
-                        <h4 style={{ margin: '0 0 20px', fontFamily: 'Helvetica Neue', fontSize: '18px', color: '#333' }}>Редактировать строку</h4>
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    background: 'rgba(0,0,0,0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000,
+                }}>
+                    <div style={{
+                        background: '#fff',
+                        borderRadius: '12px',
+                        padding: '24px',
+                        width: '480px',
+                        maxWidth: '90vw',
+                        maxHeight: '80vh',
+                        overflowY: 'auto',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                    }}>
+                        <h4 style={{
+                            margin: '0 0 20px',
+                            fontFamily: 'Helvetica Neue',
+                            fontSize: '18px',
+                            color: '#333',
+                        }}>Редактировать строку</h4>
                         {/* Инпут для каждой колонки редактируемой строки */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
                             {columnsForForm.map(col => (
                                 <div key={col.column_name}>
-                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: 600, color: '#666', fontFamily: 'Helvetica Neue' }}>{col.column_name}</label>
+                                    <label style={{
+                                        display: 'block',
+                                        marginBottom: '4px',
+                                        fontSize: '13px',
+                                        fontWeight: 600,
+                                        color: '#666',
+                                        fontFamily: 'Helvetica Neue',
+                                    }}>{col.column_name}</label>
                                     <input
-                                        style={{ width: '100%', padding: '8px 12px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: '8px', fontSize: '14px', fontFamily: 'Monaco', background: '#fafafa', boxSizing: 'border-box' }}
+                                        style={{
+                                            width: '100%',
+                                            padding: '8px 12px',
+                                            border: '1px solid rgba(0,0,0,0.15)',
+                                            borderRadius: '8px',
+                                            fontSize: '14px',
+                                            fontFamily: 'Monaco',
+                                            background: '#fafafa',
+                                            boxSizing: 'border-box',
+                                        }}
                                         value={editingData[col.column_name] ?? ''}
-                                        onChange={e => setEditingData(prev => ({ ...prev, [col.column_name]: e.target.value }))}
+                                        onChange={e => setEditingData(prev => ({
+                                            ...prev,
+                                            [col.column_name]: e.target.value,
+                                        }))}
                                     />
                                     {/* Загрузка картинки для поля image */}
                                     {col.column_name === 'image' && (
-                                        <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <div style={{marginTop: 6, display: 'flex', alignItems: 'center', gap: 8}}>
                                             <input
                                                 type="file"
                                                 accept="image/jpeg,image/png,image/webp,image/svg+xml"
                                                 onChange={e => handleImageUpload(e.target.files[0])}
                                                 disabled={uploading}
-                                                style={{ fontSize: 12 }}
+                                                style={{fontSize: 12}}
                                             />
-                                            {uploading && <span style={{ fontSize: 12, color: '#777' }}>Загружаю...</span>}
+                                            {uploading &&
+                                                <span style={{fontSize: 12, color: '#777'}}>Загружаю...</span>}
                                         </div>
                                     )}
                                     {/* Загрузка дополнительных фото */}
                                     {col.column_name === 'images' && (
-                                        <div style={{ marginTop: 6 }}>
+                                        <div style={{marginTop: 6}}>
                                             <input
                                                 type="file"
                                                 accept="image/jpeg,image/png,image/webp,image/svg+xml"
                                                 multiple
                                                 onChange={e => handleImagesUpload(Array.from(e.target.files))}
                                                 disabled={uploading}
-                                                style={{ fontSize: 12 }}
+                                                style={{fontSize: 12}}
                                             />
-                                            {uploading && <span style={{ fontSize: 12, color: '#777' }}>Загружаю...</span>}
-                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+                                            {uploading &&
+                                                <span style={{fontSize: 12, color: '#777'}}>Загружаю...</span>}
+                                            <div style={{display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8}}>
                                                 {(Array.isArray(editingData.images)
                                                         ? editingData.images
                                                         : String(editingData.images || '').replace(/^\{|\}$/g, '').split(',').map(s => s.trim()).filter(Boolean)
                                                 ).map((src, i) => (
-                                                    <div key={i} style={{ position: 'relative' }}>
+                                                    <div key={i} style={{position: 'relative'}}>
                                                         <img src={src} alt=""
-                                                             style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 4 }}
+                                                             style={{
+                                                                 width: 56,
+                                                                 height: 56,
+                                                                 objectFit: 'cover',
+                                                                 borderRadius: 4,
+                                                             }}
                                                         />
                                                         <button
                                                             type="button"
                                                             onClick={() => {
                                                                 const imgs = Array.isArray(editingData.images) ? editingData.images : [];
-                                                                setEditingData(prev => ({ ...prev, images: imgs.filter((_, idx) => idx !== i) }));
+                                                                setEditingData(prev => ({
+                                                                    ...prev,
+                                                                    images: imgs.filter((_, idx) => idx !== i),
+                                                                }));
                                                             }}
                                                             style={{
-                                                                position: 'absolute', top: -5, right: -5,
-                                                                width: 16, height: 16, borderRadius: '50%',
-                                                                background: '#e53e3e', color: '#fff',
-                                                                border: 'none', cursor: 'pointer', fontSize: 10,
-                                                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                                position: 'absolute',
+                                                                top: -5,
+                                                                right: -5,
+                                                                width: 16,
+                                                                height: 16,
+                                                                borderRadius: '50%',
+                                                                background: '#e53e3e',
+                                                                color: '#fff',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                fontSize: 10,
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
                                                             }}
-                                                        >✕</button>
+                                                        >✕
+                                                        </button>
                                                     </div>
                                                 ))}
                                             </div>
@@ -565,7 +777,7 @@ export default function TableInfo({ tableInfo }) {
                             ))}
                         </div>
                         {/* Кнопки отмены и сохранения */}
-                        <div style={{ marginTop: '20px', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                        <div style={{marginTop: '20px', display: 'flex', gap: '8px', justifyContent: 'flex-end'}}>
                             <button type="button" className="btn-danger" onClick={closeEdit}>Отмена</button>
                             <button type="button" className="btn-accent" onClick={submitEdit}>Сохранить</button>
                         </div>

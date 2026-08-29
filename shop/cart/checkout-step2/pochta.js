@@ -1,9 +1,9 @@
-import { DEFAULT_CART_WEIGHT, DEFAULT_GOODS_COST } from './constants.js';
-import { els } from './elements.js';
-import { state } from './state.js';
-import { show, setHTML, clearHTML } from '../utils.js';
-import { callbackAddress } from './pochta-widget.js';
-import { calculateAllPochtaOfficesTariffs } from './pochta-api.js';
+import {DEFAULT_CART_WEIGHT, DEFAULT_GOODS_COST} from './constants.js';
+import {els} from './elements.js';
+import {state} from './state.js';
+import {show, clearHTML} from '../utils.js';
+import {callbackAddress} from './pochta-widget.js';
+import {calculateAllPochtaOfficesTariffs} from './pochta-api.js';
 import {
     formatPochtaResults,
     formatPochtaMinPrice,
@@ -97,6 +97,6 @@ export function initPochtaWidget(address, goodsCost = DEFAULT_GOODS_COST) {
         containerId: 'ecom-widget',
         callbackFunction: callbackAddress,
         start_location: address,
-        sumoc: goodsCost
+        sumoc: goodsCost,
     });
 }

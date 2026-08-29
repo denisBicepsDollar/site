@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import * as api from "../api.js";
-import {uploadImage} from "../api.js";
 
-export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = [] }) {
+
+export function AddFormRow({tableName = '', disabled = false, onCreate, cols = []}) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [values, setValues] = useState({});
@@ -17,9 +17,13 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
         setOpen(true);
     };
 
-    const closeModal = () => { if (loading) return; setOpen(false); setError(null); };
+    const closeModal = () => {
+        if (loading) return;
+        setOpen(false);
+        setError(null);
+    };
 
-    const updateValue = (key, val) => setValues(v => ({ ...v, [key]: val }));
+    const updateValue = (key, val) => setValues(v => ({...v, [key]: val}));
 
     const parseValueByType = (type, raw) => {
         const s = typeof raw === 'string' ? raw.trim() : raw;
@@ -27,25 +31,28 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
         if (s === '') return s;
 
         try {
-            if (type === 'json' || (typeof s === 'string' && ((s.startsWith('{') && s.endsWith('}')) || (s.startsWith('[') && s.endsWith(']'))))) return JSON.parse(s);
-        } catch {}
+            if (type === 'json' ||
+                (typeof s === 'string' && ((s.startsWith('{') && s.endsWith('}')) ||
+                    (s.startsWith('[') && s.endsWith(']')))))
+                return JSON.parse(s);
 
-        if (type === 'number' || type === 'int' || type === 'float') {
-            const n = Number(s);
-            return Number.isFinite(n) ? n : raw;
+            if (type === 'number' || type === 'int' || type === 'float') {
+                const n = Number(s);
+                return Number.isFinite(n) ? n : raw;
+            }
+
+            if (type === 'boolean') {
+                if (s === 'true') return true;
+                if (s === 'false') return false;
+            }
+
+            // Массив только для text[] и подобных
+            if (type.includes('[]') || type === 'array' || type === 'ARRAY') {
+                if (typeof s === 'string' && s.includes(',')) return s.split(',').map(x => x.trim());
+            }
+        } catch {
+            return raw;
         }
-
-        if (type === 'boolean') {
-            if (s === 'true') return true;
-            if (s === 'false') return false;
-        }
-
-        // Массив только для text[] и подобных
-        if (type.includes('[]') || type === 'array' || type === 'ARRAY') {
-            if (typeof s === 'string' && s.includes(',')) return s.split(',').map(x => x.trim());
-        }
-
-        return raw;
     };
 
     const validate = () => {
@@ -79,7 +86,7 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
             for (const file of files) {
                 const formData = new FormData();
                 formData.append('image', file);
-                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                const res = await fetch('/api/upload', {method: 'POST', body: formData});
                 const data = await res.json();
                 paths.push(data.path);
             }
@@ -93,9 +100,15 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
 
     const submit = async () => {
         setError(null);
-        if (!tableName?.trim()) { setError('Требуется имя таблицы'); return; }
+        if (!tableName?.trim()) {
+            setError('Требуется имя таблицы');
+            return;
+        }
         const vErr = validate();
-        if (vErr) { setError(vErr); return; }
+        if (vErr) {
+            setError(vErr);
+            return;
+        }
 
         const payload = {};
         for (const c of cols) {
@@ -147,7 +160,7 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
 
             {open && (
                 <div className="af__overlay">
-                    <div className="af__backdrop" onClick={closeModal} />
+                    <div className="af__backdrop" onClick={closeModal}/>
                     <div className="af__modal" role="dialog" aria-modal="true" aria-label="Создать строку">
 
                         <div className="af__header">
@@ -155,12 +168,14 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
                                 <span className="af__header-title">Новая строка</span>
                                 <span className="af__header-table-title">{tableName}</span>
                             </div>
-                            <button className="af__close" onClick={closeModal} aria-label="Закрыть" disabled={loading}>×</button>
+                            <button className="af__close" onClick={closeModal} aria-label="Закрыть"
+                                    disabled={loading}>×
+                            </button>
                         </div>
 
                         <div className="af__body">
                             <div className="af__section">
-                                <div className="af__section-header" style={{ cursor: 'default' }}>
+                                <div className="af__section-header" style={{cursor: 'default'}}>
                                     <span className="af__section-title">Поля</span>
                                 </div>
 
@@ -171,12 +186,16 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
                                                 <label className="af__label af__label--sm" htmlFor={`col-${c.name}`}>
                                                     {c.name}
                                                 </label>
-                                                <span className="af__hint" style={{ fontSize: 10 }}>
+                                                <span className="af__hint" style={{fontSize: 10}}>
                                                     {c.type}
                                                 </span>
                                                 {!c.nullable
-                                                    ? <span style={{ color: 'var(--af-danger)', fontSize: 10, marginLeft: 2 }}>required</span>
-                                                    : <span className="af__hint" style={{ fontSize: 10 }}>nullable</span>
+                                                    ? <span style={{
+                                                        color: 'var(--af-danger)',
+                                                        fontSize: 10,
+                                                        marginLeft: 2,
+                                                    }}>required</span>
+                                                    : <span className="af__hint" style={{fontSize: 10}}>nullable</span>
                                                 }
                                             </div>
 
@@ -204,36 +223,57 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
                                                     />
                                                     {/* Загрузка картинки для поля image */}
                                                     {c.name === 'image' && (
-                                                        <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                        <div style={{
+                                                            marginTop: 6,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: 8,
+                                                        }}>
                                                             <input
                                                                 type="file"
                                                                 accept="image/jpeg,image/png,image/webp,image/svg+xml"
                                                                 onChange={e => handleImageUpload(e.target.files[0])}
                                                                 disabled={loading || uploading}
-                                                                style={{ fontSize: 12 }}
+                                                                style={{fontSize: 12}}
                                                             />
-                                                            {uploading && <span style={{ fontSize: 12, color: '#777' }}>Загружаю...</span>}
+                                                            {uploading && <span style={{
+                                                                fontSize: 12,
+                                                                color: '#777',
+                                                            }}>Загружаю...</span>}
                                                         </div>
                                                     )}
                                                     {c.name === 'images' && (
-                                                        <div style={{ marginTop: 6 }}>
+                                                        <div style={{marginTop: 6}}>
                                                             <input
                                                                 type="file"
                                                                 accept="image/jpeg,image/png,image/webp,image/svg+xml"
                                                                 multiple
                                                                 onChange={e => handleImagesUpload(Array.from(e.target.files))}
                                                                 disabled={loading || uploading}
-                                                                style={{ fontSize: 12 }}
+                                                                style={{fontSize: 12}}
                                                             />
-                                                            {uploading && <span style={{ fontSize: 12, color: '#777' }}>Загружаю...</span>}
-                                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+                                                            {uploading && <span style={{
+                                                                fontSize: 12,
+                                                                color: '#777',
+                                                            }}>Загружаю...</span>}
+                                                            <div style={{
+                                                                display: 'flex',
+                                                                flexWrap: 'wrap',
+                                                                gap: 6,
+                                                                marginTop: 8,
+                                                            }}>
                                                                 {(Array.isArray(values.images)
                                                                         ? values.images
                                                                         : String(values.images || '').replace(/^\{|\}$/g, '').split(',').map(s => s.trim()).filter(Boolean)
                                                                 ).map((src, i) => (
-                                                                    <div key={i} style={{ position: 'relative' }}>
+                                                                    <div key={i} style={{position: 'relative'}}>
                                                                         <img src={src} alt=""
-                                                                             style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 4 }}
+                                                                             style={{
+                                                                                 width: 48,
+                                                                                 height: 48,
+                                                                                 objectFit: 'cover',
+                                                                                 borderRadius: 4,
+                                                                             }}
                                                                         />
                                                                         <button
                                                                             type="button"
@@ -242,13 +282,23 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
                                                                                 updateValue('images', imgs.filter((_, idx) => idx !== i));
                                                                             }}
                                                                             style={{
-                                                                                position: 'absolute', top: -5, right: -5,
-                                                                                width: 16, height: 16, borderRadius: '50%',
-                                                                                background: '#e53e3e', color: '#fff',
-                                                                                border: 'none', cursor: 'pointer', fontSize: 10,
-                                                                                display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                                                position: 'absolute',
+                                                                                top: -5,
+                                                                                right: -5,
+                                                                                width: 16,
+                                                                                height: 16,
+                                                                                borderRadius: '50%',
+                                                                                background: '#e53e3e',
+                                                                                color: '#fff',
+                                                                                border: 'none',
+                                                                                cursor: 'pointer',
+                                                                                fontSize: 10,
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
                                                                             }}
-                                                                        >✕</button>
+                                                                        >✕
+                                                                        </button>
                                                                     </div>
                                                                 ))}
                                                             </div>
@@ -272,8 +322,9 @@ export function AddFormRow({ tableName = '', disabled = false, onCreate, cols = 
                             <button className="af__btn-cancel" type="button" onClick={closeModal} disabled={loading}>
                                 Отмена
                             </button>
-                            <button className="af__btn-submit" type="button" onClick={submit} disabled={loading || uploading}>
-                                {loading && <span className="af__spinner" />}
+                            <button className="af__btn-submit" type="button" onClick={submit}
+                                    disabled={loading || uploading}>
+                                {loading && <span className="af__spinner"/>}
                                 {loading ? 'Создаю...' : 'Создать строку'}
                             </button>
                         </div>

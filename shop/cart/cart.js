@@ -16,9 +16,11 @@ function readCartFromStorage() {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : [];
 }
+
 function saveCart() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
 }
+
 // =============================================
 // ПУБЛИЧНЫЕ ГЕТТЕРЫ
 // =============================================
@@ -27,12 +29,15 @@ export function loadCart() {
     cart = readCartFromStorage();
     return cart;
 }
+
 export function getCartTotal() {
     return cart.reduce((total, item) => total + item.price * item.count, 0);
 }
+
 export function getTotalItems() {
     return cart.reduce((total, item) => total + item.count, 0);
 }
+
 // =============================================
 // СЧЁТЧИК В ХЕДЕРЕ
 // =============================================
@@ -52,6 +57,7 @@ export function updateCartCount() {
         cartCountEl.classList.remove('header__cart-count--hidden');
     }
 }
+
 // =============================================
 // ОПЕРАЦИИ С КОРЗИНОЙ
 // =============================================
@@ -120,6 +126,7 @@ export function clearCart() {
     saveCart();
     updateCartCount();
 }
+
 // =============================================
 // СОБЫТИЯ
 // =============================================
@@ -152,7 +159,6 @@ function bindAddToCartButtons() {
             return;
         }
 
-        const cartKey = `${productId}_${variant.id}`;
         addToCart(productId, variant.id, variant.price, variant.volume, variant.stock);
 
         cartBtn.textContent = 'Добавлено';
@@ -166,6 +172,7 @@ function bindAddToCartButtons() {
 
     isCartEventsBound = true;
 }
+
 // =============================================
 // ИНИЦИАЛИЗАЦИЯ
 // =============================================
