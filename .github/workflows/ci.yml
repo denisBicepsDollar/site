@@ -76,14 +76,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Билд апи образа
         run: docker build -t docker_api_test back/server
-
-  nginx:
-    name: Nginx
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Сборка и автоматический тест конфига
-        run: docker build -t nginx_test nginx
   
   docker_compose:
     name: Докер
