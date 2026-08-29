@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cd /home/den1sb1cepsserver/zelenyeusy
+cd ~/zelenyeusy
 
 echo "=== Обновление кода ==="
 cp .env /tmp/.env.backup 2>/dev/null || true

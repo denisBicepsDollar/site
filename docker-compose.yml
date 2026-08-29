@@ -80,6 +80,7 @@ services:
     env_file: .env
     environment:
       NODE_ENV: production
+      REPORTS_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/reports
     volumes:
       - ./storage:/app/src/storage
     command: [ "node", "src/bin/worker.js" ]

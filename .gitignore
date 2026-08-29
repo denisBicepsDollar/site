@@ -1,9 +1,7 @@
 #1
 shop/images/
 backups/
-pgdata/
 storage/
-.env
 # Зависимости
 node_modules/
 
@@ -30,5 +28,6 @@ logs/
 .vscode/
 .DS_Store
 
-# nginx/certs/
+# nginx
 nginx/certs/
+.htpasswd
