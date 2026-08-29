@@ -1,5 +1,5 @@
 import {modalEls} from './elements.js';
-import {safeImage, NO_IMAGE} from '../utils.js';
+import {NO_IMAGE} from '../utils.js';
 import {formatPrice} from "../../cart/validation.js";
 
 // Рендер вариантов
@@ -43,7 +43,7 @@ function renderVariants(product) {
 
 
         container.querySelectorAll('.product-modal__variant').forEach(b =>
-            b.classList.remove('product-modal__variant--active')
+            b.classList.remove('product-modal__variant--active'),
         );
         btn.classList.add('product-modal__variant--active');
 
@@ -102,6 +102,7 @@ function renderVariants(product) {
     // Активируем первый
     container.querySelector('[data-variant-id]')?.click();
 }
+
 // Текущий индекс фото и массив фото
 let currentImages = [];
 let currentIndex = 0;
@@ -111,7 +112,10 @@ export function setModalImage(index) {
     const src = currentImages[index] || NO_IMAGE;
     if (modalEls.image) {
         modalEls.image.src = src;
-        modalEls.image.onerror = function() { this.onerror=null; this.src=NO_IMAGE; };
+        modalEls.image.onerror = function () {
+            this.onerror = null;
+            this.src = NO_IMAGE;
+        };
     }
     // Обновляем активную миниатюру
     if (modalEls.thumbs) {
@@ -193,7 +197,7 @@ export function renderProductModal(product) {
 
         if (thumb.dataset.variantId) {
             const variantBtn = document.querySelector(
-                `#modal-variants [data-variant-id="${thumb.dataset.variantId}"]`
+                `#modal-variants [data-variant-id="${thumb.dataset.variantId}"]`,
             );
             if (variantBtn) variantBtn.click();
         }
@@ -288,11 +292,13 @@ export function initLightboxEvents() {
         if (e.key === 'Escape') closeLightbox();
         if (e.key === 'ArrowLeft') {
             currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
-            updateLightbox(); setModalImage(currentIndex);
+            updateLightbox();
+            setModalImage(currentIndex);
         }
         if (e.key === 'ArrowRight') {
             currentIndex = (currentIndex + 1) % currentImages.length;
-            updateLightbox(); setModalImage(currentIndex);
+            updateLightbox();
+            setModalImage(currentIndex);
         }
     });
 }

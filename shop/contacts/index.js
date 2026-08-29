@@ -1,5 +1,5 @@
-import { initElements, els } from './elements.js';
-import { bindEvents } from './events.js';
+import {initElements} from './elements.js';
+import {bindEvents} from './events.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     initElements();

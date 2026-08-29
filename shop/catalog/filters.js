@@ -1,10 +1,9 @@
 import {els} from './elements.js';
 import {state} from './state.js';
-import {getProducts} from '../shared/api.js';
 import {
     GROUP_LABELS,
     SUBTYPE_LABELS,
-    VARIETY_LABELS
+    VARIETY_LABELS,
 } from './labels.js';
 import {loadProductsData} from "../shared/product-store.js";
 
@@ -37,11 +36,11 @@ function getUniqueValues(products, field) {
                 }
             }
             return current;
-        })
+        });
         return (values.filter(Boolean));
     }
-    const values = products.map(p => p[field])
-    let result = [...new Set(values)]
+    const values = products.map(p => p[field]);
+    let result = [...new Set(values)];
     return result;
 }
 
@@ -61,7 +60,7 @@ export async function renderGroupFilters() {
             group,
             state.currentGroup,
             GROUP_LABELS[group] || group,
-            'group'
+            'group',
         ))
         .join('');
 }
@@ -80,7 +79,7 @@ export async function renderTypeFilters() {
     const PRODUCTS = await loadProductsData();
 
     let filteredProducts = PRODUCTS.filter(p => p.group === state.currentGroup);
-    const names = [['all'], ...getUniqueValues(filteredProducts, ['name','type'])];
+    const names = [['all'], ...getUniqueValues(filteredProducts, ['name', 'type'])];
 
     const uniqueTypes = new Set(
         names
@@ -89,12 +88,12 @@ export async function renderTypeFilters() {
                 // убрать обрамляющие кавычки и нежелательные символы с концов
                 const cleaned = token.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '');
                 return cleaned;
-            })
-    )
+            }),
+    );
 
     const rawTypes = new Set(names.map(nameArray =>
-        nameArray.at(-1)
-    ))
+        nameArray.at(-1),
+    ));
 
     if (names.length <= 2) {
         els.typeBlock.classList.add('hidden');
@@ -106,7 +105,7 @@ export async function renderTypeFilters() {
     const rawArr = Array.from(rawTypes);
     const len = Math.min(uniqueArr.length, rawArr.length);
 
-    els.typeFilters.innerHTML = Array.from({ length: len }, (_, i) => {
+    els.typeFilters.innerHTML = Array.from({length: len}, (_, i) => {
         const label = String(uniqueArr[i] === 'all' ? 'Все виды' : uniqueArr[i]);               // метка из uniqueTypes
         const rawValue = rawArr[i];                       // значение из rawTypes
         return createFilterButtonHTML(rawValue, state.currentType, label, 'type');
@@ -150,7 +149,7 @@ export async function renderSubtypeFilters() {
             subtype,
             state.currentSubtype,
             SUBTYPE_LABELS[subtype] || subtype,
-            'subtype'
+            'subtype',
         ))
         .join('');
 }
@@ -199,7 +198,7 @@ export async function renderVarietyFilters() {
             variety,
             state.currentVariety,
             VARIETY_LABELS[variety] || variety,
-            'variety'
+            'variety',
         ))
         .join('');
 }

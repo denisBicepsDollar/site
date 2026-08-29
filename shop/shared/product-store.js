@@ -12,7 +12,7 @@ function buildSearchIndex(product) {
         product.type,
         product.subtype,
         product.variety,
-        ...(Array.isArray(product.tags) ? product.tags : [])
+        ...(Array.isArray(product.tags) ? product.tags : []),
     ];
     // Преобразуем все части в строки, фильтруем пустые, объединяем
     const text = parts
@@ -44,9 +44,10 @@ export async function loadProductsData() {
             products.forEach(product => {
                 const index = buildSearchIndex(product);
                 if (product.name?.includes('Сандей')) {
+
+                    product._searchIndex = index;
+                    product._searchWords = index.split(' ');
                 }
-                product._searchIndex = index;
-                product._searchWords = index.split(' ');
             });
 
             cache = products;
