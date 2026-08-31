@@ -18,18 +18,19 @@
 //   GET    /tables/:tableName/reports/:reportId/download  — скачать готовый отчёт
 //   DELETE /tables/:tableName/reports/:reportId           — удалить отчёт
 
-import * as rowController    from './controllers/rowController.js';
+import * as rowController from './controllers/rowController.js';
 import * as reportController from './controllers/reportController.js';
-import * as tableController  from './controllers/tableController.js';
+import * as tableController from './controllers/tableController.js';
 import * as shopController from "./controllers/shopController.js";
-import { upload, uploadImage } from './controllers/uploadController.js';
+
+//import {upload, uploadImage} from './controllers/uploadController.js';
 
 export function registerRoutes(app) {
 
     // Tables
-    app.get('/tables',               tableController.list);
-    app.get('/tables/:tableName',    rowController.list);
-    app.post('/tables',              tableController.create);
+    app.get('/tables', tableController.list);
+    app.get('/tables/:tableName', rowController.list);
+    app.post('/tables', tableController.create);
     app.delete('/tables/:tableName', tableController.remove);
 
     // Public api
@@ -40,18 +41,18 @@ export function registerRoutes(app) {
 
 
     // Rows
-    app.get('/tables/:tableName/rows',                               rowController.list);
-    app.get('/tables/:tableName/rows/:rowId',                        rowController.get);
-    app.post('/tables/:tableName/rows',                              rowController.create);
-    app.put('/tables/:tableName/rows/:filterColumn/:filterValue',    rowController.replace);
+    app.get('/tables/:tableName/rows', rowController.list);
+    app.get('/tables/:tableName/rows/:rowId', rowController.get);
+    app.post('/tables/:tableName/rows', rowController.create);
+    app.put('/tables/:tableName/rows/:filterColumn/:filterValue', rowController.replace);
     app.delete('/tables/:tableName/rows/:filterColumn/:filterValue', rowController.remove);
 
     // Reports
-    app.get('/tables/:tableName/reports',                        reportController.list);
-    app.post('/tables/:tableName/reports',                       reportController.create);
-    app.get('/tables/:tableName/reports/:reportId/status',       reportController.status);
-    app.get('/tables/:tableName/reports/:reportId/download',     reportController.download);
-    app.delete('/tables/:tableName/reports/:reportId',           reportController.remove);
+    app.get('/tables/:tableName/reports', reportController.list);
+    app.post('/tables/:tableName/reports', reportController.create);
+    app.get('/tables/:tableName/reports/:reportId/status', reportController.status);
+    app.get('/tables/:tableName/reports/:reportId/download', reportController.download);
+    app.delete('/tables/:tableName/reports/:reportId', reportController.remove);
     // Загрузка картинок (только для админки)
-    app.post('/api/upload', upload.single('image'), uploadImage);
+    //app.post('/api/upload', upload.single('image'), uploadImage);
 }
