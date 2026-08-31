@@ -83,9 +83,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Подготовка файла окружения (.env)
-        run: cp .env.dev .env
-
       - name: Проверка сборки Docker Compose
         run: docker compose build
   deploy:
