@@ -1,0 +1,23 @@
+services:
+  nginx:
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ./shop:/var/www/shop
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
+      - ./back/frontend/dist:/var/www/admin:ro
+
+  api:
+    environment:
+      NODE_ENV: development
+
+  certbot:
+    profiles:
+      - notstart
+
+  worker:
+    profiles:
+      - notstart
+    environment:
+      NODE_ENV: development
