@@ -1,25 +1,22 @@
 import pg from 'pg';
 import config from '../../config/index.js';
 
-if (!config.db.catalogConnectionString) {
+if (!config.db.usersConnectionString) {
     throw new Error('Ошибка в строке подключения главной бд при создании пула');
 }
 
 const pool = new pg.Pool
 (
     {
-        connectionString: config.db.catalogConnectionString,
+        connectionString: config.db.usersConnectionString,
     },
 );
 
 pool.on('connect', () => {
-    console.log('Открыто соединение с главной БД');
+    console.log("База users connected");
 });
-
-
 pool.on('error', (err) => {
-    console.error('Ошибка пула главной БД:', err.message);
+    console.log("Ошибка при подключении users", err.message);
 });
-
 
 export default pool;

@@ -6,7 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import config from './config/index.js';
 import errorHandler from './middleware/errorHandler.js';
-import {registerRoutes} from './routes.js';
+import {registerRoutes} from './routes/routes.js';
 import path from 'path';
 import {fileURLToPath} from "url";
 import rateLimit from 'express-rate-limit';

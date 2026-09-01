@@ -11,6 +11,11 @@ services:
   api:
     environment:
       NODE_ENV: development
+      CATALOG_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      REPORTS_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/reports
+      USERS_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/users
+      SECRET_KEY: ${SECRET_KEY}
+
 
   certbot:
     profiles:
