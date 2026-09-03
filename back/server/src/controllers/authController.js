@@ -1,5 +1,7 @@
 import * as authService from '../services/Auth/authService.js';
 
+
+
 export async function login(req, res) {
     try {
         console.log(`[authController] login ${JSON.stringify(req.body)}`);
@@ -17,7 +19,7 @@ export async function login(req, res) {
                     reason: "invalid credentials",
                 },
             );
-            return res.status(401);
+            return res.status(401).json({ error: "Invalid credentials" });;
         }
 
         return res
