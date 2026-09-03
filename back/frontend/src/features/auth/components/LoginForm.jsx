@@ -3,7 +3,6 @@ import { useState} from "react";
 import postSignIn from "../authApi.js";
 
 export default function LoginForm() {
-    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState("");
