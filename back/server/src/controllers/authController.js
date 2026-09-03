@@ -10,10 +10,24 @@ export async function login(req, res) {
         const token = await authService.login(username, password);
 
         if (!token) {
-            return res.status(401).json({error: 'Неверный логин или пароль'});
+            console.log(`[authController] login failed`,
+                {
+                    ip: req.ip,
+                    username,
+                    reason: "invalid credentials",
+                },
+            );
+            return res.status(401);
         }
 
-        return res.status(200).json({token});
+        return res
+            .status(200)
+            .cookie("token", token, {
+                httpOnly: true,
+                secure: false,
+                sameSite: 'lax',
+            })
+            .json({message: "ok"});
 
     } catch (err) {
         console.error(`[authController] login error:`, err.message);
