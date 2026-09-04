@@ -1,7 +1,4 @@
 import * as authService from '../services/Auth/authService.js';
-import {ApiError} from "../utils/ApiError.js";
-
-
 
 export async function login(req, res) {
     console.log(`[authController] login attempt for username: ${req.body.username}`);
