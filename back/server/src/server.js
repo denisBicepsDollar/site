@@ -27,10 +27,20 @@ async function startServer() {
     app.use(express.urlencoded({extended: true}));
     app.use(cookieParser());
 
+    const limiter = rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 минут
+        max: 100,                  // макс запросов
+        message: {error: 'Слишком много запросов, попробуйте позже'},
+    });
+
+    app.use('/api/', limiter);
+
     const shopPath = path.join(__dirname, '../../../', 'shop');
     app.use(express.static(shopPath));
 
+
     registerRoutes(app);
+
 
     // errorHandler должен быть последним middleware
     app.use(errorHandler);
@@ -39,15 +49,8 @@ async function startServer() {
     app.listen(port, () => {
         console.log(`[server] started on port ${port}`);
         console.log(`Магазин: http://localhost:${port}`);
-        console.log(`API:    http://localhost:${port}/tables`);
+        console.log(`API:    http://localhost:${port}/api`);
     });
-    const limiter = rateLimit({
-        windowMs: 15 * 60 * 1000, // 15 минут
-        max: 100,                  // макс запросов
-        message: {error: 'Слишком много запросов, попробуйте позже'},
-    });
-
-    app.use('/api/', limiter);
 }
 
 startServer().catch(err => {
