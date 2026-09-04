@@ -2,7 +2,7 @@ import pg from 'pg';
 import config from '../../config/index.js';
 
 if (!config.db.usersConnectionString) {
-    throw new Error('Ошибка в строке подключения главной бд при создании пула');
+    throw new Error('Users database connection string is missing');
 }
 
 const pool = new pg.Pool
