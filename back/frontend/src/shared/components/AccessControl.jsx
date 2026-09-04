@@ -19,7 +19,7 @@ export default function AccessControl({children, type = 'private'}){
                 } else {
                     setStatus('unauthorized');
                 }
-            } catch(){
+            } catch {
                 setStatus('unauthorized');
             }
         }
