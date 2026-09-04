@@ -16,7 +16,6 @@ services:
       USERS_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/users
       SECRET_KEY: ${SECRET_KEY}
 
-
   certbot:
     profiles:
       - notstart

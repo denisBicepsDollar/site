@@ -4,6 +4,7 @@
 
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import config from './config/index.js';
 import errorHandler from './middleware/errorHandler.js';
 import {registerRoutes} from './routes/routes.js';
@@ -24,6 +25,7 @@ async function startServer() {
     }));
     app.use(express.json());
     app.use(express.urlencoded({extended: true}));
+    app.use(cookieParser());
 
     const shopPath = path.join(__dirname, '../../../', 'shop');
     app.use(express.static(shopPath));

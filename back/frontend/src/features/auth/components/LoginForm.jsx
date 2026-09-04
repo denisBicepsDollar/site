@@ -1,20 +1,17 @@
-import {useState} from "react";
-import "./index.css";
-import postSignUp from "./api.js";
+import { useState} from "react";
+import postSignIn from "../authApi.js";
 
-
-export default function App() {
+export default function LoginForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState("");
-
 
     async function handleClick(e) {
         e.preventDefault();
         try {
             setError("");
-            await postSignUp(username, password);
-
+            await postSignIn(username, password);
+            window.location.href = '/dashboard';
         } catch (e) {
             setError(e.message);
         }
@@ -83,7 +80,7 @@ export default function App() {
                             className="border border-gray-300 rounded px-3 py-2"
                             id="password"
                             name="password"
-                            type="text"
+                            type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
