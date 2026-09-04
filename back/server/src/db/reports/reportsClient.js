@@ -6,7 +6,7 @@ import pg from 'pg';
 import config from '../../config/index.js';
 
 if (!config.db.reportsConnectionString) {
-    throw new Error('Ошибка в строке подключения отчетной бд при создании пула');
+    throw new Error('Reports database connection string is missing');
 }
 
 const pool = new pg.Pool

@@ -8,14 +8,15 @@ import cookieParser from 'cookie-parser';
 import config from './config/index.js';
 import errorHandler from './middleware/errorHandler.js';
 import {registerRoutes} from './routes/routes.js';
-import path from 'path';
-import {fileURLToPath} from "url";
-import rateLimit from 'express-rate-limit';
+import {apiLimiter} from "./middleware/rateLimiters.js";
+import {ApiError} from "./utils/ApiError.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 
 async function startServer() {
     const app = express();
+
+    app.set('trust proxy', 1);
 
     app.use(cors({
         origin: ['http://localhost:5173',
@@ -23,34 +24,33 @@ async function startServer() {
         ],
         credentials: true,
     }));
+
     app.use(express.json());
+
     app.use(express.urlencoded({extended: true}));
+
     app.use(cookieParser());
 
-    const shopPath = path.join(__dirname, '../../../', 'shop');
-    app.use(express.static(shopPath));
+    app.use('/api/', apiLimiter);
 
     registerRoutes(app);
+
+    app.use(() => {
+        throw new ApiError(404);
+    });
 
     // errorHandler должен быть последним middleware
     app.use(errorHandler);
 
     const port = config.port;
+
+
     app.listen(port, () => {
         console.log(`[server] started on port ${port}`);
-        console.log(`Магазин: http://localhost:${port}`);
-        console.log(`API:    http://localhost:${port}/tables`);
     });
-    const limiter = rateLimit({
-        windowMs: 15 * 60 * 1000, // 15 минут
-        max: 100,                  // макс запросов
-        message: {error: 'Слишком много запросов, попробуйте позже'},
-    });
-
-    app.use('/api/', limiter);
 }
 
 startServer().catch(err => {
-    console.error('[server] ошибка при запуске:', err);
+    console.error('[server] Критическая ошибка при запуске:', err);
     process.exit(1);
 });
