@@ -1,4 +1,31 @@
+/* ============================================================================
+   API.JS — МОДУЛЬ ДЛЯ РАБОТЫ С API
+   ============================================================================ */
+async function handleResponse(res) {
+    /* Получаем текст ответа, игнорируя ошибки парсинга */
+    const text = await res.text().catch(() => '');
 
+    /* Пытаемся распарсить текст как JSON */
+    let json;
+    try {
+        json = text ? JSON.parse(text) : {};
+    } catch {
+        /* Если парсинг не удался, оборачиваем текст в объект */
+        json = {raw: text};
+    }
+
+    /* Проверяем успешность ответа */
+    if (!res.ok) {
+        /* Формируем сообщение об ошибке из ответа или HTTP статуса */
+        const errMsg = json?.error || json?.message || `HTTP ${res.status}`;
+        const err = new Error(errMsg);
+        err.status = res.status;
+        err.payload = json;
+        throw err;
+    }
+
+    return json;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────
    ТАБЛИЦЫ (TABLES)
