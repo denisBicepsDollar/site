@@ -21,8 +21,8 @@ export default async function apiFetch( endpoint, options = {} )  {
             if (data && data.message){
                 errorMessage = data.message;
             }
-        } catch {
-
+        } catch (err) {
+            console.warn('[apiFetch] Не удалось распарсить JSON ошибки:', err);
         }
         throw new Error(translateError(errorMessage));
     }
