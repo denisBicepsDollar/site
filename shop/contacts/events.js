@@ -42,7 +42,7 @@ export function bindEvents() {
     // Закрытие общего алерта ошибки
     els.closeError?.addEventListener('click', () => {
         if (els.formError) {
-            els.formError.classList.add('contacts-form__alert--hidden');
+            els.formError.classList.add('hidden');
         }
         if (els.formErrorText) {
             els.formErrorText.textContent = '';
