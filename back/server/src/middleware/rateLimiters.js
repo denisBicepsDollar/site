@@ -7,7 +7,7 @@ export const apiLimiter = rateLimit({
     legacyHeaders: false,
     message: {
         status: 'error',
-        error: 'Too many requests',},
+        error: 'Too many requests. Please try again later.',},
 });
 export const authLimiter = rateLimit({
     windowMs: 12 * 60 * 60 * 1000, // 12 часов
@@ -17,6 +17,6 @@ export const authLimiter = rateLimit({
     legacyHeaders: false,
     message: {
         status: 'error',
-        message: 'Too many requests',
+        message: 'Too many requests. Please try again later.',
     },
 });
