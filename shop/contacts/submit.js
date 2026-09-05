@@ -3,12 +3,12 @@ import { els } from './elements.js';
 function showFormError(message) {
     if (!els.formError || !els.formErrorText) return;
     els.formErrorText.textContent = message;
-    els.formError.classList.remove('contacts-form__alert--hidden');
+    els.formError.classList.remove('hidden');
 }
 
 function hideFormError() {
     if (!els.formError) return;
-    els.formError.classList.add('contacts-form__alert--hidden');
+    els.formError.classList.add('hidden');
     if (els.formErrorText) els.formErrorText.textContent = '';
 }
 
@@ -48,7 +48,7 @@ export async function submitContactForm() {
         // Успех
         if (els.submitLoader) {
             els.submitLoader.textContent = 'Сообщение отправлено! Свяжемся с вами в ближайшее время.';
-            els.submitLoader.classList.remove('idden');
+            els.submitLoader.classList.remove('hidden');
         }
 
         if (els.contactsForm) els.contactsForm.reset();
