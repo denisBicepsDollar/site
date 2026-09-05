@@ -1,3 +1,11 @@
+const errorTranslations = {
+    "No token provided": "Войдите в систему",
+    "Invalid token": "Сессия устарела, войдите заново",
+    "Invalid username or password": "Неверное имя пользователя или пароль",
+    "Too many requests. Please try again later.": "Слишком много попыток. Попробуйте позже.",
+    "Something went wrong": "Что-то пошло не так на сервере"
+};
+
 export default async function apiFetch( endpoint, options = {} )  {
     const config = {
         method: options.method || 'GET',
@@ -34,11 +42,3 @@ export default async function apiFetch( endpoint, options = {} )  {
 function translateError(message) {
     return errorTranslations[message] || message;
 }
-
-const errorTranslations = {
-    "No token provided": "Войдите в систему",
-    "Invalid token": "Сессия устарела, войдите заново",
-    "Invalid username or password": "Неверное имя пользователя или пароль",
-    "Too many requests. Please try again later.": "Слишком много попыток. Попробуйте позже.",
-    "Something went wrong": "Что-то пошло не так на сервере"
-};
