@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 export default {
-    port: process.env.PORT || 3000,
+    port: 3000,
     secretKey: process.env.SECRET_KEY,
 
     db:
