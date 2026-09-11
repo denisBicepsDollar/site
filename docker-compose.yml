@@ -90,7 +90,7 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       REPORTS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/reports
-      CATALOG_URL: connectionString
+      CATALOG_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/${POSTGRES_DB:?DB is required}
     volumes:
       - ./storage:/app/src/storage
     command: [ "node", "src/bin/worker.js" ]
