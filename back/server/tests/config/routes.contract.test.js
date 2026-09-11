@@ -30,6 +30,7 @@ const frontendAdminPath = join(mainPath, 'back/frontend/src');
 const frontendShopPath = join(mainPath, 'shop');
 const nginxProdConfigPath = join(mainPath, 'nginx/nginx.conf');
 const nginxDevConfigPath = join(mainPath, 'nginx/nginx.dev.conf');
+const nginxCiConfigPath = join(mainPath, 'nginx/nginx.ci.conf');
 const envExamplePath = join(__dirname, '.env.example');
 
 const frontendAdminCallNames = ['fetch', 'apiFetch'];
@@ -44,6 +45,7 @@ if (!existsSync(frontendAdminPath)) throw new Error(`Fatal error: ${frontendAdmi
 if (!existsSync(frontendShopPath)) throw new Error(`Fatal error: ${frontendShopPath} does not exist`);
 if (!existsSync(nginxProdConfigPath)) throw new Error(`Fatal error: ${nginxProdConfigPath} does not exist`);
 if (!existsSync(nginxDevConfigPath)) throw new Error(`Fatal error: ${nginxDevConfigPath} does not exist`);
+if (!existsSync(nginxCiConfigPath)) throw new Error(`Fatal error: ${nginxCiConfigPath} does not exist`);
 
 dotenv.config({path: envExamplePath});
 
@@ -195,11 +197,14 @@ describe('Routes Contract Tests', () => {
         parser.toJSON(readFileSync(nginxProdConfigPath, 'utf8')), 'nginx.conf');
     const nginxDevRoutes = walkNginxConfig(
         parser.toJSON(readFileSync(nginxDevConfigPath, 'utf8')), 'nginx.dev.conf');
+    const nginxCiRoutes = walkNginxConfig(
+        parser.toJSON(readFileSync(nginxCiConfigPath, 'utf8')), 'nginx.ci.conf');
 
-    it('should resolve public and admin roles in both nginx configs', () => {
+
+    it('should resolve public and admin roles in ci,prod,dev nginx configs', () => {
         const unresolved = [];
 
-        for (const [label, routes] of [['nginx.conf', nginxProdRoutes], ['nginx.dev.conf', nginxDevRoutes]]) {
+        for (const [label, routes] of [['nginx.conf', nginxProdRoutes], ['nginx.dev.conf', nginxDevRoutes], ['nginx.ci.yml', nginxCiRoutes]]) {
             for (const role of requiredNginxRoles) {
                 if (!routes[role] || routes[role].length === 0) unresolved.push(`${label}:${role}`);
             }
@@ -256,15 +261,20 @@ describe('Routes Contract Tests', () => {
         for (const role of requiredNginxRoles) {
             const prodPrefixes = nginxProdRoutes[role];
             const devPrefixes = nginxDevRoutes[role];
+            const ciPrefixes = nginxCiRoutes[role];
 
             const missingInDev = prodPrefixes.filter(v => !devPrefixes.includes(v));
-            const missingInProd = devPrefixes.filter(v => !prodPrefixes.includes(v));
+            const missingInProd = devPrefixes.filter(v => !prodPrefixes.includes(v))
+            const missingInCi = ciPrefixes.filter(v => !ciPrefixes.includes(v));
 
             if (missingInDev.length > 0) {
                 errors.push(`Missing in dev ${role}: [${missingInDev.join(', ')}]`);
             }
             if (missingInProd.length > 0) {
                 errors.push(`Missing in prod ${role}: [${missingInProd.join(', ')}]`);
+            }
+            if (missingInCi.length > 0) {
+                errors.push(`Missing in ci ${role}: [${missingInCi.join(', ')}]`);
             }
         }
 
