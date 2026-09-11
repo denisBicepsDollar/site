@@ -31,3 +31,7 @@ logs/
 # nginx
 nginx/certs/
 .htpasswd
+
+#act
+act
+bin/act
