@@ -33,21 +33,21 @@ async function handleResponse(res) {
 
 /**
  * Получить список всех таблиц
- * GET /tables
+ * GET /admin/tables
  */
 export async function getListTables() {
-    const res = await fetch(`/tables`);
+    const res = await fetch(`/admin/tables`);
     return handleResponse(res);
 }
 
 /**
  * Удалить таблицу по названию
- * DELETE /tables/:tableName
+ * DELETE /admin/tables/:tableName
  *
  * @param {string} tableName - Название таблицы для удаления
  */
 export async function deleteTable(tableName) {
-    const res = await fetch(`/tables/${encodeURIComponent(tableName)}`, {
+    const res = await fetch(`/admin/tables/${encodeURIComponent(tableName)}`, {
         method: 'DELETE',
     });
     return handleResponse(res);
@@ -55,7 +55,7 @@ export async function deleteTable(tableName) {
 
 /**
  * Создать новую таблицу
- * POST /tables
+ * POST /admin/tables
  *
  * @param {Object} data - Данные таблицы
  * @param {string} data.tableName - Название новой таблицы
@@ -66,7 +66,7 @@ export async function deleteTable(tableName) {
 export async function postCreateTable({tableName, columns}) {
     const body = {params: {tableName, columns}};
 
-    const res = await fetch(`/tables`, {
+    const res = await fetch(`/admin/tables`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),
@@ -77,12 +77,12 @@ export async function postCreateTable({tableName, columns}) {
 
 /**
  * Получить данные таблицы (все строки)
- * GET /tables/:tableName
+ * GET /admin/tables/:tableName
  *
  * @param {string} tableName - Название таблицы
  */
 export async function getTable(tableName) {
-    const res = await fetch(`/tables/${encodeURIComponent(tableName)}`);
+    const res = await fetch(`/admin/tables/${encodeURIComponent(tableName)}`);
     return handleResponse(res);
 }
 
@@ -92,13 +92,13 @@ export async function getTable(tableName) {
 
 /**
  * Создать новую строку в таблице
- * POST /tables/:tableName/rows
+ * POST /admin/tables/:tableName/rows
  *
  * @param {string} tableName - Название таблицы
  * @param {Object} payload - Данные новой строки
  */
 export async function postCreateRow(tableName, payload) {
-    const res = await fetch(`/tables/${encodeURIComponent(tableName)}/rows`, {
+    const res = await fetch(`/admin/tables/${encodeURIComponent(tableName)}/rows`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(payload),
@@ -108,7 +108,7 @@ export async function postCreateRow(tableName, payload) {
 
 /**
  * Удалить строку из таблицы по условию
- * DELETE /tables/:tableName/rows/:filterColumn/:filterValue
+ * DELETE /admin/tables/:tableName/rows/:filterColumn/:filterValue
  *
  * @param {string} tableName - Название таблицы
  * @param {string} filterColumn - Название колонки для фильтрации
@@ -116,7 +116,7 @@ export async function postCreateRow(tableName, payload) {
  */
 export async function deleteRow(tableName, filterColumn, filterValue) {
     const res = await fetch(
-        `/tables/${encodeURIComponent(tableName)}/rows/${encodeURIComponent(filterColumn)}/${encodeURIComponent(filterValue)}`,
+        `/admin/tables/${encodeURIComponent(tableName)}/rows/${encodeURIComponent(filterColumn)}/${encodeURIComponent(filterValue)}`,
         {method: 'DELETE'},
     );
     return handleResponse(res);
@@ -124,7 +124,7 @@ export async function deleteRow(tableName, filterColumn, filterValue) {
 
 /**
  * Заменить/обновить строку в таблице
- * PUT /tables/:tableName/rows/:filterColumn/:filterValue
+ * PUT /admin/tables/:tableName/rows/:filterColumn/:filterValue
  *
  * @param {string} tableName - Название таблицы
  * @param {string} filterColumn - Название колонки для поиска строки
@@ -133,7 +133,7 @@ export async function deleteRow(tableName, filterColumn, filterValue) {
  */
 export async function putReplaceRow(tableName, filterColumn, filterValue, data) {
     const res = await fetch(
-        `/tables/${encodeURIComponent(tableName)}/rows/${encodeURIComponent(filterColumn)}/${encodeURIComponent(filterValue)}`,
+        `/admin/tables/${encodeURIComponent(tableName)}/rows/${encodeURIComponent(filterColumn)}/${encodeURIComponent(filterValue)}`,
         {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
@@ -143,16 +143,6 @@ export async function putReplaceRow(tableName, filterColumn, filterValue, data) 
     return handleResponse(res);
 }
 
-// Загрузить картинку
-export async function uploadImage(file) {
-    const formData = new FormData();
-    formData.append('image', file);
-    const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,  // без Content-Type — браузер сам поставит multipart
-    });
-    return handleResponse(res);
-}
 
 /* ─────────────────────────────────────────────────────────────────────────
    ОТЧЕТЫ (REPORTS)
@@ -160,13 +150,13 @@ export async function uploadImage(file) {
 
 /**
  * Создать новый отчет для таблицы
- * POST /tables/:tableName/reports
+ * POST /admin/tables/:tableName/reports
  *
  * @param {string} tableName - Название таблицы
  * @param {Object} payload - Параметры отчета (по умолчанию пустой объект)
  */
 export async function postCreateReport(tableName, payload = {}) {
-    const res = await fetch(`/tables/${encodeURIComponent(tableName)}/reports`, {
+    const res = await fetch(`/admin/tables/${encodeURIComponent(tableName)}/reports`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(payload),
@@ -176,32 +166,32 @@ export async function postCreateReport(tableName, payload = {}) {
 
 /**
  * Получить список всех отчетов для таблицы
- * GET /tables/:tableName/reports
+ * GET /admin/tables/:tableName/reports
  *
  * @param {string} tableName - Название таблицы
  */
 export async function getListReports(tableName) {
-    const res = await fetch(`/tables/${encodeURIComponent(tableName)}/reports`);
+    const res = await fetch(`/admin/tables/${encodeURIComponent(tableName)}/reports`);
     return handleResponse(res);
 }
 
 /**
  * Получить статус генерации отчета
- * GET /tables/:tableName/reports/:reportId/status
+ * GET /admin/tables/:tableName/reports/:reportId/status
  *
  * @param {string} tableName - Название таблицы
  * @param {string} reportId - ID отчета
  */
 export async function getStatusReport(tableName, reportId) {
     const res = await fetch(
-        `/tables/${encodeURIComponent(tableName)}/reports/${encodeURIComponent(reportId)}/status`,
+        `/admin/tables/${encodeURIComponent(tableName)}/reports/${encodeURIComponent(reportId)}/status`,
     );
     return handleResponse(res);
 }
 
 /**
  * Скачать сгенерированный отчет
- * GET /tables/:tableName/reports/:reportId/download
+ * GET /admin/tables/:tableName/reports/:reportId/download
  *
  * Возвращает Response объект для работы с blob/потоком данных
  *
@@ -211,7 +201,7 @@ export async function getStatusReport(tableName, reportId) {
  */
 export async function getDownloadReport(tableName, reportId) {
     const res = await fetch(
-        `/tables/${encodeURIComponent(tableName)}/reports/${encodeURIComponent(reportId)}/download`,
+        `/admin/tables/${encodeURIComponent(tableName)}/reports/${encodeURIComponent(reportId)}/download`,
     );
 
     /* Проверяем успешность ответа */
@@ -226,14 +216,14 @@ export async function getDownloadReport(tableName, reportId) {
 
 /**
  * Удалить отчет
- * DELETE /tables/:tableName/reports/:reportId
+ * DELETE /admin/tables/:tableName/reports/:reportId
  *
  * @param {string} tableName - Название таблицы
  * @param {string} reportId - ID отчета для удаления
  */
 export async function deleteReport(tableName, reportId) {
     const res = await fetch(
-        `/tables/${encodeURIComponent(tableName)}/reports/${encodeURIComponent(reportId)}`,
+        `/admin/tables/${encodeURIComponent(tableName)}/reports/${encodeURIComponent(reportId)}`,
         {method: 'DELETE'},
     );
     return handleResponse(res);

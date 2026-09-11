@@ -9,18 +9,22 @@ import {authLimiter} from "../middleware/rateLimiters.js";
 export function registerRoutes(app) {
     // Public API
     app.get('/api/products', shopController.list);
-    app.get('/api/products/:id', shopController.get);
+    app.get('/api/products/:productId', shopController.get);
     app.post('/api/orders', shopController.create);
     app.post('/api/contacts', shopController.createContact);
 
     // Auth
 
-    app.post('/auth/login', authLimiter ,authController.login);
+    app.post('/auth/login', authLimiter, authController.login);
     app.get('/auth/validation', authHandler, (req, res) => {
         return res.status(200).json('ok');
     });
 
     // Admin
     app.use('/admin', adminRouter);
+
+    app.get('/health', (req, res) => {
+        return res.status(200).json('ok');
+    })
 
 }

@@ -26,10 +26,12 @@ services:
     container_name: api
     restart: unless-stopped
     environment:
-      NODE_ENV: production
-      PORT: 3000
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      REPORTS_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/reports
+      NODE_ENV: ${NODE_ENV:-production}
+      CATALOG_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/${POSTGRES_DB:?DB is required}
+      REPORTS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/reports
+      USERS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/users
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
+
     volumes:
       - ./shop:/app/shop
       - ./storage:/app/src/storage
@@ -37,6 +39,11 @@ services:
       - db
     networks:
       - app-net
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   db:
     image: postgres:15-alpine
@@ -51,6 +58,11 @@ services:
       - ./db-init:/docker-entrypoint-initdb.d
     networks:
       - app-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   certbot:
     image: certbot/certbot:latest
@@ -76,8 +88,9 @@ services:
     container_name: worker
     restart: unless-stopped
     environment:
-      NODE_ENV: production
-      REPORTS_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/reports
+      NODE_ENV: ${NODE_ENV:-production}
+      REPORTS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/reports
+      CATALOG_URL: connectionString
     volumes:
       - ./storage:/app/src/storage
     command: [ "node", "src/bin/worker.js" ]

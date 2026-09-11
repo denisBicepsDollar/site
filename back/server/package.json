@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "node --test tests/config/*.test.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -23,8 +24,11 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^25.3.0",
+    "@webantic/nginx-config-parser": "^1.6.1",
     "eslint": "^10.9.1",
     "globals": "^17.11.0",
-    "nodemon": "^3.1.14"
+    "nginx-conf": "^2.1.0",
+    "nodemon": "^3.1.14",
+    "yaml": "^2.9.0"
   }
 }

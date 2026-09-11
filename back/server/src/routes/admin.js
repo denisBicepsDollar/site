@@ -5,7 +5,7 @@ import * as reportController from "../controllers/reportController.js";
 import authHandler from "../middleware/authHandler.js";
 
 const adminRouter = express.Router();
-
+adminRouter.prefix = '/admin';
 adminRouter.use(authHandler);
 
 adminRouter.get('/tables', tableController.list);

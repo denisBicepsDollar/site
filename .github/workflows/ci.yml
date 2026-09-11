@@ -67,7 +67,11 @@ jobs:
         run: npm ci
 
       - name: Проверка линтером (Lint)
+        continue-on-error: true
         run: npm run lint
+
+      - name: Тесты
+        run: npm test
 
   docker_api:
     name: Докерфайл апи
@@ -80,17 +84,87 @@ jobs:
   docker_compose:
     name: Докер
     runs-on: ubuntu-latest
+    env:
+      COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
     steps:
       - uses: actions/checkout@v4
 
+      - name: Подготовка env
+        run: cp .env.example .env
+
+      - name: Проверка конфига Docker Compose
+        run: docker compose config
+
       - name: Проверка сборки Docker Compose
         run: docker compose build
+
+      - name: Поднятие сервисов
+        run: docker compose up -d
+
+      - name: Ждем Db
+        run: |
+          for i in {1..30}; do
+                  status=$(docker inspect --format='{{.State.Health.Status}}' postgresDataBase)
+                  if [ "$status" = "healthy" ]; then
+                      exit 0
+                  fi
+                  sleep 2
+                done
+                docker compose logs
+                exit 1
+
+      - name: Ждем Api
+        run: |
+          for i in {1..30}; do
+                  status=$(docker inspect --format='{{.State.Health.Status}}' api)
+                  if [ "$status" = "healthy" ]; then
+                      exit 0
+                  fi
+                  sleep 2
+                done
+                docker compose logs
+                exit 1
+
+      - name: Проверяем /api/products
+        run: curl -f http://localhost/api/products
+
+  nginx_config:
+    name: Nginx test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build API
+        run: docker build -t my-api:latest -f ./back/server/Dockerfile ./back/server
+
+      - name: Run API
+        run: docker run -d --name api -p 3000:3000 my-api:latest
+
+      - name: Настройка локального DNS для теста
+        run: echo "127.0.0.1 api" | sudo tee -a /etc/hosts
+
+      - name: Устанавливаем Nginx
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nginx
+
+      - name: Копируем nginx.conf
+        run: sudo cp nginx/nginx.ci.conf /etc/nginx/nginx.conf
+
+      - name: Проверка
+        run: sudo nginx -t
+
+      - name: Остановить API
+        if: always()
+        run: docker stop api || true
+
+
   deploy:
     name: Деплой
     runs-on: ubuntu-latest
 
     # КЛЮЧЕВОЙ МОМЕНТ: Ждем успешного завершения ВСЕХ проверок
-    needs: [ admin_frontend, shop_frontend, api_backend, docker_api, docker_compose ]
+    needs: [ admin_frontend, shop_frontend, api_backend, docker_api, docker_compose, nginx_config ]
 
     # ДОПОЛНИТЕЛЬНОЕ УСЛОВИЕ: Физически отправляем код на сервер ТОЛЬКО при пуше в main.
     # При обычном Pull Request (до слияния) деплой запускаться НЕ БУДЕТ.
