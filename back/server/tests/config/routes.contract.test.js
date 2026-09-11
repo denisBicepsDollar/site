@@ -265,7 +265,8 @@ describe('Routes Contract Tests', () => {
 
             const missingInDev = prodPrefixes.filter(v => !devPrefixes.includes(v));
             const missingInProd = devPrefixes.filter(v => !prodPrefixes.includes(v))
-            const missingInCi = ciPrefixes.filter(v => !ciPrefixes.includes(v));
+            const missingInCi = prodPrefixes.filter(v => !ciPrefixes.includes(v));
+            const missingInProdCi = ciPrefixes.filter(v => !prodPrefixes.includes(v));
 
             if (missingInDev.length > 0) {
                 errors.push(`Missing in dev ${role}: [${missingInDev.join(', ')}]`);
@@ -275,6 +276,9 @@ describe('Routes Contract Tests', () => {
             }
             if (missingInCi.length > 0) {
                 errors.push(`Missing in ci ${role}: [${missingInCi.join(', ')}]`);
+            }
+            if (missingInProdCi.length > 0) {
+                errors.push(`Missing in prod (ci) ${role}: [${missingInProdCi.join(', ')}]`);
             }
         }
 
