@@ -84,8 +84,13 @@ jobs:
   docker_compose:
     name: Докер
     runs-on: ubuntu-latest
+    env:
+      COMPOSE_FILE: docker-compose.yml
     steps:
       - uses: actions/checkout@v4
+
+      - name: Подготовка env
+        run: cp .env.example .env
 
       - name: Проверка конфига Docker Compose
         run: docker compose config
