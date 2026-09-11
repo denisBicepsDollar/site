@@ -7,7 +7,7 @@ export function AddFormRow({tableName = '', disabled = false, onCreate, cols = [
     const [loading, setLoading] = useState(false);
     const [values, setValues] = useState({});
     const [error, setError] = useState(null);
-    const [uploading, setUploading] = useState(false);
+    const [uploading] = useState(false);
 
     const openModal = () => {
         setError(null);
@@ -64,39 +64,6 @@ export function AddFormRow({tableName = '', disabled = false, onCreate, cols = [
         return null;
     };
 
-    // Загрузка картинки на сервер
-    const handleImageUpload = async (file) => {
-        if (!file) return;
-        setUploading(true);
-        try {
-            const data = await api.uploadImage(file);
-            updateValue('image', data.path);
-        } catch (e) {
-            setError('Ошибка загрузки картинки: ' + e.message);
-        } finally {
-            setUploading(false);
-        }
-    };
-
-    const handleImagesUpload = async (files) => {
-        if (!files?.length) return;
-        setUploading(true);
-        try {
-            const paths = [];
-            for (const file of files) {
-                const formData = new FormData();
-                formData.append('image', file);
-                const res = await fetch('/api/upload', {method: 'POST', body: formData});
-                const data = await res.json();
-                paths.push(data.path);
-            }
-            updateValue('images', [...(Array.isArray(values.images) ? values.images : []), ...paths]);
-        } catch (e) {
-            setError('Ошибка загрузки: ' + e.message);
-        } finally {
-            setUploading(false);
-        }
-    };
 
     const submit = async () => {
         setError(null);
@@ -232,7 +199,6 @@ export function AddFormRow({tableName = '', disabled = false, onCreate, cols = [
                                                             <input
                                                                 type="file"
                                                                 accept="image/jpeg,image/png,image/webp,image/svg+xml"
-                                                                onChange={e => handleImageUpload(e.target.files[0])}
                                                                 disabled={loading || uploading}
                                                                 style={{fontSize: 12}}
                                                             />
@@ -248,7 +214,7 @@ export function AddFormRow({tableName = '', disabled = false, onCreate, cols = [
                                                                 type="file"
                                                                 accept="image/jpeg,image/png,image/webp,image/svg+xml"
                                                                 multiple
-                                                                onChange={e => handleImagesUpload(Array.from(e.target.files))}
+                                                                onChange={e => (Array.from(e.target.files))}
                                                                 disabled={loading || uploading}
                                                                 style={{fontSize: 12}}
                                                             />

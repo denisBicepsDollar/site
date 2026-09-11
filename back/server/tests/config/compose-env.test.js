@@ -5,8 +5,11 @@ import assert from "node:assert";
 import {execSync} from "node:child_process";
 import {readFileSync, existsSync} from "fs";
 import yaml from "yaml";
+import data from './compose.schema.json' with {type: 'json'}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const workerVariablesInCode = data.worker;
 
 const mainPath = resolve(__dirname, '../../../../');
 const mainComposePath = join(mainPath, 'docker-compose.yml');
@@ -66,6 +69,9 @@ describe('Docker compose Config Tests', () => {
         if (service.build) {
             describe(`Test for ${serviceName}`, () => {
 
+                const requiredVariablesCode =
+                    serviceName === 'worker' ? workerVariablesInCode : variablesInCode;
+                
                 const rawBuildPath = typeof service.build === 'string'
                     ? service.build
                     : service.build.context;
@@ -85,7 +91,7 @@ describe('Docker compose Config Tests', () => {
 
 
                 it('should ensure production docker-compose environment blocks cover all variables used in code', () => {
-                        const undocumented = [...variablesInCode].filter(
+                        const undocumented = [...requiredVariablesCode].filter(
                             v => ![...prodVariablesList].includes(v))
                         assert.strictEqual(
                             undocumented.length,
@@ -108,7 +114,7 @@ describe('Docker compose Config Tests', () => {
                 it('should ensure production docker-compose does not contain dead or unused variables', () => {
 
                     const deadVariables = [...prodVariablesList].filter(
-                        v => ![...variablesInCode].includes(v)
+                        v => ![...requiredVariablesCode].includes(v)
                     );
 
                     assert.strictEqual(
