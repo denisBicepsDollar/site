@@ -1,6 +1,13 @@
 import * as reportsService from '../services/Reports/reportService.js';
 import path from 'path';
 import {ApiError} from "../utils/ApiError.js";
+import logger from "../utils/logger.js";
+
+const logModule = logger.child({
+    module: 'reportController'
+})
+
+
 
 // POST /tables/:tableName/reports
 // Создаёт задачу на генерацию отчёта и ставит её в очередь воркеру.
@@ -9,8 +16,12 @@ import {ApiError} from "../utils/ApiError.js";
 // Возвращает: { id, status }
 export async function create(req, res) {
 
+    const log = logModule.child({
+        function: 'create report'
+    })
+
     const { tableName } = req.params;
-    console.log(`[reportController] create table="${tableName}"`, JSON.stringify(req.body, null, 2));
+    log.debug({tableName, body: req.body});
 
     const {
         title       = null,
@@ -36,7 +47,7 @@ export async function create(req, res) {
         having, windowFns, coalesce, limit, withSummary,
     });
 
-    console.log(`[reportController] create result id=${report.id}`);
+    log.debug({ reportId: report.id });
     return res.status(200).json({ id: report.id, status: report.status });
 
 }
@@ -45,8 +56,12 @@ export async function create(req, res) {
 // Удаляет отчёт из БД и файл с диска (если есть).
 export async function remove(req, res) {
 
+    const log = logModule.child({
+        function: 'remove report'
+    })
+
     const { reportId } = req.params;
-    console.log(`[reportController] remove id=${reportId}`);
+    log.debug({reportId});
 
     await reportsService.removeReport(reportId);
     return res.status(200).json(`Отчёт ${reportId} удалён.`);
@@ -58,8 +73,11 @@ export async function remove(req, res) {
 // Возвращает: { data: [...] }
 export async function list(req, res) {
 
+    const log = logModule.child({
+        function: 'list reports'
+    })
     const { tableName } = req.params;
-    console.log(`[reportController] list table="${tableName}"`);
+    log.debug({tableName});
 
     const reports = await reportsService.listReportByTable(tableName);
     return res.status(200).json({ data: reports });
@@ -71,8 +89,12 @@ export async function list(req, res) {
 // Если отчёт не найден — 404.
 export async function status(req, res) {
 
+    const log = logModule.child({
+        function: 'status report'
+    })
+
     const { reportId } = req.params;
-    console.log(`[reportController] status id=${reportId}`);
+    log.debug({reportId});
 
     const report = await reportsService.getReport(reportId);
     if (!report) {
@@ -93,8 +115,12 @@ export async function status(req, res) {
 // 404 если отчёт не найден, 409 если ещё не готов или файл пропал.
 export async function download(req, res) {
 
+    const log = logModule.child({
+        function: 'download report'
+    })
+
     const { reportId } = req.params;
-    console.log(`[reportController] download id=${reportId}`);
+    log.debug({reportId});
 
     const report = await reportsService.getReport(reportId);
     if (!report) {

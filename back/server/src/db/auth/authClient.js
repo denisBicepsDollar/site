@@ -1,5 +1,10 @@
 import pg from 'pg';
 import config from '../../config/index.js';
+import logger from "../../utils/logger.js";
+const log = logger.child({
+    module: 'authClient'
+})
+
 
 if (!config.db.usersConnectionString) {
     throw new Error('Users database connection string is missing');
@@ -13,10 +18,10 @@ const pool = new pg.Pool
 );
 
 pool.on('connect', () => {
-    console.log("База users connected");
+    log.info("База users connected");
 });
 pool.on('error', (err) => {
-    console.log("Ошибка при подключении users", err.message);
+    log.error({ err }, "Ошибка при подключении users");
 });
 
 export default pool;

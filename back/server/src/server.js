@@ -7,6 +7,11 @@ import {registerRoutes} from './routes/routes.js';
 import {apiLimiter} from './middleware/rateLimiters.js';
 import {ApiError} from './utils/ApiError.js';
 import {fileURLToPath} from "url";
+import logger from "./utils/logger.js";
+
+const log = logger.child({
+    module: 'server'
+})
 
 export function createApp() {
     const app = express();
@@ -40,7 +45,7 @@ export function startServer() {
     const port = config.port;
 
     return app.listen(port, () => {
-        console.log(`[server] started on port ${port}`);
+        log.info({port},' started');
     });
 }
 

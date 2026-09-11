@@ -4,9 +4,20 @@
 // иначе не будет перехватывать ошибки переданные через next(err).
 
 import {ApiError} from "../utils/ApiError.js";
+import config from "../config/index.js"
+import logger from "../utils/logger.js";
+
+const logModule = logger.child({
+    module: 'Middleware'
+})
 // eslint-disable-next-line no-unused-vars
 export default function errorHandler(err, req, res, _next) {
-    console.error(`[errorHandler] ${req.method} ${req.url}`, err);
+
+    const log = logModule.child({
+        module: 'errorHandler',
+    })
+
+    log.error({method: req.method, url : req.url, err});
 
     if (err instanceof ApiError) {
         return res.status(err.status).json({
@@ -29,7 +40,7 @@ export default function errorHandler(err, req, res, _next) {
         })
     }
 
-    const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
+    const isDev = config.env === 'development';
 
 
     return res.status(500).json({

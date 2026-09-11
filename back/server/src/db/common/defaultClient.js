@@ -1,5 +1,9 @@
 import pg from 'pg';
 import config from '../../config/index.js';
+import logger from "../../utils/logger.js";
+const log = logger.child({
+    module: 'defaultClient'
+})
 
 if (!config.db.catalogConnectionString) {
     throw new Error('Main database connection string is missing');
@@ -13,12 +17,12 @@ const pool = new pg.Pool
 );
 
 pool.on('connect', () => {
-    console.log('Открыто соединение с главной БД');
+    log.info('Открыто соединение с главной БД');
 });
 
 
 pool.on('error', (err) => {
-    console.error('Ошибка пула главной БД:', err.message);
+    log.error({ err },'Ошибка пула главной БД');
 });
 
 

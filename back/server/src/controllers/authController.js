@@ -1,7 +1,18 @@
 import * as authService from '../services/Auth/authService.js';
+import logger from "../utils/logger.js";
+
+const logModule = logger.child({
+    module: 'authController'
+})
+
 
 export async function login(req, res) {
-    console.log(`[authController] login attempt for username: ${req.body.username}`);
+
+    const log = logModule.child({
+        function: 'login'
+    })
+
+    log.debug(`[authController] login attempt for username: ${req.body.username}`);
 
     const payload = req.body;
     const {username, password} = payload;

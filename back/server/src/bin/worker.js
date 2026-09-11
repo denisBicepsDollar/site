@@ -1,5 +1,8 @@
 import {runWorker} from "../worker/worker.js";
+import logger from "../utils/logger.js";
 
-
-console.log("Воркер запущен");
+const log = logger.child({
+    module: 'worker'
+})
+log.info("Воркер запущен");
 runWorker();

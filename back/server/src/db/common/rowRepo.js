@@ -1,5 +1,6 @@
 import pool from './defaultClient.js';
 
+
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 // Оборачивает имя идентификатора (таблица, колонка) в двойные кавычки.
@@ -26,6 +27,7 @@ function quoteValue(val) {
 //   LIKE / ILIKE / NOT LIKE / NOT ILIKE — автодобавляет % если нет
 //   = != > >= < <=         — числа и булевы без кавычек, строки в кавычках
 function buildWhereClause(whereObj) {
+
     console.log(`[rowRepo] buildWhereClause:`, JSON.stringify(whereObj, null, 2));
 
     if (!whereObj || typeof whereObj !== 'object' || Array.isArray(whereObj)) {

@@ -1,9 +1,17 @@
 import jwt from "jsonwebtoken";
 import config from "../config/index.js";
 import {ApiError} from "../utils/ApiError.js";
+import logger from "../utils/logger.js";
+
+const logModule = logger.child({
+    module: 'Middleware'
+})
 
 export default async function authHandler(req, res, next) {
-    console.log(`[authMiddleware] authHandler ${req.ip}`);
+    const log = logModule.child({
+        function: 'authHandler'
+    })
+    log.debug({ip: req.ip});
 
     const token = req.cookies.token;
     if (!token) {

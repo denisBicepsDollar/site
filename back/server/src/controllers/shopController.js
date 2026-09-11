@@ -1,10 +1,20 @@
 import * as shopService from "../services/Common/shopService.js";
 import {ApiError} from "../utils/ApiError.js";
+import logger from "../utils/logger.js";
+
+const logModule = logger.child({
+    module: 'shopController'
+})
+
 
 // GET /api/products
 //
 export async function list(req, res) {
-    console.log(`[shopController] list]`);
+
+    const log = logModule.child({
+        function: 'list products'
+    })
+    log.debug('list products')
 
     const data = await shopService.listProducts(req.query);
     return res.status(200).json(data);
@@ -12,7 +22,11 @@ export async function list(req, res) {
 }
 // GET /api/products/:id
 export async function get(req, res) {
-    console.log('[shopController] get id=', req.params.id);
+    const log = logModule.child({
+        function: 'get product'
+    })
+
+    log.debug({id: req.params.id});
     const product = await shopService.getProduct(req.params.id);
     if (!product) {
         throw new ApiError(404)
@@ -22,7 +36,10 @@ export async function get(req, res) {
 }
 export async function create(req, res) {
 
-    console.log('[shopController] createOrder body:', req.body);
+    const log = logModule.child({
+        function: 'create order'
+    })
+    log.debug({ body: req.body});
 
     const { customer, delivery, cart } = req.body; // ← вот что реально приходит
 
@@ -64,7 +81,10 @@ export async function create(req, res) {
 }
 // POST /api/contacts
 export async function createContact(req, res) {
-    console.log('[shopController] createContact');
+    const log = logModule.child({
+        function: 'create contact'
+    })
+    log.debug({body: req.body});
     const id = await shopService.saveContact(req.body);
     return res.status(201).json({ id });
 }

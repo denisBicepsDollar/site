@@ -11,6 +11,8 @@ services:
   api:
     environment:
       NODE_ENV: development
+      SERVICE_NAME: api
+      LOG_LEVEL: debug
       CATALOG_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/${POSTGRES_DB:?DB is required}
       REPORTS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/reports
       USERS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/users
@@ -26,3 +28,5 @@ services:
       - notstart
     environment:
       NODE_ENV: development
+      SERVICE_NAME: worker
+      LOG_LEVEL: debug
