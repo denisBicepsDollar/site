@@ -151,12 +151,6 @@ jobs:
       - name: Копируем nginx.conf
         run: sudo cp nginx/nginx.ci.conf /etc/nginx/nginx.conf
 
-      - name: Создаём директорию и файлы
-        run: |
-          sudo mkdir -p /etc/letsencrypt/live/zelenyeusy.ru
-          sudo touch /etc/letsencrypt/live/zelenyeusy.ru/privkey.pem \
-                /etc/letsencrypt/live/zelenyeusy.ru/fullchain.pem
-
       - name: Проверка
         run: sudo nginx -t
 
