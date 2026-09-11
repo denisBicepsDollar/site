@@ -85,7 +85,7 @@ jobs:
     name: Докер
     runs-on: ubuntu-latest
     env:
-      COMPOSE_FILE: docker-compose.yml
+      COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
     steps:
       - uses: actions/checkout@v4
 
@@ -100,12 +100,6 @@ jobs:
 
       - name: Поднятие сервисов
         run: docker compose up -d
-
-      - name: Show containers
-        run: docker compose ps
-
-      - name: Show nginx logs
-        run: docker compose logs nginx
 
       - name: Ждем Db
         run: |
@@ -159,8 +153,8 @@ jobs:
 
       - name: Создаём директорию и файлы
         run: |
-          mkdir -p /etc/letsencrypt/live/zelenyeusy.ru
-          touch /etc/letsencrypt/live/zelenyeusy.ru/privkey.pem \
+          sudo mkdir -p /etc/letsencrypt/live/zelenyeusy.ru
+          sudo touch /etc/letsencrypt/live/zelenyeusy.ru/privkey.pem \
                 /etc/letsencrypt/live/zelenyeusy.ru/fullchain.pem
 
       - name: Проверка
