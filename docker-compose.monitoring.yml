@@ -1,0 +1,52 @@
+services:
+  promtail:
+    image: grafana/promtail:3.0.0
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./monitoring/promtail-config.yaml:/etc/promtail/config.yml:ro
+      - ./monitoring/promtail:/run/promtail
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - site_app-net
+
+  loki:
+    image: grafana/loki:3.0.0
+    user: "root"
+    container_name: loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki-config.yaml:/etc/loki/local-config.yaml
+      - ./monitoring/data/loki:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - site_app-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    env_file:
+      - .env.monitoring
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:?GRAFANA_PASSWORD is required}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:?GRAFANA_USER is required}
+    volumes:
+      - ./monitoring/data/grafana:/var/lib/grafana
+    networks:
+      - site_app-net
+
+networks:
+  site_app-net:
+    external: true
+
+volumes:
+  grafana_data:
+  loki_data:
+  promtail_positions:

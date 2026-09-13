@@ -1,9 +1,11 @@
 import pg from 'pg';
 import config from '../../config/index.js';
-import logger from "../../utils/logger.js";
-const log = logger.child({
-    module: 'defaultClient'
-})
+import getLogger from "../../utils/logger.js";
+
+const moduleName = 'defaultClient';
+
+const log = getLogger(moduleName);
+
 
 if (!config.db.catalogConnectionString) {
     throw new Error('Main database connection string is missing');

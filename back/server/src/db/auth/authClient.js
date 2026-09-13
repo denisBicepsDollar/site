@@ -1,9 +1,10 @@
 import pg from 'pg';
 import config from '../../config/index.js';
-import logger from "../../utils/logger.js";
-const log = logger.child({
-    module: 'authClient'
-})
+import getLogger from "../../utils/logger.js";
+const moduleName = 'authClient';
+
+const log = getLogger(moduleName);
+
 
 
 if (!config.db.usersConnectionString) {

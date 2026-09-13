@@ -1,17 +1,16 @@
 import * as rowService from '../services/Common/rowService.js';
-import safeStringify from 'fast-safe-stringify';
 import {ApiError} from "../utils/ApiError.js";
-import logger from "../utils/logger.js";
+import getLogger from "../utils/logger.js";
 
-const logModule = logger.child({
-    module: 'rowController'
-})
+
+const moduleName = 'rowController';
+
 
 // GET /tables/:tableName/rows и GET /tables/:tableName
 // Возвращает метаданные колонок и строки таблицы: { data: { columns, data } }
 export async function list(req, res) {
 
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'list rows'
     })
 
@@ -27,7 +26,7 @@ export async function list(req, res) {
 // Если строка не найдена — 404.
 export async function get(req, res) {
 
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'get rows'
     })
 
@@ -46,7 +45,7 @@ export async function get(req, res) {
 // Возвращает созданную строку: { data: row }
 export async function create(req, res) {
 
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'create row'
     })
 
@@ -63,7 +62,7 @@ export async function create(req, res) {
 // Обновляет строку по значению указанной колонки. Тело запроса — новые значения полей.
 // Возвращает обновлённую строку: { data: row }
 export async function replace(req, res) {
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'replace row'
     })
 
@@ -81,7 +80,7 @@ export async function replace(req, res) {
 // Удаляет строку по значению указанной колонки.
 // Возвращает удалённую строку: { data: row }
 export async function remove(req, res) {
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'remove row'
     })
 

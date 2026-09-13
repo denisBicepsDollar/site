@@ -35,3 +35,8 @@ nginx/certs/
 #act
 act
 bin/act
+
+#monitoring
+monitoring/data/
+monitoring/promtail/positions.yaml
+.env.monitoring

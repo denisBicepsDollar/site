@@ -2,13 +2,10 @@ import * as reportsService from '../services/Reports/reportService.js';
 import path from 'path';
 import {ApiError} from "../utils/ApiError.js";
 import logger from "../utils/logger.js";
-
-const logModule = logger.child({
-    module: 'reportController'
-})
+import getLogger from "../utils/logger.js";
 
 
-
+const moduleName = 'reportController';
 // POST /tables/:tableName/reports
 // Создаёт задачу на генерацию отчёта и ставит её в очередь воркеру.
 // Поддерживает как новый формат (where, aggregates, windowFns и т.д.),
@@ -16,7 +13,7 @@ const logModule = logger.child({
 // Возвращает: { id, status }
 export async function create(req, res) {
 
-    const log = logModule.child({
+    const log = getLogger().child({
         function: 'create report'
     })
 
@@ -56,7 +53,7 @@ export async function create(req, res) {
 // Удаляет отчёт из БД и файл с диска (если есть).
 export async function remove(req, res) {
 
-    const log = logModule.child({
+    const log = getLogger.child({
         function: 'remove report'
     })
 
@@ -73,7 +70,7 @@ export async function remove(req, res) {
 // Возвращает: { data: [...] }
 export async function list(req, res) {
 
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'list reports'
     })
     const { tableName } = req.params;
@@ -89,7 +86,7 @@ export async function list(req, res) {
 // Если отчёт не найден — 404.
 export async function status(req, res) {
 
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'status report'
     })
 
@@ -115,7 +112,7 @@ export async function status(req, res) {
 // 404 если отчёт не найден, 409 если ещё не готов или файл пропал.
 export async function download(req, res) {
 
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'download report'
     })
 

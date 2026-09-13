@@ -3,6 +3,7 @@ services:
     ports:
       - "80:80"
     volumes:
+      - ./nginx/logs:/var/log/nginx
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
       - ./shop:/var/www/shop
       - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
@@ -24,8 +25,7 @@ services:
       - notstart
 
   worker:
-    profiles:
-      - notstart
+
     environment:
       NODE_ENV: development
       SERVICE_NAME: worker

@@ -1,10 +1,11 @@
 import pino from 'pino'
 import config from '../config/index.js'
+import {loggerStorage} from "../middleware/requestContext.js";
 
 
 const isDev = config.env === 'development';
 
-const logger = pino({
+const mainLogger = pino({
 
     level: config.logLevel,
 
@@ -29,8 +30,16 @@ const logger = pino({
             colorize: true,
             translateTime: 'HH:MM:ss',
             ignore: 'pid,hostname',
-            messageFormat: '{if module}{module}{end}{if function}{function}{end}{msg}'
+            messageFormat: '{if module}{module} {end}{if function}{function} {end} {msg}'
         }
     }
 })
-export default logger;
+export default function getLogger(module){
+    const context = loggerStorage.getStore()
+
+    const modLog = context?.log ?? mainLogger
+
+    if (module) return modLog.child({module})
+
+    return modLog
+}

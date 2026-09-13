@@ -1,4 +1,6 @@
 import pool from './defaultClient.js';
+import getLogger from "../../utils/logger.js";
+const moduleName = 'rowRepo';
 
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -27,11 +29,14 @@ function quoteValue(val) {
 //   LIKE / ILIKE / NOT LIKE / NOT ILIKE — автодобавляет % если нет
 //   = != > >= < <=         — числа и булевы без кавычек, строки в кавычках
 function buildWhereClause(whereObj) {
+    const log = getLogger(moduleName).child({
+        function: 'buildWhereClause'
+    })
 
-    console.log(`[rowRepo] buildWhereClause:`, JSON.stringify(whereObj, null, 2));
+    log.debug({whereObj});
 
     if (!whereObj || typeof whereObj !== 'object' || Array.isArray(whereObj)) {
-        console.log(`[rowRepo] whereObj пустой — пропускаем`);
+        log.debug('whereObj пустой — пропускаем');
         return '';
     }
 
@@ -85,7 +90,7 @@ function buildWhereClause(whereObj) {
     }
 
     const result = parts.join(' AND ');
-    console.log(`[rowRepo] WHERE clause:`, result);
+    log.debug(`WHERE clause: ${result}`);
     return result;
 }
 
@@ -168,6 +173,10 @@ const WIN_FN_SQL = {
 // Формат: { anyKey: { fn, col, n, partitionBy, orderBy, orderDir, alias } }
 // Неизвестные fn пропускаются с предупреждением.
 function buildWindowParts(windowFns) {
+    const log = getLogger(moduleName).child({
+        function: 'buildWindowParts'
+    })
+
     if (!windowFns || typeof windowFns !== 'object') return [];
 
     const parts = [];
@@ -178,7 +187,7 @@ function buildWindowParts(windowFns) {
         const fnDef = WIN_FN_SQL[fnKey];
 
         if (!fnDef) {
-            console.warn(`[rowRepo] buildWindowParts: неизвестная fn "${fnKey}" — пропускаем`);
+            log.warn(`неизвестная fn "${fnKey}" — пропускаем`);
             continue;
         }
 
@@ -236,7 +245,10 @@ export async function findByColumns(tableName, {
     limit       = null,
     withSummary = null,
 } = {}) {
-    console.log(`[rowRepo] findByColumns table="${tableName}"`, { columns, where, groupBy, orderBy, limit });
+    const log = getLogger(moduleName).child({
+        function: 'findByColumns',
+    })
+    log.debug({tableName, columns, where, groupBy, orderBy, limit });
 
     if (typeof columns === 'string') columns = [columns];
     if (!Array.isArray(columns) || columns.length === 0) columns = null;
@@ -296,16 +308,19 @@ export async function findByColumns(tableName, {
         sql += `\n\nUNION ALL\n\nSELECT ${summaryParts.join(', ')}\nFROM ${quoteIdent(tableName)}`;
     }
 
-    console.log(`[rowRepo] SQL:\n${sql}`);
+    log.debug({sql}, 'SQL');
     const { rows } = await pool.query(sql);
-    console.log(`[rowRepo] findByColumns result: ${rows.length} rows`);
+    log.debug({length: rows.length}, 'result');
     return rows;
 }
 
 // Возвращает метаданные колонок и все строки таблицы (лимит 1000).
 // Используется для отображения таблицы на фронте: columns — схема, data — данные.
 export async function find(tableName) {
-    console.log(`[rowRepo] find table="${tableName}"`);
+    const log = getLogger(moduleName).child({
+        function: 'find table'
+    })
+    log.debug({tableName});
 
     const { rows: columns } = await pool.query(
         `SELECT column_name, data_type, is_nullable, column_default
@@ -319,14 +334,17 @@ export async function find(tableName) {
         `SELECT * FROM ${quoteIdent(tableName)} LIMIT 1000`
     );
 
-    console.log(`[rowRepo] find result: ${data.length} rows, ${columns.length} columns`);
+    log.debug({dataLength : data.length, rowsLength : columns.length},'result');
     return { columns, data };
 }
 
 // Вставляет новую строку в таблицу.
 // Значение 'DEFAULT' подставляется как SQL-ключевое слово, остальные — параметрами $N.
 export async function create(tableName, data) {
-    console.log(`[rowRepo] create table="${tableName}"`, data);
+    const log = getLogger(moduleName).child({
+        function: 'create table'
+    })
+    log.debug({tableName, data});
 
     const keys   = Object.keys(data);
     const cols   = keys.map(k => quoteIdent(k)).join(', ');
@@ -339,7 +357,7 @@ export async function create(tableName, data) {
 
     const sql = `INSERT INTO ${quoteIdent(tableName)} (${cols}) VALUES (${placeholders.join(', ')}) RETURNING *`;
     const { rows } = await pool.query(sql, values);
-    console.log(`[rowRepo] create result:`, rows[0]);
+    log({rows: rows[0]}, 'result');
     return rows;
 }
 
@@ -347,7 +365,11 @@ export async function create(tableName, data) {
 // Значение 'DEFAULT' сбрасывает колонку к дефолту, null/''/'' — устанавливает NULL.
 // Все значения передаются параметрами $N — не через шаблонные строки.
 export async function replace(tableName, data, filterValue, filterColumn = 'id') {
-    console.log(`[rowRepo] replace table="${tableName}" where ${filterColumn}=${filterValue}`, data);
+    const log = getLogger(moduleName).child({
+        function: 'replace table'
+    })
+
+    log.debug({tableName, filterColumn,filterValue,data});
 
     const keys = Object.keys(data);
     if (!keys.length) return null;
@@ -363,18 +385,21 @@ export async function replace(tableName, data, filterValue, filterColumn = 'id')
     values.push(filterValue);
     const sql = `UPDATE ${quoteIdent(tableName)} SET ${sets} WHERE ${quoteIdent(filterColumn)} = $${values.length} RETURNING *`;
     const { rows } = await pool.query(sql, values);
-    console.log(`[rowRepo] replace result: ${rows.length} rows`);
+    console.log({rowsLength: rows.length},'result');
     return rows;
 }
 
 // Удаляет строку по значению указанной колонки.
 // filterValue передаётся параметром $1 — не через шаблонную строку.
 export async function remove(tableName, filterValue, filterColumn) {
-    console.log(`[rowRepo] remove table="${tableName}" where ${filterColumn}=${filterValue}`);
+    const log = getLogger(moduleName).child({
+        function: 'remove table'
+    })
+    log.debug({tableName , filterColumn, filterValue});
 
     const values = [filterValue];
     const sql    = `DELETE FROM ${quoteIdent(tableName)} WHERE ${quoteIdent(filterColumn)} = $1 RETURNING *`;
     const { rows } = await pool.query(sql, values);
-    console.log(`[rowRepo] remove result: ${rows.length} rows`);
+    log.debug({rowsLength: rows.length},'result');
     return rows;
 }

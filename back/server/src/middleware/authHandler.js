@@ -1,14 +1,12 @@
 import jwt from "jsonwebtoken";
 import config from "../config/index.js";
 import {ApiError} from "../utils/ApiError.js";
-import logger from "../utils/logger.js";
+import getLogger from "../utils/logger.js";
 
-const logModule = logger.child({
-    module: 'Middleware'
-})
+const moduleName = 'Middleware'
 
 export default async function authHandler(req, res, next) {
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'authHandler'
     })
     log.debug({ip: req.ip});

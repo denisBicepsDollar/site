@@ -1,17 +1,14 @@
 import * as shopService from "../services/Common/shopService.js";
 import {ApiError} from "../utils/ApiError.js";
-import logger from "../utils/logger.js";
+import getLogger from "../utils/logger.js";
 
-const logModule = logger.child({
-    module: 'shopController'
-})
-
+const moduleName = 'shopController';
 
 // GET /api/products
 //
 export async function list(req, res) {
 
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'list products'
     })
     log.debug('list products')
@@ -22,7 +19,7 @@ export async function list(req, res) {
 }
 // GET /api/products/:id
 export async function get(req, res) {
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'get product'
     })
 
@@ -36,7 +33,7 @@ export async function get(req, res) {
 }
 export async function create(req, res) {
 
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'create order'
     })
     log.debug({ body: req.body});
@@ -81,7 +78,7 @@ export async function create(req, res) {
 }
 // POST /api/contacts
 export async function createContact(req, res) {
-    const log = logModule.child({
+    const log = getLogger(moduleName).child({
         function: 'create contact'
     })
     log.debug({body: req.body});
