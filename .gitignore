@@ -20,7 +20,7 @@ logs/
 
 # Окружение
 .env
-.env.prod
+.env.bak
 
 
 # IDE
