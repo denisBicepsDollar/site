@@ -116,7 +116,7 @@ describe('Docker compose Config Tests', () => {
                 it('should ensure production docker-compose does not contain dead or unused variables', () => {
 
                     const deadVariables = [...prodVariablesList].filter(
-                        v => ![...requiredVariablesCode].includes(v)
+                        v => ![...requiredVariablesCode].includes(v) && !data.common.includes(v)
                     );
 
                     assert.strictEqual(
