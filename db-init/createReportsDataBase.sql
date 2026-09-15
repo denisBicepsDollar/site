@@ -5,7 +5,7 @@ CREATE DATABASE reports;
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS reports (
-                                       id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     table_name    TEXT NOT NULL,
     title         TEXT,
     params        JSONB,

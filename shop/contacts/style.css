@@ -232,10 +232,6 @@
     color: var(--color-error);
 }
 
-.contacts-form__alert--hidden {
-    display: none;
-}
-
 .contacts-form__alert-text {
     font-weight: var(--fw-semibold);
 }

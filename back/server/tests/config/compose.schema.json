@@ -1,0 +1,10 @@
+{
+  "common": [
+    "SERVICE_NAME"
+  ],
+  "worker": [
+    "NODE_ENV",
+    "CATALOG_URL",
+    "REPORTS_URL"
+  ]
+}

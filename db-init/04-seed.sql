@@ -53,3 +53,14 @@ VALUES
         NOW()
     )
     ON CONFLICT (id) DO NOTHING;
+\c users
+INSERT INTO users
+    (username,
+     password,
+     role)
+VALUES
+    (
+     'admin',
+     '$2b$10$66cMX955qWGHrSCKLRy..ez6nl9BPElL6yPEwx9MJjVijl8IPuOhK',
+     'admin'
+    )

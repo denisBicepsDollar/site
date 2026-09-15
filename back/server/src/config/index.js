@@ -1,17 +1,16 @@
-import {config as dotenvConfig} from 'dotenv';
-import path from 'path';
-
-if (process.env.NODE_ENV !== 'production') {
-    const envPath = path.resolve(import.meta.dirname, '../../../../.env.dev');
-    dotenvConfig({path: envPath});
-}
+import 'dotenv/config';
 
 export default {
-    port: process.env.PORT || 3000,
+    port: 3000,
+    secretKey: process.env.SECRET_KEY,
+    env: process.env.NODE_ENV || 'development',
+    logLevel: process.env.LOG_LEVEL || 'debug',
+    serviceName: process.env.SERVICE_NAME || 'app-service',
 
     db:
         {
-            dbConnectionString: process.env.DATABASE_URL || null,
+            catalogConnectionString: process.env.CATALOG_URL || null,
             reportsConnectionString: process.env.REPORTS_URL || null,
+            usersConnectionString: process.env.USERS_URL || null,
         },
 };

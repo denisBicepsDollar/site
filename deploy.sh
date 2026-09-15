@@ -4,18 +4,26 @@ set -e
 cd ~/zelenyeusy
 
 echo "=== Обновление кода ==="
-cp .env.dev /tmp/.env.dev.backup 2>/dev/null || true
+cp .env /tmp/.env.backup 2>/dev/null || true
 
 git fetch origin main
 git reset --hard origin/main
 
-cp /tmp/.env.dev.backup .env.dev 2>/dev/null || echo "WARN: .env не найден в бэкапе!"
+cp /tmp/.env.backup .env 2>/dev/null || echo "WARN: .env не найден в бэкапе!"
 
 echo "=== Сборка админки (React) ==="
 cd back/frontend
 npm ci
 npm run build
 cd ../..
+
+echo "=== Проверка мониторинга ==="
+if docker compose -f docker-compose.monitoring.yml --env-file .env.monitoring ps -q loki grafana alloy | grep -q .; then
+  echo "Мониторинг уже запущен."
+else
+  echo "WARN: Мониторинг не запущен."
+  echo "Запустить вручную: docker compose -f docker-compose.monitoring.yml --env-file .env.monitoring up -d"
+fi
 
 echo "=== Перезапуск Docker-сервисов ==="
 docker compose -f docker-compose.yml up -d --build

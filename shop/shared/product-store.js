@@ -1,4 +1,5 @@
 import {getProducts} from './api.js';
+import {state} from "../catalog/state.js";
 
 let cache = null;
 let loadingPromise = null;
@@ -43,7 +44,7 @@ export async function loadProductsData() {
             const products = Array.isArray(data) ? data : (data.data || []);
             products.forEach(product => {
                 const index = buildSearchIndex(product);
-                if (product.name?.includes('Сандей')) {
+                if (product.name?.includes(state.currentSearch)) {
 
                     product._searchIndex = index;
                     product._searchWords = index.split(' ');

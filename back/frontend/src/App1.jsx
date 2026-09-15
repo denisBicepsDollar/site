@@ -2,8 +2,8 @@
    APP.JSX — ГЛАВНЫЙ КОМПОНЕНТ ПРИЛОЖЕНИЯ
    ============================================================================ */
 
-import { useState, useEffect } from 'react';
-import * as api from './api.js'
+import {useState, useEffect} from 'react';
+import * as api from './api.js';
 import Sidebar from './sidebars/sidebar';
 import TableInfo from './table/tableInfo';
 
@@ -11,7 +11,7 @@ import TableInfo from './table/tableInfo';
    ГЛАВНЫЙ КОМПОНЕНТ APP
    ───────────────────────────────────────────────────────────────────────── */
 
-export default function App() {
+export default function App1() {
     /* ─────────────────────────────────────────────────────────────────────
        СОСТОЯНИЯ КОМПОНЕНТА
        ───────────────────────────────────────────────────────────────────── */
@@ -48,16 +48,16 @@ export default function App() {
             })
             .catch(e => {
                 /* Установка ошибки только если компонент смонтирован */
-                if (mounted) setError(e.message)
+                if (mounted) setError(e.message);
             })
             .finally(() => {
                 /* Отключение флага загрузки */
-                if (mounted) setLoading(false)
+                if (mounted) setLoading(false);
             });
 
         /* Функция очистки: предотвращает утечки памяти */
         return () => {
-            mounted = false
+            mounted = false;
         };
     }, []);
 

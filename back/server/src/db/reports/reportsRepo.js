@@ -55,7 +55,7 @@ export async function create({
 // Атомарно берёт один отчёт со статусом 'В ожидании...' и переводит его в 'В процессе...'.
 // FOR UPDATE SKIP LOCKED гарантирует что два воркера не возьмут одну задачу одновременно.
 export async function getPendingAndLock() {
-    console.log(`[reportsRepo] getPendingAndLock`);
+    // console.log(`[reportsRepo] getPendingAndLock`);
 
     const sql = `
         WITH next AS (
@@ -72,7 +72,7 @@ export async function getPendingAndLock() {
         RETURNING reports.*
     `;
     const { rows } = await client.query(sql);
-    console.log(`[reportsRepo] getPendingAndLock result:`, rows[0]?.id ?? 'no pending reports');
+    // console.log(`[reportsRepo] getPendingAndLock result:`, rows[0]?.id ?? 'no pending reports');
     return rows[0];
 }
 

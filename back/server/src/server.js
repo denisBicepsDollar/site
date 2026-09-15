@@ -1,54 +1,69 @@
-// ── server.js ─────────────────────────────────────────────────────────────────
-// Точка входа HTTP-сервера. Инициализирует Express, подключает middleware и роуты.
-// errorHandler регистрируется ПОСЛЕ роутов — иначе он не перехватит ошибки из них.
-
+import { initCrashHandler } from './utils/terminate.js'
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import config from './config/index.js';
 import errorHandler from './middleware/errorHandler.js';
-import {registerRoutes} from './routes.js';
-import path from 'path';
+import {registerRoutes} from './routes/routes.js';
+import {apiLimiter} from './middleware/rateLimiters.js';
+import {ApiError} from './utils/ApiError.js';
 import {fileURLToPath} from "url";
-import rateLimit from 'express-rate-limit';
+import getLogger from "./utils/logger.js";
+import {requestContext} from "./middleware/requestContext.js";
+import {accessLogger} from "./middleware/accessLogger.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const server = { instance : null }
+initCrashHandler({httpServer: server})
 
-async function startServer() {
+const moduleName = 'server';
+
+const log = getLogger(moduleName);
+
+
+export function createApp() {
     const app = express();
 
+    app.set('trust proxy', 1);
+
     app.use(cors({
-        origin: ['http://localhost:5173',
-            'http://127.0.0.1:5173',
-        ],
+        origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
         credentials: true,
     }));
+    app.use(accessLogger);
+
+    app.use(requestContext)
+
     app.use(express.json());
     app.use(express.urlencoded({extended: true}));
+    app.use(cookieParser());
 
-    const shopPath = path.join(__dirname, '../../../', 'shop');
-    app.use(express.static(shopPath));
+    app.use('/api/', apiLimiter);
 
     registerRoutes(app);
 
-    // errorHandler должен быть последним middleware
+    app.use(() => {
+        throw new ApiError(404);
+    });
+
+
     app.use(errorHandler);
 
-    const port = config.port;
-    app.listen(port, () => {
-        console.log(`[server] started on port ${port}`);
-        console.log(`Магазин: http://localhost:${port}`);
-        console.log(`API:    http://localhost:${port}/tables`);
-    });
-    const limiter = rateLimit({
-        windowMs: 15 * 60 * 1000, // 15 минут
-        max: 100,                  // макс запросов
-        message: {error: 'Слишком много запросов, попробуйте позже'},
-    });
-
-    app.use('/api/', limiter);
+    return app;
 }
 
-startServer().catch(err => {
-    console.error('[server] ошибка при запуске:', err);
-    process.exit(1);
-});
+export function startServer() {
+    const app = createApp();
+    const port = config.port;
+    const env = config.env
+
+    const runningServer = app.listen(port, () => {
+        log.info({port, env}, 'started');
+    });
+    server.instance = runningServer;
+
+    return runningServer;
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+    startServer();
+}

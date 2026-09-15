@@ -18,6 +18,11 @@ services:
       - api
     networks:
       - app-net
+    logging:
+        driver: "json-file"
+        options:
+          max-size: "20m"
+          max-file: "3"
 
   api:
     build:
@@ -25,12 +30,15 @@ services:
       dockerfile: Dockerfile
     container_name: api
     restart: unless-stopped
-    env_file: .env
     environment:
-      NODE_ENV: production
-      PORT: 3000
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      REPORTS_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/reports
+      NODE_ENV: ${NODE_ENV}
+      SERVICE_NAME: api
+      LOG_LEVEL: info
+      CATALOG_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/${POSTGRES_DB:?DB is required}
+      REPORTS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/reports
+      USERS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/users
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
+
     volumes:
       - ./shop:/app/shop
       - ./storage:/app/src/storage
@@ -38,12 +46,21 @@ services:
       - db
     networks:
       - app-net
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   db:
     image: postgres:15-alpine
     container_name: postgresDataBase
     restart: unless-stopped
-    env_file: .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -53,6 +70,16 @@ services:
       - ./db-init:/docker-entrypoint-initdb.d
     networks:
       - app-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   certbot:
     image: certbot/certbot:latest
@@ -70,6 +97,11 @@ services:
         sleep 12h & wait $${!};
       done;
       '
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   worker:
     build:
@@ -77,10 +109,10 @@ services:
       dockerfile: Dockerfile
     container_name: worker
     restart: unless-stopped
-    env_file: .env
     environment:
-      NODE_ENV: production
-      REPORTS_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/reports
+      NODE_ENV: ${NODE_ENV}
+      REPORTS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/reports
+      CATALOG_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/${POSTGRES_DB:?DB is required}
     volumes:
       - ./storage:/app/src/storage
     command: [ "node", "src/bin/worker.js" ]
@@ -88,7 +120,17 @@ services:
       - db
     networks:
       - app-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   app-net:
     driver: bridge
+
+volumes:
+  grafana_data:
+  loki_data:
+  promtail_positions:

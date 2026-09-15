@@ -1,0 +1,61 @@
+// 1. Опрашиваем Docker API только ради получения ID и Имен контейнеров
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+// 2. Связываем данные: берем ID из Docker API и собираем из него путь к файлу лога
+discovery.relabel "filter_docker_names" {
+  targets = discovery.docker.containers.targets
+
+  // Шаг А: Берем имя контейнера, чистим от слэша и делаем меткой "container"
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+    replacement   = "$1"
+  }
+
+  // Шаг Б: Самый важный! Берем ID контейнера из Docker API (__meta_docker_container_id)
+  // и конструируем из него прямой путь к файлу на диске, перезаписывая служебную метку __path__
+  rule {
+    source_labels = ["__meta_docker_container_id"]
+    regex         = "(.*)"
+    target_label  = "__path__"
+    replacement   = "/var/lib/docker/containers/$1/$1-json.log" // Подставили ID контейнера в путь!
+  }
+}
+
+
+loki.source.file "docker_file_scrape" {
+  targets    = discovery.relabel.filter_docker_names.output
+  forward_to = [loki.process.parse_docker_json.receiver]
+}
+
+
+loki.process "parse_docker_json" {
+  // Запись в одну строку гарантирует, что Alloy правильно поймет структуру
+  stage.json {
+    expressions = { raw_log = "log" }
+  }
+
+  stage.json {
+    source = "raw_log"
+    expressions = { app_level = "level", app_module = "module"}
+    }
+  stage.labels {
+    values = { level = "app_level", module = "app_module" }
+    }
+
+  stage.output {
+      source = "raw_log"
+    }
+  forward_to = [loki.write.loki_client.receiver]
+}
+
+
+// 4. Отправка в Loki
+loki.write "loki_client" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

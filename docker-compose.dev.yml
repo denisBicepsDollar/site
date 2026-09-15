@@ -1,0 +1,32 @@
+services:
+  nginx:
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/logs:/var/log/nginx
+      - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ./shop:/var/www/shop
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
+      - ./back/frontend/dist:/var/www/admin:ro
+
+  api:
+    environment:
+      NODE_ENV: development
+      SERVICE_NAME: api
+      LOG_LEVEL: debug
+      CATALOG_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/${POSTGRES_DB:?DB is required}
+      REPORTS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/reports
+      USERS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/users
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
+
+
+  certbot:
+    profiles:
+      - notstart
+
+  worker:
+
+    environment:
+      NODE_ENV: development
+      SERVICE_NAME: worker
+      LOG_LEVEL: debug
