@@ -24,15 +24,17 @@ const mainLogger = pino({
         censor: '[REDACTED]'
     },
 
-    transport: isDev && {
-        target: 'pino-pretty',
-        options: {
-            colorize: true,
-            translateTime: 'HH:MM:ss',
-            ignore: 'pid,hostname',
-            messageFormat: '{if module}{module} {end}{if function}{function} {end} {msg}'
+    transport: isDev
+        ? {
+            target: 'pino-pretty',
+            options: {
+                colorize: true,
+                translateTime: 'HH:MM:ss',
+                ignore: 'pid,hostname',
+                messageFormat: '{if module}{module} {end}{if function}{function} {end} {msg}'
+            }
         }
-    }
+        : undefined
 })
 export default function getLogger(module){
     const context = loggerStorage.getStore()

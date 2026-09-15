@@ -11,7 +11,7 @@ services:
 
   api:
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       SERVICE_NAME: api
       LOG_LEVEL: debug
       CATALOG_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/${POSTGRES_DB:?DB is required}

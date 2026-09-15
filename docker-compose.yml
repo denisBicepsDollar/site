@@ -111,8 +111,6 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV}
-      SERVICE_NAME: worker
-      LOG_LEVEL: info
       REPORTS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/reports
       CATALOG_URL: connectionString
     volumes:
