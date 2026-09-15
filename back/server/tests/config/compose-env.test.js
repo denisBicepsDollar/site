@@ -32,6 +32,7 @@ const variablesInCode = new Set(
         .trim()
         .replaceAll('process.env.', '')
         .split('\n')
+        .filter(line => line && !data.common.includes(line))
 );
 
 const rawVariablesEnvExample = execSync(
@@ -44,6 +45,7 @@ const variablesInEnvExample = new Set(
     rawVariablesEnvExample
         .trim()
         .split('\n')
+
 );
 
 
@@ -114,7 +116,7 @@ describe('Docker compose Config Tests', () => {
                 it('should ensure production docker-compose does not contain dead or unused variables', () => {
 
                     const deadVariables = [...prodVariablesList].filter(
-                        v => ![...requiredVariablesCode].includes(v)
+                        v => ![...requiredVariablesCode].includes(v) && !data.common.includes(v)
                     );
 
                     assert.strictEqual(

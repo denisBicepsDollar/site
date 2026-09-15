@@ -17,6 +17,14 @@ npm ci
 npm run build
 cd ../..
 
+echo "=== Проверка мониторинга ==="
+if docker compose -f docker-compose.monitoring.yml --env-file .env.monitoring ps -q loki grafana alloy | grep -q .; then
+  echo "Мониторинг уже запущен."
+else
+  echo "WARN: Мониторинг не запущен."
+  echo "Запустить вручную: docker compose -f docker-compose.monitoring.yml --env-file .env.monitoring up -d"
+fi
+
 echo "=== Перезапуск Docker-сервисов ==="
 docker compose -f docker-compose.yml up -d --build
 
