@@ -32,6 +32,7 @@ const variablesInCode = new Set(
         .trim()
         .replaceAll('process.env.', '')
         .split('\n')
+        .filter(line => line && !data.common.includes(line))
 );
 
 const rawVariablesEnvExample = execSync(
@@ -44,7 +45,7 @@ const variablesInEnvExample = new Set(
     rawVariablesEnvExample
         .trim()
         .split('\n')
-        .filter(line => line && !data.common.includes(line))
+
 );
 
 
