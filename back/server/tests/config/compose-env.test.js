@@ -44,6 +44,7 @@ const variablesInEnvExample = new Set(
     rawVariablesEnvExample
         .trim()
         .split('\n')
+        .filter(line => line && !data.common.includes(line))
 );
 
 
