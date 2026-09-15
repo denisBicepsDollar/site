@@ -16,11 +16,12 @@ export function accessLogger(req, res, next) {
         const status =  res.statusCode
 
         const logData = {
+            remote_addr: req.headers['x-real-ip'],
             method: req.method,
             path: req.path,
             status: status,
-            durationMs: duration,
-            requestId: req.headers['x-request-id']
+            upstream_response_time: duration,
+            request_id: req.headers['x-request-id']
         };
 
         if (status >= 500) {

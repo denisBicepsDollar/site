@@ -1,30 +1,42 @@
 services:
-  promtail:
-    image: grafana/promtail:3.0.0
-    container_name: promtail
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
+    user: "0"
     restart: unless-stopped
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./monitoring/promtail-config.yaml:/etc/promtail/config.yml:ro
-      - ./monitoring/promtail:/run/promtail
-    command: -config.file=/etc/promtail/config.yml
+      - ./monitoring/alloy-config.alloy:/etc/alloy/config.alloy:ro
+      - ./monitoring/data/alloy:/var/lib/alloy/data
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command: run --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
     networks:
       - site_app-net
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:12345/-/healthy | grep -q healthy" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
 
   loki:
     image: grafana/loki:3.0.0
     user: "root"
     container_name: loki
     restart: unless-stopped
-    ports:
-      - "3100:3100"
     volumes:
       - ./monitoring/loki-config.yaml:/etc/loki/local-config.yaml
       - ./monitoring/data/loki:/loki
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - site_app-net
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:3100/ready | grep -q 'ready'" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
 
   grafana:
     image: grafana/grafana:latest
@@ -33,20 +45,22 @@ services:
     env_file:
       - .env.monitoring
     ports:
-      - "3001:3000"
+      - "127.0.0.1:3001:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:?GRAFANA_PASSWORD is required}
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:?GRAFANA_USER is required}
     volumes:
       - ./monitoring/data/grafana:/var/lib/grafana
+      - ./monitoring/datasource.yaml
     networks:
       - site_app-net
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health | grep -q 'ok'" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
 
 networks:
   site_app-net:
     external: true
-
-volumes:
-  grafana_data:
-  loki_data:
-  promtail_positions:

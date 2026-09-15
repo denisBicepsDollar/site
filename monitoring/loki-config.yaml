@@ -4,8 +4,7 @@ server:
   http_listen_port: 3100
 
 common:
-  instance_addr: 127.0.0.1
-  path_prefix: /tmp/loki
+  path_prefix: /loki
   storage:
     filesystem: {}
   replication_factor: 1
@@ -19,7 +18,7 @@ limits_config:
   allow_structured_metadata: false
 
 compactor:
-  working_directory: /tmp/loki/retention
+  working_directory: /loki/retention
   compaction_interval: 10m
   retention_enabled: true
   retention_delete_delay: 2h

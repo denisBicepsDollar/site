@@ -37,6 +37,8 @@ act
 bin/act
 
 #monitoring
-monitoring/data/
-monitoring/promtail/positions.yaml
+monitoring/data/alloy/*
+monitoring/data/grafana/*
+monitoring/data/loki/*
+
 .env.monitoring
