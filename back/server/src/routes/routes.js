@@ -3,7 +3,7 @@ import * as authController from "../controllers/authController.js";
 import adminRouter from "./admin.js";
 import authHandler from "../middleware/authHandler.js";
 import {authLimiter} from "../middleware/rateLimiters.js";
-
+import healthRouter from "./health.js";
 //import {upload, uploadImage} from './controllers/uploadController.js';
 
 export function registerRoutes(app) {
@@ -23,8 +23,7 @@ export function registerRoutes(app) {
     // Admin
     app.use('/admin', adminRouter);
 
-    app.get('/health', (req, res) => {
-        return res.status(200).json('ok');
-    })
 
+    // HealthCheck
+    app.use('/health', healthRouter);
 }

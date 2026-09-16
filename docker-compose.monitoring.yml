@@ -14,7 +14,7 @@ services:
     networks:
       - site_app-net
     healthcheck:
-      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:12345/-/healthy | grep -q healthy" ]
+      test: ["CMD", "alloy", "compile", "/etc/alloy/config.alloy"]
       interval: 10s
       timeout: 3s
       retries: 5

@@ -4,7 +4,11 @@
 // Структура идентична defaultClient — отличается только database.
 import pg from 'pg';
 import config from '../../config/index.js';
+import getLogger from "../../utils/logger.js";
 
+const moduleName = 'reportsClient';
+
+const log = getLogger(moduleName);
 if (!config.db.reportsConnectionString) {
     throw new Error('Reports database connection string is missing');
 }
@@ -17,12 +21,15 @@ const pool = new pg.Pool
 );
 
 pool.on('connect', () => {
-    console.log('Открыто соединение с отчетной БД');
+    
 });
 
 
 pool.on('error', (err) => {
-    console.error('Ошибка пула отчетной БД:', err.message);
+    log.debug({
+        message: err.message,
+        code: err.code,
+        severity: err.severity }, 'Ошибка пула отчетной БД');
 });
 
 export default pool;

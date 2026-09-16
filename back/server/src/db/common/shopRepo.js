@@ -58,7 +58,7 @@ export async function getProducts({
                                       limit = 1000,
                                       offset = 0,
                                   } = {}) {
-    console.log('[shopRepo] getProducts', {group, type, search});
+    
 
     const where = [];
     const params = [];
@@ -117,16 +117,16 @@ export async function getProducts({
         OFFSET ${parseInt(offset)}
     `;
 
-    console.log('[shopRepo] SQL:\n' + sql);
+    
 
     const {rows} = await pool.query(sql, params);
-    console.log('first row:', rows[0]?.id, 'min_price:', rows[0]?.min_price);
+    
     return rows.map(r => mapProduct(r, []));
 }
 
 // ── 2. ОДИН ТОВАР ПО ID ────────────────────────────────────────────────────
 export async function getProductById(id) {
-    console.log('[shopRepo] getProductById', id);
+    
     const {rows} = await pool.query(
         `SELECT p.*,
                 (SELECT v.image
@@ -162,13 +162,13 @@ export async function getProductById(id) {
                       END ASC`, [id],
     );
 
-    console.log('[shopRepo] variants:', variants); // ← добавь
+     // ← добавь
     return mapProduct(rows[0], variants);
 }
 
 // ── 3. СОЗДАНИЕ ЗАКАЗА (самое важное) ──────────────────────────────────────
 export async function createOrder(order, items) {
-    console.log('[shopRepo] createOrder START', order);
+    
     const client = await pool.connect();
 
     try {
@@ -262,12 +262,12 @@ export async function createOrder(order, items) {
         }
 
         await client.query('COMMIT');
-        console.log('[shopRepo] createOrder OK id=', newOrder.id);
+        
         return {orderId: newOrder.id, total};
 
     } catch (e) {
         await client.query('ROLLBACK');
-        console.log('[shopRepo] createOrder FAIL', e.message);
+        
         throw e;
     } finally {
         client.release();
@@ -275,7 +275,7 @@ export async function createOrder(order, items) {
 }
 
 export async function createContact({name, email, phone, message}) {
-    console.log('[shopRepo] createContact', {name, email});
+    
     if (!name?.trim()) throw new Error('Укажите имя');
     if (!message?.trim()) throw new Error('Укажите сообщение');
     if (!email?.trim() && !phone?.trim()) throw new Error('Укажите email или телефон');
@@ -286,6 +286,6 @@ export async function createContact({name, email, phone, message}) {
     `;
     const vals = [name || null, email || null, phone || null, message];
     const {rows: [row]} = await pool.query(sql, vals);
-    console.log('[shopRepo] contact saved id=', row.id);
+    
     return row.id;
 }

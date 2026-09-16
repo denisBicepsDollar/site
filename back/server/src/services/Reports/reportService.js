@@ -18,7 +18,7 @@ export async function createTask({
                                      groupBy, orderBy, orderDir, where, aggregates,
                                      having, windowFns, coalesce, limit, withSummary,
                                  }) {
-    console.log(`[reportService] createTask table="${tableName}"`);
+    
 
     return reportsRepo.create({
         table_name: tableName,
@@ -31,7 +31,7 @@ export async function createTask({
 // Удаляет отчёт: сначала файл с диска (если есть), затем запись из БД.
 // ENOENT при удалении файла не считается ошибкой — файл мог быть удалён вручную.
 export async function removeReport(reportId) {
-    console.log(`[reportService] removeReport id=${reportId}`);
+    
 
     const report = await reportsRepo.getReport(reportId);
     if (!report) return { ok: false, reason: 'NOT_FOUND' };
@@ -53,7 +53,7 @@ export async function removeReport(reportId) {
 // Legacy-параметры (count, avg, group_by и т.д.) берутся из отдельных колонок.
 // При успехе — markDone, при ошибке — markFailed.
 export async function processReport(report) {
-    console.log(`[reportService] processReport id=${report.id} table="${report.table_name}"`);
+    
 
     const {
         where, aggregates, having, windowFns, coalesce, limit, withSummary,
@@ -78,7 +78,7 @@ export async function processReport(report) {
             withSummary: withSummary ?? null,
         });
 
-        console.log(`[reportService] processReport rows=${rows.length}`);
+        
 
         const csv      = reportCSV(rows);
         await fs.mkdir(STORAGE_DIR, { recursive: true });
@@ -88,7 +88,6 @@ export async function processReport(report) {
 
         return { ok: true, path: filePath };
     } catch (err) {
-        console.error(`[reportService] processReport failed id=${report.id}:`, err);
         await reportsRepo.markFailed(report.id, err);
         return { ok: false, error: err };
     }
@@ -107,7 +106,7 @@ export async function processNext() {
 // Возвращает отчёт по id. Если файл указан но не существует на диске —
 // автоматически помечает отчёт как FILE_MISSING и обнуляет result_path.
 export async function getReport(id) {
-    console.log(`[reportService] getReport id=${id}`);
+    
 
     const report = await reportsRepo.getReport(id);
     if (!report || !report.result_path) return report;
@@ -125,6 +124,6 @@ export async function getReport(id) {
 
 // Возвращает список отчётов для таблицы. Делегирует в репозиторий.
 export async function listReportByTable(tableName) {
-    console.log(`[reportService] listReportByTable table="${tableName}"`);
+    
     return reportsRepo.listReportByTable(tableName);
 }
