@@ -126,7 +126,18 @@ jobs:
                 exit 1
 
       - name: Проверяем /api/products
-        run: curl -f http://localhost/api/products
+        run: |
+          echo "Ожидаем доступности веб-сервера на localhost..."
+          for i in {1..15}; do
+            if curl -s -f http://localhost/api/products > /dev/null; then
+              echo "✅ Сервер полностью готов и отвечает!"
+              break
+            fi
+            echo "Попытка $i: сервер пока недоступен, ждем..."
+            sleep 2
+          done
+          
+          curl -f http://localhost/api/products
 
   nginx_config:
     name: Nginx test

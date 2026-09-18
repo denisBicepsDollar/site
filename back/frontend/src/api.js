@@ -37,10 +37,6 @@ export async function getListTables() {
 }
 
 
-export async function getTable(tableName) {
-    const res = await fetch(`/admin/tables/${encodeURIComponent(tableName)}`);
-    return handleResponse(res);
-}
 
 /* ─────────────────────────────────────────────────────────────────────────
    СТРОКИ (ROWS)
