@@ -385,7 +385,7 @@ export async function replace(tableName, data, filterValue, filterColumn = 'id')
     values.push(filterValue);
     const sql = `UPDATE ${quoteIdent(tableName)} SET ${sets} WHERE ${quoteIdent(filterColumn)} = $${values.length} RETURNING *`;
     const { rows } = await pool.query(sql, values);
-    console.log({rowsLength: rows.length},'result');
+    
     return rows;
 }
 

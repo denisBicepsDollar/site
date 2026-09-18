@@ -24,7 +24,10 @@ pool.on('connect', () => {
 
 
 pool.on('error', (err) => {
-    log.error({ err },'Ошибка пула главной БД');
+    log.debug({
+        message: err.message,
+        code: err.code,
+        severity: err.severity  },'Ошибка пула главной БД');
 });
 
 

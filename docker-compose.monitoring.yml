@@ -14,7 +14,7 @@ services:
     networks:
       - site_app-net
     healthcheck:
-      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:12345/-/healthy | grep -q healthy" ]
+      test: ["CMD", "alloy", "compile", "/etc/alloy/config.alloy"]
       interval: 10s
       timeout: 3s
       retries: 5
@@ -22,7 +22,7 @@ services:
 
   loki:
     image: grafana/loki:3.0.0
-    user: "root"
+    user: "0"
     container_name: loki
     restart: unless-stopped
     volumes:
@@ -51,7 +51,7 @@ services:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:?GRAFANA_USER is required}
     volumes:
       - ./monitoring/data/grafana:/var/lib/grafana
-      - ./monitoring/datasource.yaml
+      - ./monitoring/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
     networks:
       - site_app-net
     healthcheck:

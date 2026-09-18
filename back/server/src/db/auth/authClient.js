@@ -21,8 +21,11 @@ const pool = new pg.Pool
 pool.on('connect', () => {
     log.info("База users connected");
 });
-pool.on('error', (err) => {
-    log.error({ err }, "Ошибка при подключении users");
+pool.on('debug', (err) => {
+    log.error({
+        message: err.message,
+        code: err.code,
+        severity: err.severity }, "Ошибка при подключении users");
 });
 
 export default pool;

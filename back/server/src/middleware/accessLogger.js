@@ -1,19 +1,20 @@
 import getLogger from "../utils/logger.js"
+
 const moduleName = 'Middleware';
 
 export function accessLogger(req, res, next) {
 
-    if (req.path === '/health') return next();
+    if (req.path.includes('/health')) return next();
 
     const log = getLogger(moduleName).child({
         function: 'accessLogger'
     })
-
+    
     const startTime = new Date();
 
     res.on('finish', () => {
         const duration = new Date() - startTime;
-        const status =  res.statusCode
+        const status = res.statusCode
 
         const logData = {
             remote_addr: req.headers['x-real-ip'],
@@ -26,11 +27,9 @@ export function accessLogger(req, res, next) {
 
         if (status >= 500) {
             log.error(logData, 'API Request Error');
-        }
-        else if (status >= 400) {
+        } else if (status >= 400) {
             log.warn(logData, 'API Request Warning');
-        }
-        else {
+        } else {
             log.info(logData, 'API Request Success');
         }
     });

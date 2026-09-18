@@ -1,15 +1,23 @@
 #!/bin/bash
-set -e
+set -ex
 
 cd ~/zelenyeusy
 
 echo "=== Обновление кода ==="
-cp .env /tmp/.env.backup 2>/dev/null || true
+if [ -f ".env" ]; then
+    echo "Создаем надежный бэкап .env..."
+    cp .env .env.bak
+else
+    echo "WARN: Локальный .env не найден, бэкапить нечего."
+fi
 
 git fetch origin main
 git reset --hard origin/main
 
-cp /tmp/.env.backup .env 2>/dev/null || echo "WARN: .env не найден в бэкапе!"
+if [ -f ".env.bak" ]; then
+    echo "Восстанавливаем .env из бэкапа..."
+    mv .env.bak .env
+fi
 
 echo "=== Сборка админки (React) ==="
 cd back/frontend
