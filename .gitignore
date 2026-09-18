@@ -40,5 +40,7 @@ bin/act
 monitoring/data/alloy/*
 monitoring/data/grafana/*
 monitoring/data/loki/*
+monitoring/container_restarts.txt
+monitoring/alerts/*
 
 .env.monitoring
