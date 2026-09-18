@@ -42,7 +42,6 @@ services:
       SERVICE_NAME: api
       LOG_LEVEL: info
       CATALOG_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/${POSTGRES_DB:?DB is required}
-      REPORTS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/reports
       USERS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/users
       SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
     volumes:

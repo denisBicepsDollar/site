@@ -104,7 +104,7 @@ jobs:
       - name: Ждем Db
         run: |
           for i in {1..30}; do
-                  status=$(docker inspect --format='{{.State.Health.Status}}' postgresDataBase)
+                  status=$(docker inspect --format='{{.State.Health.Status}}' db)
                   if [ "$status" = "healthy" ]; then
                       exit 0
                   fi
