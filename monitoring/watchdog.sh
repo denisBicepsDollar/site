@@ -5,21 +5,29 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 REQUIRED_CONTAINERS=("nginx" "api" "db")
 
 
-BOT_TOKEN=token
-CHAT_ID=123456
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-STATE_FILE="/home/den1sb1cepsserver/zelenyeusy/monitoring/container_restarts.txt"
-ALERT_DIR="/home/den1sb1cepsserver/zelenyeusy/monitoring/alerts"
+ENV_FILE="$(cd "${SCRIPT_DIR}/../" && pwd)/.env.monitoring"
+
+STATE_FILE="${SCRIPT_DIR}/container_restarts.txt"
+ALERT_DIR="${SCRIPT_DIR}/alerts"
+
 mkdir -p "${ALERT_DIR}"
+
+if [ -f "${ENV_FILE}" ]; then
+  source "${ENV_FILE}"
+  export BOT_TOKEN CHAT_ID
+  echo "level=info msg='Variables loaded'"
+fi
 
 
 
 get_explain() {
   case "$1" in
-    *unhealthy*) echo "docker logs \${container} it can be dataBase or disk space" ;;
-    *exited*) echo "docker restart \${container} && docker logs" ;;
+    *unhealthy*) echo "docker logs ${container} it can be dataBase or disk space" ;;
+    *exited*) echo "docker restart ${container} && docker logs" ;;
     *missing*) echo "check deploy pipeline, container does not exists" ;;
-    *flapping*) echo "constant restart, check docker logs --tail 50 \${container}" ;;
+    *flapping*) echo "constant restart, check docker logs --tail 50 ${container}" ;;
     *disk_90*) echo "docker image prune and older logs, after check pgdata" ;;
     *disk_80*) echo "check docker system df, after del unused volumes" ;;
     *ram*) echo "check top/htop, can be memory leak" ;;
@@ -38,14 +46,11 @@ send_alert () {
       return
     fi
   fi
-
-  # Если крон не прочитал токены из crontab, скрипт возьмет их отсюда (на всякий случай подставьте свои)
   local token="${BOT_TOKEN}"
   local chat="${CHAT_ID}"
-
   curl -s -X GET "https://api.telegram.org/bot${token}/sendMessage" \
   --data-urlencode "chat_id=${chat}" \
-  --data-urlencode "text=service=${service}, event=${event}, explain_type=${explain}"
+  --data-urlencode "text=service=${service}, event=${event}, explain_type=${explain}" > /dev/null 2>&1
   echo "${now}" > "${marker}"
 }
 
@@ -63,14 +68,13 @@ close_alert () {
 
     curl -s -X GET "https://api.telegram.org/bot${token}/sendMessage" \
       --data-urlencode "chat_id=${chat}" \
-      --data-urlencode "text=service=${service}, status=RESOLVED, duration=${duration}m"
+      --data-urlencode "text=service=${service}, status=RESOLVED, duration=${duration}m" > /dev/null 2>&1
     rm -f "${marker}"
   fi
 }
 
 echo "level=info msg='Starting system health check'"
 
-# ИСПРАВЛЕНИЕ ОШИБКИ 1: Собираем статусы БЕЗ изоляции subshell
 containers_state=""
 while read -r name; do
   if [ -n "$name" ]; then
@@ -95,7 +99,6 @@ system_status="HEALTHY"
 
 for container in "${REQUIRED_CONTAINERS[@]}"; do
   container_info=$(echo "${containers_state}" | grep -E "^${container} ")
-
   if [ -z "${container_info}" ]; then
     send_alert "missing_${container}" "${container}" "missing" "missing"
     system_status="UNHEALTHY"
@@ -104,24 +107,25 @@ for container in "${REQUIRED_CONTAINERS[@]}"; do
     close_alert "missing_${container}" "${container}"
   fi
 
-  if [[ $container_info == *"unhealthy"* ]]; then
-      send_alert "status_${container}" "$container" "unhealthy" "unhealthy"
-      system_status="UNHEALTHY"
-  elif [[ $container_info == *"exited"* ]]; then
+  read -r c_name c_status c_health c_restarts <<< "${container_info}"
+
+  if [ "${c_status}" = "exited" ]; then
       send_alert "status_${container}" "$container" "exited" "exited"
+      system_status="UNHEALTHY"
+  elif [ "${c_health}" = "unhealthy" ]; then
+      send_alert "status_${container}" "$container" "unhealthy" "unhealthy"
       system_status="UNHEALTHY"
   else
       close_alert "status_${container}" "$container"
   fi
 
-  read -r name status hc_status restarts <<< "${container_info}"
-
-  echo "${name} ${restarts}" >> "${STATE_FILE}"
+  # Записываем имя и правильную переменную c_restarts в файл состояния
+  echo "${c_name} ${c_restarts}" >> "${STATE_FILE}"
 
   prev_count=${PREV_RESTARTS["${container}"]}
 
-  if [ -n "${prev_count}" ] && [ "${restarts}" -gt "${prev_count}" ];then
-    diff=$((restarts - prev_count))
+  if [ -n "${prev_count}" ] && [ "${c_restarts}" -gt "${prev_count}" ];then
+    diff=$((c_restarts - prev_count))
     send_alert "flapping_${container}" "$container" "flapping (diff=${diff})" "flapping"
     system_status="UNHEALTHY"
   else
