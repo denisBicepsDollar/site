@@ -60,6 +60,38 @@ export default function errorHandler(err, req, res, _next) {
         })
     }
 
+    if (req.path === '/health/') {
+        console.log(err.code)
+        if (err.code === 'ENOTFOUND' || err.code === 'EAI_AGAIN') {
+            log.warn({ status: 503, code: err.code, request_id }, 'Docker container "db" is down');
+
+            return res.status(503).json({
+                status: 'degraded',
+                timestamp: new Date().toISOString(),
+                components: { catalog_db: 'error', reports_db: 'error', users_db: 'error' }
+            });
+        }
+
+        if (err.code === '57P01' || err.code === 'ECONNREFUSED' || err.severity === 'FATAL') {
+            log.warn({ status: 503, code: err.code, message: err.message, request_id }, 'Database pool process error');
+
+            const isCatalog = err.message.includes('catalog') || req.stack?.includes('catalogDbHealth');
+            const isReports = err.message.includes('reports') || req.stack?.includes('reportsDbHealth');
+            const isUsers = err.message.includes('users') || req.stack?.includes('usersDbHealth');
+
+            return res.status(503).json({
+                status: 'degraded',
+                timestamp: new Date().toISOString(),
+                components: {
+                    catalog_db: isCatalog ? 'error' : 'ok',
+                    reports_db: isReports ? 'error' : 'ok',
+                    users_db: isUsers ? 'error' : 'ok'
+                }
+            });
+        }
+    }
+
+
     const isDev = config.env === 'development';
 
     log.error({

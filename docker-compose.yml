@@ -15,7 +15,8 @@ services:
       - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
       - ./back/frontend/dist:/var/www/admin:ro
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     networks:
       - app-net
     logging:
@@ -23,6 +24,12 @@ services:
         options:
           max-size: "20m"
           max-file: "3"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
 
   api:
     build:
@@ -35,22 +42,22 @@ services:
       SERVICE_NAME: api
       LOG_LEVEL: info
       CATALOG_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/${POSTGRES_DB:?DB is required}
-      REPORTS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/reports
       USERS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/users
       SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
-
     volumes:
       - ./shop:/app/shop
       - ./storage:/app/src/storage
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - app-net
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
-      interval: 5s
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/health/ping" ]
+      interval: 30s
       timeout: 3s
-      retries: 10
+      retries: 3
+      start_period: 40s
     logging:
       driver: "json-file"
       options:
@@ -59,7 +66,7 @@ services:
 
   db:
     image: postgres:15-alpine
-    container_name: postgresDataBase
+    container_name: db
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -102,30 +109,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
-  worker:
-    build:
-      context: ./back/server
-      dockerfile: Dockerfile
-    container_name: worker
-    restart: unless-stopped
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      REPORTS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/reports
-      CATALOG_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/${POSTGRES_DB:?DB is required}
-    volumes:
-      - ./storage:/app/src/storage
-    command: [ "node", "src/bin/worker.js" ]
-    depends_on:
-      - db
-    networks:
-      - app-net
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 networks:
   app-net:
     driver: bridge

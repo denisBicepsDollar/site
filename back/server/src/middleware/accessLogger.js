@@ -3,7 +3,8 @@ import getLogger from "../utils/logger.js"
 const moduleName = 'Middleware';
 
 export function accessLogger(req, res, next) {
-    if (req.path === '/health') return next();
+
+    if (req.path.includes('/health')) return next();
 
     const log = getLogger(moduleName).child({
         function: 'accessLogger'
