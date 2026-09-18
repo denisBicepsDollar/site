@@ -110,7 +110,7 @@ else
   echo "Ok"
 fi
 
-disk_usage=$(df / | awk 'NR==2 {print $6}' -| tr -d '%')
+disk_usage=$(df / | awk 'NR==2 {print $5}' -| tr -d '%')
 
 if [[ $disk_usage -gt 90 ]]; then
   send_alert "disk" "disk" "usage > 90% (current: ${disk_usage}%)" "disk_90"
