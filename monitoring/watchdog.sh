@@ -120,7 +120,7 @@ else
   close_alert "disk" "Disk"
 fi
 
-read -r total available <<< $(wsl free | awk 'NR==2 {print $2, $7}')
+read -r total available <<< $(free | awk 'NR==2 {print $2, $7}')
 
 ram_free_pct=$(( available * 100 / total ))
 
