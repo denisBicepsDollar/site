@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
 
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
 REQUIRED_CONTAINERS=("nginx" "api" "db")
-STATE_FILE="/tmp/container_restarts.txt"
-ALERT_DIR="/tmp/alerts"
+
+
+BOT_TOKEN=token
+CHAT_ID=123456
+
+STATE_FILE="/home/den1sb1cepsserver/zelenyeusy/monitoring/container_restarts.txt"
+ALERT_DIR="/home/den1sb1cepsserver/zelenyeusy/monitoring/alerts"
 mkdir -p "${ALERT_DIR}"
+
 
 
 get_explain() {
@@ -14,7 +22,7 @@ get_explain() {
     *flapping*) echo "constant restart, check docker logs --tail 50 \${container}" ;;
     *disk_90*) echo "docker image prune and older logs, after check pgdata" ;;
     *disk_80*) echo "check docker system df, after del unused volumes" ;;
-    *ram*) echo "check top/htop, can be memory leak"
+    *ram*) echo "check top/htop, can be memory leak" ;;
   esac
 }
 
@@ -31,11 +39,16 @@ send_alert () {
     fi
   fi
 
-  curl -s -X GET "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-  --data-urlencode "chat_id=${CHAT_ID}" \
+  # Если крон не прочитал токены из crontab, скрипт возьмет их отсюда (на всякий случай подставьте свои)
+  local token="${BOT_TOKEN}"
+  local chat="${CHAT_ID}"
+
+  curl -s -X GET "https://api.telegram.org/bot${token}/sendMessage" \
+  --data-urlencode "chat_id=${chat}" \
   --data-urlencode "text=service=${service}, event=${event}, explain_type=${explain}"
   echo "${now}" > "${marker}"
 }
+
 close_alert () {
   local key="$1" service="$2"
   local marker="${ALERT_DIR}/${key}.marker"
@@ -45,37 +58,47 @@ close_alert () {
     local first_sent=$(stat -c %Y "${marker}")
     local duration=$(( (now - first_sent) / 60 ))
 
-    curl -s -X GET "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-      --data-urlencode "chat_id=${CHAT_ID}" \
-      --data-urlencode "text=service=${service}, duration=${duration}"
+    local token="${BOT_TOKEN}"
+    local chat="${CHAT_ID}"
+
+    curl -s -X GET "https://api.telegram.org/bot${token}/sendMessage" \
+      --data-urlencode "chat_id=${chat}" \
+      --data-urlencode "text=service=${service}, status=RESOLVED, duration=${duration}m"
     rm -f "${marker}"
   fi
 }
 
 echo "level=info msg='Starting system health check'"
 
+# ИСПРАВЛЕНИЕ ОШИБКИ 1: Собираем статусы БЕЗ изоляции subshell
+containers_state=""
 while read -r name; do
-  containers_state="${containers_state}$(docker inspect --format "${name} {{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}} {{.RestartCount}}" "${name}")
-"
+  if [ -n "$name" ]; then
+    info=$(docker inspect --format "{{.Name}} {{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{else}}no-healthcheck{{end}} {{.RestartCount}}" "$name" 2>/dev/null)
+    info=$(echo "$info" | sed 's|/||')
+    containers_state="${containers_state}${info}"$'\n'
+  fi
 done < <(docker ps -a --format '{{.Names}}')
-
 
 declare -A PREV_RESTARTS
 if [ -f "${STATE_FILE}" ]; then
   while read -r c_name c_count; do
-    PREV_RESTARTS["${c_name}"]="${c_count}"
+    if [ -n "$c_name" ]; then
+      PREV_RESTARTS["${c_name}"]="${c_count}"
+    fi
   done < "${STATE_FILE}"
 fi
 
 > "${STATE_FILE}"
 
+system_status="HEALTHY"
 
 for container in "${REQUIRED_CONTAINERS[@]}"; do
-
-  container_info=$(echo "${containers_state}" | grep -E "${container}")
+  container_info=$(echo "${containers_state}" | grep -E "^${container} ")
 
   if [ -z "${container_info}" ]; then
     send_alert "missing_${container}" "${container}" "missing" "missing"
+    system_status="UNHEALTHY"
     continue
   else
     close_alert "missing_${container}" "${container}"
@@ -83,13 +106,15 @@ for container in "${REQUIRED_CONTAINERS[@]}"; do
 
   if [[ $container_info == *"unhealthy"* ]]; then
       send_alert "status_${container}" "$container" "unhealthy" "unhealthy"
-    elif [[ $container_info == *"Exited"* ]]; then
+      system_status="UNHEALTHY"
+  elif [[ $container_info == *"exited"* ]]; then
       send_alert "status_${container}" "$container" "exited" "exited"
-    else
+      system_status="UNHEALTHY"
+  else
       close_alert "status_${container}" "$container"
-    fi
+  fi
 
-  read -r name _ _ restarts <<< "${container_info}"
+  read -r name status hc_status restarts <<< "${container_info}"
 
   echo "${name} ${restarts}" >> "${STATE_FILE}"
 
@@ -98,35 +123,32 @@ for container in "${REQUIRED_CONTAINERS[@]}"; do
   if [ -n "${prev_count}" ] && [ "${restarts}" -gt "${prev_count}" ];then
     diff=$((restarts - prev_count))
     send_alert "flapping_${container}" "$container" "flapping (diff=${diff})" "flapping"
+    system_status="UNHEALTHY"
   else
     close_alert "flapping_${container}" "$container"
   fi
 done
 
-if [ -n "${error_containers}" ]; then
-  echo "Problems:"
-  echo "${error_containers}"
-else
-  echo "Ok"
-fi
-
-disk_usage=$(df / | awk 'NR==2 {print $5}' -| tr -d '%')
+disk_usage=$(df / | awk 'NR==2 {print $5}' | tr -d '%')
 
 if [[ $disk_usage -gt 90 ]]; then
   send_alert "disk" "disk" "usage > 90% (current: ${disk_usage}%)" "disk_90"
+  system_status="UNHEALTHY"
 elif [[ $disk_usage -gt 80 ]]; then
   send_alert "disk" "Disk" "used > 80% (current: ${disk_usage}%)" "disk_80"
+  system_status="UNHEALTHY"
 else
   close_alert "disk" "Disk"
 fi
 
 read -r total available <<< $(free | awk 'NR==2 {print $2, $7}')
-
 ram_free_pct=$(( available * 100 / total ))
 
 if [[ $ram_free_pct -lt 15 ]]; then
   send_alert "ram" "RAM" "free < 15% (current: ${ram_free_pct}%)" "ram"
+  system_status="UNHEALTHY"
 else
   close_alert "ram" "RAM"
 fi
-echo "level=info msg='Health check finished' disk_used_pct=${disk_usage} ram_free_pct=${ram_free_pct} status=HEALTHY"
+
+echo "level=info msg='Health check finished' disk_used_pct=${disk_usage} ram_free_pct=${ram_free_pct} status=${system_status}"
