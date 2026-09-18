@@ -10,7 +10,6 @@ export default {
     db:
         {
             catalogConnectionString: process.env.CATALOG_URL || null,
-            reportsConnectionString: process.env.REPORTS_URL || null,
             usersConnectionString: process.env.USERS_URL || null,
         },
 };

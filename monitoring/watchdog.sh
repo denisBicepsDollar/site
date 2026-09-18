@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-REQUIRED_CONTAINERS=("nginx" "api" "worker" "db")
+REQUIRED_CONTAINERS=("nginx" "api" "db")
 STATE_FILE="/tmp/container_restarts.txt"
 ALERT_DIR="/tmp/alerts"
 mkdir -p "${ALERT_DIR}"

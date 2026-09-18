@@ -7,7 +7,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "lint": "eslint .",
-    "test": "node --test tests/config/*.test.js"
+    "test": "node --test --test-reporter=spec tests/config/*.test.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

@@ -111,30 +111,6 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  worker:
-    build:
-      context: ./back/server
-      dockerfile: Dockerfile
-    container_name: worker
-    restart: unless-stopped
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      REPORTS_URL: postgres://${POSTGRES_USER:?USER is required}:${POSTGRES_PASSWORD:?PASSWORD is required}@db:5432/reports
-      CATALOG_URL: connectionString
-    volumes:
-      - ./storage:/app/src/storage
-    command: [ "node", "src/bin/worker.js" ]
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - app-net
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 networks:
   app-net:
     driver: bridge

@@ -16,20 +16,17 @@ export async function healthCheck() {
         timestamp: new Date().toISOString(),
         components: {
             catalog_db: 'ok',
-            reports_db: 'ok',
             users_db: 'ok',
         }
     };
     const [catalogDbHealth, reportsDbHealth, usersDbHealth] = await Promise.all([
         healthRepo.catalogDbHealth(),
-        healthRepo.reportsDbHealth(),
         healthRepo.usersDbHealth()
     ])
 
     if (catalogDbHealth === 'error' || reportsDbHealth === 'error' || usersDbHealth === 'error') {
         healthStatus.status = 'degraded';
         healthStatus.components.catalog_db = catalogDbHealth;
-        healthStatus.components.reports_db = reportsDbHealth;
         healthStatus.components.users_db = usersDbHealth;
     }
     cachedStatus = healthStatus;
