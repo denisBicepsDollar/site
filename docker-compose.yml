@@ -67,7 +67,7 @@ services:
 
   db:
     image: postgres:15-alpine
-    container_name: postgresDataBase
+    container_name: db
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
