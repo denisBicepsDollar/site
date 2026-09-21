@@ -6,66 +6,103 @@
 /* ─────────────────────────────────────────────────────────────────────────
    CSS ПЕРЕМЕННЫЕ (ДИЗАЙН-СИСТЕМА)
    ───────────────────────────────────────────────────────────────────────── */
-:root {
+@theme {
     /* Основные цвета */
-    --af-bg: #ffffff;
-    --af-surface: #f5f5f5;
-    --af-border: rgba(0, 0, 0, 0.12);
-    --af-border2: rgba(0, 0, 0, 0.08);
+    --color-primary: #f5f5f5;
+    --color-border: rgba(0, 0, 0, 0.12);
+    --color-border2: rgba(0, 0, 0, 0.08);
 
     /* Акцентные цвета */
-    --af-accent: #0062ca;
-    --af-accent2: #2ecc71;
-    --af-danger: #ff4f6e;
+    --color-accent: #0062ca;
+    --color-accent2: #2ecc71;
+    --color-danger: #ff4f6e;
 
     /* Текст */
-    --af-text: #333333;
-    --af-muted: #777777;
-    --af-label: #666666;
+    --color-text: #333333;
+    --color-muted: #777777;
+    --color-label: #666666;
 
     /* Компоненты */
-    --af-input-bg: #fafafa;
-    --af-r: 12px;
+    --color-input-bg: #fafafa;
+    --color-r: 12px;
 
     /* Типография */
-    --af-font-size-header: 32px;
-    --af-font-size-body: 16px;
-    --af-font-size-etc: 18px;
-    --af-font: 'Monaco';
-    --af-font2: 'Helvetica Neue', 'Helvetica';
+    --color-font-size-header: 32px;
+    --color-font-size-body: 16px;
+    --color-font-size-etc: 18px;
+    --color-font: 'Monaco';
+    --color-font2: 'Helvetica Neue', 'Helvetica';
 
     /* Цветовые вариации */
-    --af-accent-light: #e6f2ff;
-    --af-accent-dark: #0047a3;
-    --af-accent2-light: #e8f8f0;
-    --af-accent2-dark: #1fa855;
-    --af-danger-light: #ffe6ed;
-    --af-danger-dark: #d63855;
+    --color-accent-light: #e6f2ff;
+    --color-accent-dark: #0047a3;
+    --color-accent2-light: #e8f8f0;
+    --color-accent2-dark: #1fa855;
+    --color-danger-light: #ffe6ed;
+    --color-danger-dark: #d63855;
 
     /* Семантические цвета */
-    --af-success: #10b981;
-    --af-success-light: #d1fae5;
-    --af-success-dark: #047857;
+    --color-success: #10b981;
+    --color-success-light: #d1fae5;
+    --color-success-dark: #047857;
 
-    --af-warning: #f59e0b;
-    --af-warning-light: #fef3c7;
-    --af-warning-dark: #d97706;
+    --color-warning: #f59e0b;
+    --color-warning-light: #fef3c7;
+    --color-warning-dark: #d97706;
 
-    --af-info: #3b82f6;
-    --af-info-light: #dbeafe;
-    --af-info-dark: #1d4ed8;
+    --color-info: #3b82f6;
+    --color-info-light: #dbeafe;
+    --color-info-dark: #1d4ed8;
 
     /* Оттенки серого */
-    --af-gray-50: #f9fafb;
-    --af-gray-100: #f3f4f6;
-    --af-gray-200: #e5e7eb;
-    --af-gray-300: #d1d5db;
-    --af-gray-400: #9ca3af;
-    --af-gray-500: #6b7280;
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+
+    /* --- ЭСТЕТИКА APPLE / IPHONE --- */
+
+    /* Фирменная палитра iOS (System Colors) */
+    --color-blue: #007aff;        /* Классический синий iOS */
+    --color-green: #34c759;       /* Яркий зеленый */
+    --color-indigo: #5856d6;      /* Индиго / фиолетовый */
+    --color-orange: #ff9500;      /* Системный оранжевый */
+    --color-pink: #ff2d55;        /* Насыщенный розовый */
+    --color-purple: #af52de;      /* Пурпурный */
+    --color-red: #ff3b30;         /* Фирменный красный */
+    --color-teal: #30b0c7;        /* Бирюзовый */
+    --color-yellow: #ffcc00;      /* Теплый желтый */
+
+    /* Премиальные цвета корпусов (iPhone Pro Titanium & Matte) */
+    --color-space-black: #1c1c1e; /* Космический черный */
+    --color-graphite: #4b4a48;    /* Графит */
+    --color-silver: #f2f2f7;      /* Серебро (светло-серый iOS) */
+    --color-gold: #f4e0c8;        /* Благородное золото */
+    --color-natural-titanium: #a6a19a; /* Натуральный титан */
+    --color-desert-titanium: #cbb9a8;  /* Пустынный титан (iPhone 16 Pro) */
+    --color-deep-purple: #3b334a; /* Глубокий пурпурный (14 Pro) */
+    --color-sierra-blue: #a7c1d7; /* Небесно-голубой (13 Pro) */
+    --color-midnight: #1a222d;    /* Темная ночь (глубокий сине-черный) */
+
+    /* Пастельные цвета базовых iPhone (15 / 16) */
+    --color-pastel-pink: #fbe0e3;  /* Нежно-розовый */
+    --color-pastel-yellow: #fef0be;/* Лимонный пастельный */
+    --color-pastel-green: #d1f1e1; /* Мятный / Зеленый чай */
+    --color-pastel-blue: #d2e4f9;  /* Размытый голубой */
+    --color-ultramarine: #3b5ba5;  /* Ультрамарин (iPhone 16) */
+    --color-teal-bright: #89cfd3;  /* Насыщенный бирюзовый (iPhone 16) */
+
+    /* Системный размытый фон и поверхности (Dark/Light режимы) */
+    --color-bg-grouped: #f2f2f7;    /* Стандартный фон настроек iOS */
+    --color-card-light: #ffffff;    /* Белая плашка под контент */
+    --color-card-dark: #1c1c1e;     /* Темная плашка в Dark Mode */
+
 
     /* Эффекты */
-    --af-overlay: rgba(0, 0, 0, 0.5);
-    --af-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --color-overlay: rgba(0, 0, 0, 0.5);
+    --color-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -73,9 +110,9 @@
    ───────────────────────────────────────────────────────────────────────── */
 
 .muted {
-    color: var(--af-muted);
-    font-family: var(--af-font2);
-    font-size: var(--af-font-size-etc);
+    color: var(--color-muted);
+    font-family: var(--color-font2);
+    font-size: var(--color-font-size-etc);
     margin: 0;
     padding: 13px;
 }
@@ -87,11 +124,11 @@
 
 /* Основная кнопка (создание, добавление) */
 .btn-accent {
-    font-family: var(--af-font2);
+    font-family: var(--color-font2);
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.06em;
-    background: linear-gradient(180deg, var(--af-accent) 0%, #0052a3 100%);
+    background: linear-gradient(180deg, var(--color-accent) 0%, #0052a3 100%);
     color: #fff;
     border: none;
     border-radius: 12px;
@@ -113,12 +150,12 @@
 
 /* Кнопка опасного действия (удаление) */
 .btn-danger {
-    font-family: var(--af-font2);
+    font-family: var(--color-font2);
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    background: linear-gradient(180deg, var(--af-danger) 0%, var(--af-danger-dark) 100%);
+    background: linear-gradient(180deg, var(--color-danger) 0%, var(--color-danger-dark) 100%);
     color: #fff;
     border: none;
     border-radius: 12px;
@@ -140,12 +177,12 @@
 
 /* Кнопка успеха (скачивание, экспорт) */
 .btn-accent2 {
-    font-family: var(--af-font2);
+    font-family: var(--color-font2);
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    background: linear-gradient(180deg, var(--af-accent2) 0%, var(--af-accent2-dark) 100%);
+    background: linear-gradient(180deg, var(--color-accent2) 0%, var(--color-accent2-dark) 100%);
     color: #fff;
     border: none;
     border-radius: 12px;
@@ -167,12 +204,12 @@
 
 /* Информационная кнопка (доп. действия) */
 .btn-outline {
-    font-family: var(--af-font2);
+    font-family: var(--color-font2);
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    background: linear-gradient(180deg, var(--af-info) 0%, var(--af-info-dark) 100%);
+    background: linear-gradient(180deg, var(--color-info) 0%, var(--color-info-dark) 100%);
     color: #fff;
     border: none;
     border-radius: 12px;
@@ -194,12 +231,12 @@
 
 /* Кнопка предупреждения (осторожно, замена) */
 .btn-warning {
-    font-family: var(--af-font2);
+    font-family: var(--color-font2);
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    background: linear-gradient(180deg, var(--af-warning) 0%, var(--af-warning-dark) 100%);
+    background: linear-gradient(180deg, var(--color-warning) 0%, var(--color-warning-dark) 100%);
     color: #fff;
     border: none;
     border-radius: 12px;
