@@ -5,6 +5,8 @@ import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import Dashboard from "./features/dashboard/components/Dashboard.jsx";
 import AccessControl from "./shared/components/AccessControl.jsx";
 import LoginForm from "./features/auth/components/LoginForm.jsx";
+import {GoodsContent} from "./features/dashboard/components/GoodsContent.jsx";
+import {OrdersContent} from "./features/dashboard/components/OrdersContent.jsx";
 
 const root = createRoot(document.getElementById('root'));
 root.render(
@@ -26,8 +28,8 @@ root.render(
                 </AccessControl>
             }>
                 <Route index element={<Navigate to="goods" replace />} />
-                <Route path="goods" element={<span>товары</span>}/>
-                <Route path="orders" element={<span>заказы</span>}/>
+                <Route path="goods" element={<GoodsContent />}/>
+                <Route path="orders" element={<OrdersContent/>}/>
                 <Route path="messages" element={<span>обращения</span>}/>
                 <Route path="settings" element={<span>настройки</span>}/>
                 <Route path="localhost" element={<span>перейти в магазин</span>}/>
