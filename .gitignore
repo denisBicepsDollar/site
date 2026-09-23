@@ -36,6 +36,8 @@ nginx/certs/
 act
 bin/act
 
+back/frontend/public/
+
 #monitoring
 monitoring/data/alloy/*
 monitoring/data/grafana/*
