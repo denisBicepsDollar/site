@@ -31,7 +31,7 @@ export function HeaderInfo() {
             <div className={`
                         flex 
                         items-center
-                        pt-12
+                        pt-8
                         pb-0
                         
                         `}>

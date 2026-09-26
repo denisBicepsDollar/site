@@ -1,18 +1,39 @@
 import { twMerge } from 'tailwind-merge';
 import { NavLink } from 'react-router-dom';
-import {useState} from "react";
+import {useEffect, useState} from "react";
+
+const goods = [
+    { id: 1, name: "Монстера Делициоза", sku: "PL-001", category: "Комнатные растения", price: "2 400 ₽", stock: "15 шт", variants: "D-17, H-60", status: "active", updated: "Сегодня", image: "/1.png" },
+    { id: 2, name: "Фикус Лирата", sku: "PL-002", category: "Комнатные растения", price: "4 800 ₽", stock: "1 шт", variants: "D-21, H-110", status: "warning", updated: "Вчера", image: "/2.png" },
+    { id: 3, name: "Замиокулькас (Долларовое дерево)", sku: "PL-003", category: "Комнатные растения", price: "1 900 ₽", stock: "0 шт", variants: "D-14, H-45", status: "inactive", updated: "2 дня назад", image: "/3.png" },
+    { id: 4, name: "Букет «Нежное утро» (Розы и эвкалипт)", sku: "FL-101", category: "Срезанные цветы", price: "3 500 ₽", stock: "8 шт", variants: "M (25 см)", status: "active", updated: "Сегодня", image: "/4.png" },
+    { id: 5, name: "Сансевиерия Лауренти", sku: "PL-004", category: "Комнатные растения", price: "1 600 ₽", stock: "40 шт", variants: "D-12, H-35", status: "active", updated: "3 дня назад", image: "/5.png" },
+    { id: 6, name: "Суккулент Микс в кашпо", sku: "PL-005", category: "Суккуленты", price: "650 ₽", stock: "25 шт", variants: "D-6, H-10", status: "active", updated: "Сегодня", image: "/6.png" },
+    { id: 7, name: "Орхидея Фаленопсис (Белая)", sku: "PL-006", category: "Цветущие растения", price: "2 100 ₽", stock: "2 шт", variants: "1 ствол, H-60", status: "warning", updated: "Вчера", image: "/7.png" },
+    { id: 8, name: "Спатифиллум (Женское счастье)", sku: "PL-007", category: "Цветущие растения", price: "1 350 ₽", stock: "0 шт", variants: "D-12, H-40", status: "inactive", updated: "5 дней назад", image: "/8.png" },
+    { id: 9, name: "Букет «Французская лаванда»", sku: "FL-102", category: "Сухоцветы", price: "1 800 ₽", stock: "12 шт", variants: "One size", status: "active", updated: "Сегодня", image: "/9.png" },
+    { id: 10, name: "Эпипремнум Ауреум (Ампельный)", sku: "PL-008", category: "Комнатные растения", price: "950 ₽", stock: "18 шт", variants: "D-12, H-20", status: "active", updated: "Вчера", image: "/10.png" },
+    { id: 11, name: "Калатея Орната", sku: "PL-009", category: "Комнатные растения", price: "2 200 ₽", stock: "4 шт", variants: "D-14, H-50", status: "active", updated: "Сегодня", image: "/11.png" },
+    { id: 12, name: "Антуриум Андре (Красный)", sku: "PL-010", category: "Цветущие растения", price: "1 750 ₽", stock: "3 шт", variants: "D-12, H-45", status: "warning", updated: "2 дня назад", image: "/12.png" },
+    { id: 13, name: "Алоэ Вера Премиум", sku: "PL-011", category: "Суккуленты", price: "1 100 ₽", stock: "14 шт", variants: "D-10, H-30", status: "active", updated: "Сегодня", image: "/13.png" },
+    { id: 14, name: "Букет из 15 красных роз (Кения)", sku: "FL-103", category: "Срезанные цветы", price: "2 850 ₽", stock: "0 шт", variants: "40 см", status: "inactive", updated: "4 дня назад", image: "/14.png" },
+    { id: 15, name: "Папоротник Нефролепис", sku: "PL-012", category: "Комнатные растения", price: "1 450 ₽", stock: "7 шт", variants: "D-15, H-35", status: "active", updated: "Вчера", image: "/15.png" },
+    { id: 16, name: "Хамедорея Изящная (Пальма)", sku: "PL-013", category: "Комнатные растения", price: "1 200 ₽", stock: "9 шт", variants: "D-12, H-40", status: "active", updated: "Сегодня", image: "/16.png" },
+    { id: 17, name: "Эхеверия Миранда", sku: "PL-014", category: "Суккуленты", price: "550 ₽", stock: "30 шт", variants: "D-8, H-12", status: "active", updated: "3 дня назад", image: "/17.png" },
+    { id: 18, name: "Традесканция Зебрина", sku: "PL-015", category: "Комнатные растения", price: "800 ₽", stock: "1 шт", variants: "D-10, H-15", status: "warning", updated: "Вчера", image: "/18.png" },
+    { id: 19, name: "Грунт премиум для ароидных", sku: "SU-501", category: "Сопутствующие товары", price: "450 ₽", stock: "50 шт", variants: "3 литра", status: "active", updated: "Сегодня", image: "/19.png" },
+    { id: 20, name: "Кашпо керамическое (Мрамор)", sku: "SU-502", category: "Сопутствующие товары", price: "1 250 ₽", stock: "0 шт", variants: "D-16, H-16", status: "inactive", updated: "6 дней назад", image: "/20.png" }
+];
+
 
 export function AsideButton({
                                 children,
                                 text,
                                 to,
-                                variant = 'default',
-                                onClick,
                                 className = '',
-                                isActive: isDefaultActive = false // переименовали дефолтный пропс, чтобы не путаться
                             }) {
 
-    const getStyles = (active) => twMerge(`
+    const getStyles = (isActive) => twMerge(`
         flex 
         items-center 
         gap-3 
@@ -24,22 +45,15 @@ export function AsideButton({
         ease-out
         hover:scale-102 hover:brightness-110 
         active:scale-98
-        ${active ? 'bg-white text-black font-semibold' : 'hover:bg-blue-600/40 hover:text-white'}
+        ${isActive ? 'bg-white text-black font-semibold' : 'hover:bg-blue-600/40 hover:text-white'}
         ${className}
     `);
-
-    function handleClick(e) {
-        if (onClick) {
-            onClick(e);
-        }
-    }
 
     if (to) {
         return (
             <NavLink
                 to={to}
                 className={({ isActive }) => getStyles(isActive)}
-                onClick={handleClick}
             >
                 {children}
                 {
@@ -51,53 +65,209 @@ export function AsideButton({
             </NavLink>
         );
     }
+}
+
+export function PageButton(
+    {
+        children,
+        text,
+        onClick,
+        className = '',
+        variant = 'default',
+    }) {
+
+    const defaultStyle = `
+    flex 
+    items-center 
+    gap-3 
+    rounded-xl 
+    p-2
+    cursor-pointer
+    transition-all
+    duration-150
+    font-medium
+    ease-out
+    hover:brightness-110 
+    active:scale-98
+    border-2
+    border-border2
+    ${variant === 'accent' ? " bg-blue-500 text-white" : ""}
+    `
 
     return (
-        <button
-            className={getStyles(isDefaultActive)}
-            onClick={handleClick}
-            data-selected={isDefaultActive}
-        >
+        <button className={defaultStyle} onClick={onClick}>
             {children}
-            <span className="font-medium p-2 ">
+            <span>
                 {text}
             </span>
         </button>
-    );
+
+    )
+
 }
+
+
+
 export function SortByStatusButtons(){
+    const [selected, setSelected] = useState('all');
+
+
+    const categories = new Map([['all', goods.length]]);
+
+    for (const elem of goods) {
+        const status = elem.status;
+        const currentCount = categories.get(status) || 0
+        categories.set(status, currentCount+1)
+    }
+
     return (
-        <div>
-            sort
+        <div className="flex flex-1">
+            <div className="
+            flex
+            gap-2
+            px-1
+            bg-muted/20
+            rounded-2xl
+            items-center
+            ">
+                {
+                    Array.from(categories).map(([name, count]) => (
+                    <div
+                        onClick={() => setSelected(name)}
+                        className={`
+                        flex
+                        cursor-pointer
+                        px-1.5
+                        gap-0.5
+                        py-0.5
+                        rounded-xl
+                        items-baseline
+                        group
+                        transition-all 
+                        duration-200 
+                        active:scale-98
+                        bg-transparent
+                        ${selected === name ? "bg-white border-border2 border-2 shadow-sm" : "border-2 border-transparent text-muted/80 hover:bg-muted/5 "}
+    
+                        `}>
+                            <button className={`
+                            cursor-pointer
+                            flex
+                            transition-colors duration-200
+                            ${selected === name ? "" : "group-hover:text-black/80"}
+                            `}>{name}
+                            </button>
+                            <span className={`
+                                flex
+                                px-1.5
+                                text-sm
+                                font-medium
+                                transition-all duration-200
+                                ease-out
+                                ${selected === name ? "bg-black  text-white " : " group-hover:brightness-110 text-muted/50 bg-muted/20  group-hover:text-black/60 group-hover:bg-muted/40 "}
+                                rounded-xl
+                                `}>
+                                    {count}
+                            </span>
+                    </div>
+
+                    ))
+                }
+            </div>
         </div>
     );
 
 }
 
 export function SearchByName(){
+    const [text, setText] = useState('');
+
     return (
-        <div>
-            searchByName
-        </div>
+        <label className="
+            flex
+            flex-row
+            border-2
+            items-center
+            rounded-xl
+            p-2
+            w-55
+            cursor-text
+            transition-all duration-200
+            border-border2
+            focus-within:shadow-md focus-within:shadow-blue-600/20
+        ">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                className=" w-5 mr-2">
+                <path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>
+            </svg>
+
+            <input
+                className="
+                    outline-none
+                    w-full
+                    bg-transparent
+
+                "
+                type="text"
+                placeholder="Название, артикул..."
+                value={text}
+                onChange={(e) => {setText(e.target.value)}}
+            />
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 className={`${text ? 'opacity-100' : 'opacity-0 pointer-events-none'} transition-all duration-200 w-7 p-1 h-7 flex items-center justify-center rounded-full cursor-pointer hover:bg-muted/20`}
+                 onClick={() => setText('')}
+            >
+                <path d="M18 6 6 18"/>
+                <path d="m6 6 12 12"/>
+            </svg>
+        </label>
     );
 
 }
-export function TableRender(){
+
+export function TableRender() {
     const [selectedIds, setSelectedIds] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(4);
+
+    useEffect(() => {
+        function handleResize(){
+            const width = window.innerWidth;
+
+            if (width < 640) {
+                setItemsPerPage(4);
+            }
+            else if (width < 1600) {
+                setItemsPerPage(5);
+            }
+            else {
+                setItemsPerPage(8);
+            }
+        }
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [])
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = goods.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(goods.length / itemsPerPage);
 
 
+    let isAllSelected = currentItems.length > 0 && selectedIds.length === currentItems.length;
 
-
-
-
-    const goods = [
-        { id: 1, name: "Свитшот Over size", sku: "SW-2940", category: "Одежда", price: "4 200 ₽", stock: "12 шт", variants: "S, M, L", status: "active", updated: "Сегодня", image: "/1.png" },
-        { id: 2, name: "Футболка хлопковая Basic", sku: "TS-1022", category: "Одежда", price: "1 800 ₽", stock: "1 шт", variants: "M, XL", status: "warning", updated: "Вчера", image: "/3.png" },
-        { id: 3, name: "Кепка Сasual", sku: "CP-4411", category: "Аксессуары", price: "1 200 ₽", stock: "0 шт", variants: "One size", status: "inactive", updated: "2 дня назад", image: "/2.png" },
-    ];
-    let isAllSelected = goods.length > 0 && selectedIds.length === goods.length;
-
-    function handleToggle(id){
+    function handleToggle(id) {
         if (selectedIds.includes(id)) {
             setSelectedIds(selectedIds.filter(itemId => itemId !== id));
         }
@@ -107,7 +277,7 @@ export function TableRender(){
             }
             else {
                 let allIds = [...selectedIds]
-                for (const elem of goods) {
+                for (const elem of currentItems) {
                     if (!selectedIds.includes(elem.id)) {
                         allIds.push(elem.id);
                     }
@@ -147,8 +317,6 @@ export function TableRender(){
                 text-muted
                 text-xs
                 font-medium
-
-
                 px-4">
                 <label className="">
                     <input
@@ -196,17 +364,15 @@ export function TableRender(){
                 gap-0.5
                 ">
                 {
-                    goods.map((item) => (
+                    currentItems.map((item) => (
                         <div
                             key={item.id}
                             className={`
                             flex 
-                            items-center w-full  px-4 py-4  text-sm text-stone-900 hover:bg-stone-50/60 
+                            cursor-pointer
+                            items-center w-full  px-4 py-3  text-sm text-stone-900 hover:bg-stone-50/60 
                             transition-colors
                             ${selectedIds.includes(item.id) ? "bg-stone-50/60" : "bg-white"}`}
-
-
-
                         >
                             <label className="">
                                 <input
@@ -285,7 +451,29 @@ export function TableRender(){
 
                     ))
                 }
+                <div
+                    className="bg-white px-4 py-2 flex gap-2"
+                >
+                    <div className="flex-1">
+                        <span>
+                        Показано {Math.min(indexOfLastItem,goods.length)} из {goods.length} товаров
+                        </span>
+                    </div>
+                    <div className="flex flex-row">
+                        <span>
+                            Страница {currentPage} из {totalPages}
+                        </span>
 
+                        {currentPage != 1  && (<PageButton
+                            text='Назад'
+                            onClick={() => setCurrentPage(currentPage - 1)}
+                        />)}
+                        {currentPage != totalPages  && (<PageButton
+                            text='Далее'
+                            onClick={() => setCurrentPage(currentPage + 1)}
+                        />)}
+                    </div>
+                </div>
             </div>
         </div>
     );
