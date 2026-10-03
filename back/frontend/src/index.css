@@ -3,6 +3,18 @@
    ============================================================================ */
 @import "tailwindcss";
 
+/* Отключаем стрелочки для Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Отключаем стрелочки для Chrome, Safari, Edge и Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
    CSS ПЕРЕМЕННЫЕ (ДИЗАЙН-СИСТЕМА)
    ───────────────────────────────────────────────────────────────────────── */
@@ -63,7 +75,6 @@
     --color-gray-500: #6b7280;
 
     /* --- ЭСТЕТИКА APPLE / IPHONE --- */
-
     /* Фирменная палитра iOS (System Colors) */
     --color-blue: #007aff;        /* Классический синий iOS */
     --color-green: #34c759;       /* Яркий зеленый */
@@ -74,7 +85,6 @@
     --color-red: #ff3b30;         /* Фирменный красный */
     --color-teal: #30b0c7;        /* Бирюзовый */
     --color-yellow: #ffcc00;      /* Теплый желтый */
-
     /* Премиальные цвета корпусов (iPhone Pro Titanium & Matte) */
     --color-space-black: #1c1c1e; /* Космический черный */
     --color-graphite: #4b4a48;    /* Графит */
@@ -85,7 +95,6 @@
     --color-deep-purple: #3b334a; /* Глубокий пурпурный (14 Pro) */
     --color-sierra-blue: #a7c1d7; /* Небесно-голубой (13 Pro) */
     --color-midnight: #1a222d;    /* Темная ночь (глубокий сине-черный) */
-
     /* Пастельные цвета базовых iPhone (15 / 16) */
     --color-pastel-pink: #fbe0e3;  /* Нежно-розовый */
     --color-pastel-yellow: #fef0be;/* Лимонный пастельный */
@@ -93,13 +102,10 @@
     --color-pastel-blue: #d2e4f9;  /* Размытый голубой */
     --color-ultramarine: #3b5ba5;  /* Ультрамарин (iPhone 16) */
     --color-teal-bright: #89cfd3;  /* Насыщенный бирюзовый (iPhone 16) */
-
     /* Системный размытый фон и поверхности (Dark/Light режимы) */
     --color-bg-grouped: #f2f2f7;    /* Стандартный фон настроек iOS */
     --color-card-light: #ffffff;    /* Белая плашка под контент */
     --color-card-dark: #1c1c1e;     /* Темная плашка в Dark Mode */
-
-
     /* Эффекты */
     --color-overlay: rgba(0, 0, 0, 0.5);
     --color-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);

@@ -3,11 +3,16 @@ import {
     SearchByName,
     TableRender,
     AsideButton,
-    PageButton
+    PageButton,
 } from "../../../shared/components/Ui.jsx";
 import {HeaderInfo} from "./HeaderInfo.jsx";
+import {useState} from "react";
 
 export function GoodsContent() {
+    const [currentStatus, setCurrentStatus] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
+
+
     return (
         <div className={`
         h-full
@@ -21,8 +26,13 @@ export function GoodsContent() {
             pt-4
             `}>
 
-                <SortByStatusButtons/>
-                <SearchByName/>
+                <SortByStatusButtons
+                    currentStatus={currentStatus}
+                    setCurrentStatus={setCurrentStatus} />
+                <SearchByName
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                />
 
                 <PageButton text='Экспорт'>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -42,7 +52,7 @@ export function GoodsContent() {
                     </svg>
                 </PageButton>
             </div>
-            <TableRender/>
+            <TableRender currentStatus={currentStatus} searchQuery={searchQuery} />
         </div>
     );
 }
