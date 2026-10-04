@@ -1,9 +1,27 @@
+import AsidePanel from "./AsidePanel.jsx";
+import {Outlet} from 'react-router-dom';
+import {HeaderInfo} from "./HeaderInfo.jsx";
+
+
 export default function Dashboard() {
+
+
     return (
-        <div style={{ padding: 20 }}>
-            <h1>Привет, ты в личном кабинете!</h1>
-            <p>Тут твои данные, графики и кнопки.</p>
+        <div className={"flex overflow-hidden min-h-screen w-full"}>
+            <AsidePanel/>
+            <main className={"w-full min-h-screen overflow-y-auto"}>
+                <div className={`
+            `}>
+                    <div className={`
+                    flex
+                    flex-col
+                    w-full
+                `}>
+                    </div>
+
+                </div>
+                <Outlet/>
+            </main>
         </div>
     );
-
 }
