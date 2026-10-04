@@ -24,6 +24,10 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+
+      // Напоминалка «пора делить файл», а не запрет: см. STRUCTURE.md.
+      // Warning не валит CI, но подсвечивает рост.
+      'max-lines': ['warn', { max: 300, skipBlankLines: true, skipComments: true }],
     },
   },
 ])
