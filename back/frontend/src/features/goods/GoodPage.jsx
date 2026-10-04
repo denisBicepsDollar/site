@@ -21,8 +21,15 @@ import {StatusSection} from "./components/StatusSection.jsx";
 import {NotesSection} from "./components/NotesSection.jsx";
 import {PhotoViewer} from "./components/PhotoViewer.jsx";
 
+/* Обёртка нужна ради key: при переходе на другой товар форма монтируется заново
+   и не тащит в себе данные предыдущего товара. */
 export function GoodPage() {
     const {id} = useParams();
+
+    return <GoodForm key={id} id={id}/>;
+}
+
+function GoodForm({id}) {
     const navigate = useNavigate();
     const form = useGoodForm(id);
 

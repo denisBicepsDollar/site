@@ -24,20 +24,8 @@ export function useGoodForm(id) {
     const [form, setForm] = useState(() => createFormState(item));
     const [savedSnapshot, setSavedSnapshot] = useState(() => buildSnapshot(createFormState(item)));
 
-    /* id товара, данные которого сейчас лежат в форме */
-    const loadedIdRef = useRef(item?.id);
     /* blob-ссылки на загруженные файлы, чтобы не течь при размонтировании */
     const objectUrlsRef = useRef(new Set());
-
-    /* Переход на другой товар без перезагрузки страницы — перезаливаем форму */
-    useEffect(() => {
-        if (loadedIdRef.current === item?.id) return;
-
-        loadedIdRef.current = item?.id;
-        const next = createFormState(item);
-        setForm(next);
-        setSavedSnapshot(buildSnapshot(next));
-    }, [item]);
 
     /* Чистим blob-ссылки, когда уходим со страницы */
     useEffect(() => () => {
