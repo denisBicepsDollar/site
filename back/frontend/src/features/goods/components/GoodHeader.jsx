@@ -1,5 +1,5 @@
 import {ArrowLeft, Save} from "lucide-react";
-import {PageButton} from "../../../shared/components/Ui.jsx";
+import {PageButton} from "../../../shared/components/PageButton.jsx";
 
 /* Верхняя прилипающая панель: хлебные крошки, индикатор изменений и «Сохранить» */
 export function GoodHeader({name, hasChanges, onBack, onSave}) {

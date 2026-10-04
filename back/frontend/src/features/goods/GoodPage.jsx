@@ -7,7 +7,7 @@
 
 import {useMemo, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {PageButton} from "../../shared/components/Ui.jsx";
+import {PageButton} from "../../shared/components/PageButton.jsx";
 
 import {useGoodForm} from "./model/useGoodForm.js";
 import {collectPhotos, findCoverIndex, findVariantPhotoIndex, stepIndex} from "./model/photos.js";

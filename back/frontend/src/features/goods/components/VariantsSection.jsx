@@ -1,5 +1,5 @@
 import {Sparkles} from "lucide-react";
-import {PageButton} from "../../../shared/components/Ui.jsx";
+import {PageButton} from "../../../shared/components/PageButton.jsx";
 import {VariantRow} from "./VariantRow.jsx";
 
 /* Секция 4. Варианты и количество: быстрое добавление размеров + таблица вариантов */

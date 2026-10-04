@@ -14,7 +14,7 @@
 | `features/<фича>/model/` | логика и состояние | чистые функции (`formState.js`), правила (`snapshot.js`), хук (`useGoodForm.js`) |
 | `features/<фича>/<Page>.jsx` | сборка страницы | только: данные из хука → секции → `confirm`/`navigate`/API |
 | `features/<фича>/constants.js` | справочники, моки, лимиты | то, что не меняется во время работы |
-| `shared/components/` | то, что нужно **разным фичам** | кнопки, поля, `AccessControl` |
+| `shared/components/` | то, что нужно **разным фичам** | `PageButton`, `AccessControl` |
 
 Новая страница → новая папка `features/<имя>/` с теми же подпапками. Не складывай всё в
 `features/dashboard/components/`: это должна быть папка роутера, а не свалка страниц.
@@ -92,9 +92,36 @@ export function DiscountSection({discount, onDiscountChange}) {
 Оно ничего не ломает (это warning, а не error), но подсвечивает файлы, которые пора делить.
 Порог можно подкрутить: маленькие файлы — норма, 300 строк — уже сигнал.
 
-Сейчас предупреждают три «исторических» файла (их стоит разобрать по тому же принципу,
+Сейчас предупреждают два «исторических» файла (их стоит разобрать по тому же принципу,
 список должен только сокращаться):
 
-- `src/table/tableInfo.jsx`
-- `src/shared/components/Ui.jsx` (внутри живёт `TableRender` — это отдельный компонент таблицы)
-- `src/addForm/addFormReport.jsx`
+- `src/table/tableInfo.jsx` (666)
+- `src/addForm/addFormReport.jsx` (471)
+
+## 9. Как разобрать файл-свалку (живой пример: бывший `shared/components/Ui.jsx`)
+
+`Ui.jsx` был на 696 строк, и в нём лежали **четыре разные вещи**. Разбор занял 6 шагов:
+
+1. **Выписать, что внутри** (по экспортам и данным):
+   мок `goods` на 225 строк · `AsideButton` · `PageButton` ·
+   `SortByStatusButtons` · `SearchByName` · `TableRender`.
+2. **Задать каждому куску вопрос «кто владелец?»**:
+   данные → моки фичи; навигация сайдбара → дашборд; кнопка → общий примитив;
+   фильтр/поиск/таблица товаров → фича товаров.
+3. **Примитивы — в `shared/`**, но только те, что нужны 2+ фичам:
+   `PageButton` уехал в `shared/components/PageButton.jsx`, `AsideButton` — в
+   `features/dashboard/components/AsideButton.jsx` (нужен только сайдбару).
+4. **Данные — в `mocks/`**, отдельно от разметки: 20 товаров переехали в
+   `features/goods/mocks/goodsList.js`.
+5. **Логику — в хук/чистые функции**: фильтр, пагинация и счётчики →
+   `features/goods/model/goodsTable.js`; состояние страницы и выделения →
+   `features/goods/model/useGoodsTable.js`.
+6. **Большой JSX — по визуальным секциям**: `TableRender` (320 строк) распался на
+   `GoodsTable` (склейка) + `GoodsTableHeader` + `GoodsTableRow` + `GoodsPagination`
+   + `GoodsSelectionBar`.
+
+Было: `Ui.jsx` 696 строк, из которых «UI» — меньше трети.
+
+Стало: 1 общий примитив (`shared/components/PageButton.jsx`, 52 строки),
+1 элемент дашборда, мок, 2 файла логики и 6 компонентов списка —
+самый большой из них 53 строки.

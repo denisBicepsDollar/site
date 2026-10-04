@@ -1,5 +1,5 @@
 import icon from '/icon.png'
-import { AsideButton } from '../../../shared/components/Ui.jsx'
+import { AsideButton } from './AsideButton.jsx'
 import {useState} from "react";
 
 
