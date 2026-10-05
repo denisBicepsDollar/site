@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {createElement, useEffect, useRef, useState} from "react";
 import {ChevronLeft, ChevronRight, ImageOff, Loader2, Star, Tag, X} from "lucide-react";
 
 /* Полноэкранный просмотр фото (лайтбокс).
@@ -24,11 +24,11 @@ export function PhotoViewer({
 
     const dialogRef = useRef(null);
     const closeButtonRef = useRef(null);
-    const imageRef = useRef(null);
     const swipeStartX = useRef(null);
 
     const [entered, setEntered] = useState(false);
-    const [status, setStatus] = useState("loading"); // "loading" | "ready" | "error"
+    const [imageState, setImageState] = useState(() => ({src: photo?.src, status: "loading"}));
+    const status = imageState.src === photo?.src ? imageState.status : "loading";
 
     /* Плавное появление оверлея */
     useEffect(() => {
@@ -98,10 +98,6 @@ export function PhotoViewer({
         return () => document.removeEventListener("keydown", handleKeyDown);
     }, [canNavigate, onClose, onNext, onPrev]);
 
-    /* Смена фото — заново показываем индикатор загрузки */
-    useEffect(() => {
-        setStatus(imageRef.current?.complete ? "ready" : "loading");
-    }, [photo?.src]);
 
     const handleTouchStart = event => {
         swipeStartX.current = event.changedTouches[0]?.clientX ?? null;
@@ -202,12 +198,11 @@ export function PhotoViewer({
                     ) : (
                         <img
                             key={photo.src}
-                            ref={imageRef}
                             src={photo.src}
                             alt={caption}
                             draggable={false}
-                            onLoad={() => setStatus("ready")}
-                            onError={() => setStatus("error")}
+                            onLoad={() => setImageState({src: photo.src, status: "ready"})}
+                            onError={() => setImageState({src: photo.src, status: "error"})}
                             className={`max-h-full max-w-full cursor-default select-none rounded-xl object-contain shadow-2xl ring-1 ring-white/10 transition duration-200 motion-reduce:transition-none ${
                                 entered ? "scale-100 opacity-100" : "scale-95 opacity-0"
                             }`}
@@ -259,7 +254,7 @@ function NavButton({direction, onClick}) {
                 isLeft ? "left-2 sm:left-6" : "right-2 sm:right-6"
             }`}
         >
-            <Icon className="h-6 w-6 sm:h-7 sm:w-7"/>
+            {createElement(Icon, {className: "h-6 w-6 sm:h-7 sm:w-7", "aria-hidden": true})}
         </button>
     );
 }
@@ -277,7 +272,7 @@ function ActionButton({icon: Icon, children, onClick, variant = "solid"}) {
             onClick={onClick}
             className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium shadow-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-[0.98] ${styles}`}
         >
-            <Icon className="h-4 w-4"/>
+            {createElement(Icon, {className: "h-4 w-4", "aria-hidden": true})}
             {children}
         </button>
     );

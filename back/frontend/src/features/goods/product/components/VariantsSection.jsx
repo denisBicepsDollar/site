@@ -1,5 +1,5 @@
 import {Sparkles} from "lucide-react";
-import {PageButton} from "../../../shared/components/ui.jsx";
+import {Button} from "../../../../shared/components/ui/Button.jsx";
 import {VariantRow} from "./VariantRow.jsx";
 
 /* Секция 4. Варианты и количество */
@@ -47,7 +47,7 @@ export function VariantsSection({
 
                     <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
                         {sizePresets.map((size) => (
-                            <PageButton
+                            <Button
                                 key={size}
                                 text={size}
                                 onClick={() => onAddVariant(size)}
@@ -57,7 +57,7 @@ export function VariantsSection({
                     </div>
                 </div>
 
-                <PageButton
+                <Button
                     text="Свой вариант"
                     onClick={() => onAddVariant("")}
                     className="h-10 w-full bg-white sm:w-auto sm:min-w-40"

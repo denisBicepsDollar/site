@@ -1,25 +1,13 @@
 import AsidePanel from "./AsidePanel.jsx";
-import {Outlet} from 'react-router-dom';
-import {HeaderInfo} from "./HeaderInfo.jsx";
-
+import {Outlet} from "react-router-dom";
 
 export default function Dashboard() {
 
 
     return (
-        <div className={"flex overflow-hidden min-h-screen w-full"}>
-           
-            <main className={"w-full min-h-screen overflow-y-auto"}>
-                <div className={`
-            `}>
-                    <div className={`
-                    flex
-                    flex-col
-                    w-full
-                `}>
-                    </div>
-
-                </div>
+        <div className="flex min-h-screen bg-zinc-50 text-zinc-900">
+            <AsidePanel/>
+            <main className="min-w-0 flex-1">
                 <Outlet/>
             </main>
         </div>

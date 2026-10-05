@@ -1,5 +1,5 @@
 /* ============================================================================
-   useGoodForm — вся «умная» часть страницы товара в одном хуке.
+   useProductForm — вся «умная» часть страницы товара в одном хуке.
 
    Хук ничего не рисует: он хранит состояние формы, умеет его менять
    и сообщает, есть ли несохранённые изменения. Компоненты-секции получают
@@ -7,7 +7,8 @@
    ============================================================================ */
 
 import {useEffect, useMemo, useRef, useState} from 'react';
-import {findGoodById, getSizePresets} from '../constants.js';
+import {getSizePresets} from '../constants.js';
+import {findProductById} from '../../data/products.js';
 import {
     addVariant as addVariantToState,
     addVariantPhotos as addVariantPhotosToState,
@@ -19,8 +20,8 @@ import {
 } from './formState.js';
 import {buildSnapshot} from './snapshot.js';
 
-export function useGoodForm(id) {
-    const item = useMemo(() => findGoodById(id), [id]);
+export function useProductForm(id) {
+    const item = useMemo(() => findProductById(id), [id]);
 
     const [form, setForm] = useState(() => createFormState(item));
     const [savedSnapshot, setSavedSnapshot] = useState(() => buildSnapshot(createFormState(item)));

@@ -1,11 +1,11 @@
 import {useMemo, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {PageButton} from "../../../shared/components/Ui.jsx";
+import {PageButton} from "../../../../shared/components/Ui.jsx";
 
-import {useGoodForm} from "../model/useGoodForm.js";
+import {useProductForm} from "../model/useProductForm.js";
 import {collectPhotos, findCoverIndex, findVariantPhotoIndex, stepIndex} from "../model/photos.js";
 
-import {GoodHeader} from "./GoodHeader.jsx";
+import {ProductHeader} from "./ProductHeader.jsx";
 import {GeneralInfoSection} from "./GeneralInfoSection.jsx";
 import {DescriptionSection} from "./DescriptionSection.jsx";
 import {PhotosSection} from "./PhotosSection.jsx";
@@ -24,7 +24,7 @@ export function GoodPage() {
 
 function GoodForm({id}) {
     const navigate = useNavigate();
-    const form = useGoodForm(id);
+    const form = useProductForm(id);
 
     /* Индекс открытого фото в общем списке (null — просмотрщик закрыт) */
     const [activePhotoIndex, setActivePhotoIndex] = useState(null);
@@ -80,7 +80,7 @@ function GoodForm({id}) {
 
     return (
         <div className="bg-muted/10 min-h-screen">
-            <GoodHeader
+            <ProductHeader
                 name={form.name}
                 hasChanges={form.hasChanges}
                 onBack={() => navigate(-1)}

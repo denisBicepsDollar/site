@@ -57,7 +57,7 @@ export const BREAKPOINTS = {
 };
 
 /* Данные товара (пока мок) */
-export const goods = [// --- КОМНАТНЫЕ РАСТЕНИЯ (Варианты: D5, D7, D10) ---
+export const goods = [
     {
         id: 2,
         name: "Фикус Лирата",
@@ -79,5 +79,3 @@ export const goods = [// --- КОМНАТНЫЕ РАСТЕНИЯ (Вариант
         }]
     }];
 
-/* Поиск товара по id из адреса (/dashboard/goods/:id) */
-export const findGoodById = id => goods.find(item => item.id === Number(id)) ?? null;
