@@ -15,6 +15,7 @@ import {
     removeVariant as removeVariantFromState,
     removeVariantPhoto as removeVariantPhotoFromState,
     updateVariantAt,
+    updateVariantCover,
 } from './formState.js';
 import {buildSnapshot} from './snapshot.js';
 
@@ -77,7 +78,7 @@ export function useGoodForm(id) {
         addVariant: name => setForm(prev => addVariantToState(prev, name)),
         updateVariant: (index, patch) => setForm(prev => updateVariantAt(prev, index, patch)),
         removeVariant: index => setForm(prev => removeVariantFromState(prev, index)),
-        setVariantCover: (index, src) => setForm(prev => updateVariantAt(prev, index, {previewImage: src})),
+        setVariantCover: (index, src) => setForm(prev => updateVariantCover(prev, index, {previewImage: src})),
 
         /* Фотографии */
         removeVariantPhoto: (variantIndex, imageIndex) =>

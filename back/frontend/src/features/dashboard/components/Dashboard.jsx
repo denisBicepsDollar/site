@@ -8,7 +8,7 @@ export default function Dashboard() {
 
     return (
         <div className={"flex overflow-hidden min-h-screen w-full"}>
-            <AsidePanel/>
+           
             <main className={"w-full min-h-screen overflow-y-auto"}>
                 <div className={`
             `}>

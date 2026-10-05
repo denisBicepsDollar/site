@@ -49,6 +49,12 @@ export const SIZES = {
     sm: {wrapper: "h-28 w-24 grow-0 shrink-0 overflow-hidden rounded-lg ", image: ""},
 };
 
+export const BREAKPOINTS = {
+    xl: 1920,
+    lg: 1366,
+    md: 1200,
+    sm: 800,
+};
 
 /* Данные товара (пока мок) */
 export const goods = [// --- КОМНАТНЫЕ РАСТЕНИЯ (Варианты: D5, D7, D10) ---
@@ -67,9 +73,9 @@ export const goods = [// --- КОМНАТНЫЕ РАСТЕНИЯ (Вариант
         previewImage: "/1.png",
 
         variants: [{
-            name: "D7", previewImage: "/2.png", stock: 5, price: 5000, images: ["/2.png", "/3.png", "/4.png", "/4.png"]
+            name: "D7", previewImage: "/6.png", stock: 5, price: 5000, images: ["/2.png", "/3.png", "/5.png", "/6.png"]
         }, {
-            name: "D10", previewImage: "/4.png", stock: 3, price: 2000, images: ["/4.png", "/1.png"]
+            name: "D10", previewImage: "/4.png", stock: 3, price: 2000, images: ["/1.png", "/4.png", "/7.png"]
         }]
     }];
 

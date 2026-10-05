@@ -263,7 +263,7 @@ export function AsideButton({
 }
 
 export function PageButton({
-                               children, text, onClick, className, variant = 'default',
+                               children, text, onClick, className, variant = 'default', disabled = false,
                            }) {
 
     const defaultStyle = `
@@ -273,30 +273,33 @@ export function PageButton({
     gap-3 
     rounded-xl 
     p-2
-    cursor-pointer
     transition-all
     duration-200
     font-medium
     ease-out
-    hover:brightness-110 
-    active:scale-98
     border-2
     border-border2
-    hover:bg-muted/20
+    
+    /* Эффекты для активной кнопки (работают только если НЕ disabled) */
+    ${!disabled ? 'cursor-pointer hover:brightness-110 hover:bg-muted/20 active:scale-98' : ''}
+    
+    /* Стили для отключенной кнопки */
+    ${disabled ? 'opacity-50 cursor-not-allowed select-none active:scale-100' : ''}
+    
     ${className}
     ${variant === 'accent' ? " bg-blue-500 text-white" : ""}
-    ${variant === 'danger' ? " text-red-500 hover:bg-red-500/20" : ""}
-    `
+    `;
 
-    return (<button className={defaultStyle} onClick={onClick}>
+    return (
+        <button
+            className={defaultStyle}
+            onClick={!disabled ? onClick : undefined} // Блокируем вызов клика на уровне JS
+            disabled={disabled} // Передаем стандартный атрибут в тег button
+        >
             {children}
-            <span>
-                {text}
-            </span>
+            {text && <span>{text}</span>}
         </button>
-
-    )
-
+    );
 }
 
 

@@ -26,6 +26,8 @@ export function createFormState(item) {
         cover: item?.previewImage ?? "",
         variants: (item?.variants ?? []).map((variant, index) => ({
             ...variant,
+            images: [variant.previewImage, ...variant.images.filter(img => img !== variant.previewImage)],
+
             /* clientId нужен как стабильный key в списках, пока вариант не сохранён на сервере */
             clientId: `existing-${index}`,
         })),
@@ -49,6 +51,22 @@ export function updateVariantAt(state, index, patch) {
     return {
         ...state,
         variants: state.variants.map((variant, i) => (i === index ? {...variant, ...patch} : variant)),
+    };
+}
+
+export function updateVariantCover(state, index, {previewImage}) {
+    return {
+        ...state,
+        variants: state.variants.map((variant, i) =>
+            i === index
+                ? {
+                    ...variant,
+                    previewImage, // записываем строку-ссылку
+                    // Переносим обложку на первое место в массиве, убирая дубликаты
+                    images: [previewImage, ...variant.images.filter(img => img !== previewImage)],
+                }
+                : variant // остальные варианты возвращаем без изменений
+        )
     };
 }
 
