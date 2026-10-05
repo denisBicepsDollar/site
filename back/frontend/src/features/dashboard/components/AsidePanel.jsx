@@ -13,7 +13,10 @@ export default function AsidePanel() {
     return (
         <aside
             className={`
-            min-h-screen
+            sticky
+            top-0
+            self-start
+            h-screen
             flex
             w-25
             ease-in-out

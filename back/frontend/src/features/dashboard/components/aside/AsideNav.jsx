@@ -11,11 +11,12 @@ const NAV_ITEMS = [
 // Основная навигация панели
 export default function AsideNav() {
     return (
-        <nav className="
+                <nav className="
                     flex
                     flex-1
                     flex-col
                     gap-3
+                    overflow-y-auto
                 ">
             {NAV_ITEMS.map(item => (
                 <AsideNavItem key={item.to} {...item}/>
