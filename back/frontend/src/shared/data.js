@@ -1,31 +1,32 @@
-const catalogProducts = [{
-    id: 1,
-    name: "Монстера Делициоза",
-    sku: "PL-001",
-    category: "Комнатные",
-    price: 3500,
-    stock: 4,
-    status: "active",
-    updated: "Вчера",
-    description: "Популярное комнатное растение с крупными резными листьями.",
-    previewImage: "/img/pl-001_preview.png",
-    variants: [
-        {
-            name: "D9",
-            previewImage: "/img/pl-001_v1.png",
-            stock: 3,
-            price: 3500,
-            images: ["/img/pl-001_v1.png", "/img/pl-001_v1_2.png"]
-        },
-        {
-            name: "D12",
-            previewImage: "/img/pl-001_v2.png",
-            stock: 1,
-            price: 4500,
-            images: ["/img/pl-001_v2.png", "/img/pl-001_v2_2.png"]
-        }
-    ]
-},
+export const data = [
+    {
+        id: 1,
+        name: "Монстера Делициоза",
+        sku: "PL-001",
+        category: "Комнатные",
+        price: 3500,
+        stock: 4,
+        status: "active",
+        updated: "Вчера",
+        description: "Популярное комнатное растение с крупными резными листьями.",
+        previewImage: "/img/pl-001_preview.png",
+        variants: [
+            {
+                name: "D9",
+                previewImage: "/img/pl-001_v1.png",
+                stock: 3,
+                price: 3500,
+                images: ["/img/pl-001_v1.png", "/img/pl-001_v1_2.png"]
+            },
+            {
+                name: "D12",
+                previewImage: "/img/pl-001_v2.png",
+                stock: 1,
+                price: 4500,
+                images: ["/img/pl-001_v2.png", "/img/pl-001_v2_2.png"]
+            }
+        ]
+    },
     {
         id: 2,
         name: "Фикус Лирата",
@@ -405,30 +406,3 @@ const catalogProducts = [{
         ]
     },
 ]
-
-
-export const products = catalogProducts;
-
-
-/** Find a catalog product and adapt its summary fields to the editor model. */
-export function findProductById(id) {
-    const product = catalogProducts.find(item => item.id === Number(id));
-    if (!product) return null;
-
-    const {variantNames = [], ...editableProduct} = product;
-    const variants = editableProduct.variants ?? variantNames.map((name, index) => ({
-        name,
-        stock: index === 0 ? product.stock : 0,
-        price: product.price,
-        previewImage: "",
-        images: [],
-    }));
-
-    return {
-        ...editableProduct,
-        variants,
-        description: editableProduct.description ?? "",
-        note: editableProduct.note ?? "",
-        previewImage: editableProduct.previewImage ?? "",
-    };
-}

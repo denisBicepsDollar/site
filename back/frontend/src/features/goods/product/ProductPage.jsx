@@ -1,7 +1,7 @@
 import {useMemo, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {Button} from "../../../shared/components/ui/Button.jsx";
-import {EmptyState} from "../../../shared/components/ui/EmptyState.jsx";
+import {Button} from "../../../shared/ui/Button.jsx";
+import {EmptyState} from "../../../shared/ui/EmptyState.jsx";
 
 import {useProductForm} from "./model/useProductForm.js";
 import {collectPhotos, findCoverIndex, findVariantPhotoIndex, stepIndex} from "./model/photos.js";

@@ -1,17 +1,41 @@
-export function PageHeader({title, description, eyebrow = "Управление магазином", actions}) {
+export function PageHeader({title, description, summary}) {
     return (
-        <header
-            className="flex flex-col gap-4 border-b border-zinc-200/80 pb-5 sm:flex-row sm:items-end sm:justify-between">
-            <div className="min-w-0">
-                <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
-                    {eyebrow}
-                </p>
-                <h1 className="text-2xl font-semibold tracking-tight text-zinc-950 sm:text-3xl">
-                    {title}
-                </h1>
-                {description && <p className="mt-1.5 max-w-2xl text-sm text-zinc-500 sm:text-base">{description}</p>}
+        <>
+            <div className="
+                flex
+                items-center
+                pt-8
+                pb-0
+            ">
+                <div className="
+                    flex
+                    w-full
+                    gap-5
+                    items-baseline
+                ">
+                    <h3 className="font-medium text-2xl leading-none tracking-tighter">
+                        {title}
+                    </h3>
+                    <div className="relative top-1 w-[2px] h-6 bg-muted rounded-lg"/>
+                    <p className="text-muted text-xl font-light leading-none tracking-tighter">
+                        {description}
+                    </p>
+                </div>
             </div>
-            {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
-        </header>
+
+            {summary && (
+                <div className="flex items-center pt-3">
+                    <div className="
+                        flex
+                        items-center
+                        text-muted
+                        justify-baseline
+                        font-normal text-md leading-5
+                    ">
+                        {summary}
+                    </div>
+                </div>
+            )}
+        </>
     );
 }

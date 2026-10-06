@@ -1,6 +1,6 @@
 import {ClipboardList} from "lucide-react";
-import {EmptyState} from "../../../shared/components/ui/EmptyState.jsx";
-import {PageHeader} from "./PageHeader.jsx";
+import {EmptyState} from "../../shared/ui/EmptyState.jsx";
+import {PageHeader} from "../dashboard/components/PageHeader.jsx";
 
 export function OrdersContent() {
     return (

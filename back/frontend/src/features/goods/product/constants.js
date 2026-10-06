@@ -6,6 +6,8 @@
    ============================================================================ */
 
 /* Лимиты на длину текстовых полей */
+import {data} from "../../../shared/data.js";
+
 export const MAX_NAME_LENGTH = 100;
 export const MAX_DESCRIPTION_LENGTH = 200;
 export const MAX_NOTE_LENGTH = 100;
@@ -55,27 +57,7 @@ export const BREAKPOINTS = {
     md: 1200,
     sm: 800,
 };
+export const findGoodById = id => data.find(item => item.id === Number(id)) ?? null;
 
-/* Данные товара (пока мок) */
-export const goods = [
-    {
-        id: 2,
-        name: "Фикус Лирата",
-        sku: "PL-002",
-        category: "Комнатные",
-        price: 4800,
-        stock: 1,
-        status: "active",
-        updated: "Вчера",
-        description: "the best good",
 
-        // 1. Явно указываем главное фото (превью для карточки/списка)
-        previewImage: "/1.png",
-
-        variants: [{
-            name: "D7", previewImage: "/6.png", stock: 5, price: 5000, images: ["/2.png", "/3.png", "/5.png", "/6.png"]
-        }, {
-            name: "D10", previewImage: "/4.png", stock: 3, price: 2000, images: ["/1.png", "/4.png", "/7.png"]
-        }]
-    }];
 

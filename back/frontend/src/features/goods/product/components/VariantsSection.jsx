@@ -1,5 +1,5 @@
 import {Sparkles} from "lucide-react";
-import {Button} from "../../../../shared/components/ui/Button.jsx";
+import {Button} from "../../../../shared/ui/Button.jsx";
 import {VariantRow} from "./VariantRow.jsx";
 
 /* Секция 4. Варианты и количество */

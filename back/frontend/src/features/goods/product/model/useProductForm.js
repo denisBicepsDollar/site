@@ -8,7 +8,7 @@
 
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {getSizePresets} from '../constants.js';
-import {findProductById} from '../../data/products.js';
+import {findGoodById} from '../constants.js';
 import {
     addVariant as addVariantToState,
     addVariantPhotos as addVariantPhotosToState,
@@ -21,7 +21,7 @@ import {
 import {buildSnapshot} from './snapshot.js';
 
 export function useProductForm(id) {
-    const item = useMemo(() => findProductById(id), [id]);
+    const item = useMemo(() => findGoodById(id), [id]);
 
     const [form, setForm] = useState(() => createFormState(item));
     const [savedSnapshot, setSavedSnapshot] = useState(() => buildSnapshot(createFormState(item)));
