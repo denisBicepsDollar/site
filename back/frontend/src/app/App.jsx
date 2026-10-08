@@ -9,6 +9,8 @@ import {GoodsListPage} from "../features/goods/GoodsListPage.jsx";
 import {ProductPage} from "../features/goods/product/ProductPage.jsx";
 import AccessControl from "@/components/shared/components/AccessControl.jsx";
 import {OrderPage} from "@/features/orders/order/order-page.jsx";
+import {MessagesListPage} from "@/features/messages/message-content.jsx";
+import SettingsPage from "@/features/settings/settings-content.jsx";
 
 export default function App() {
     return (
@@ -40,24 +42,13 @@ export default function App() {
                             <Route index element={<OrdersListPage/>}/>
                             <Route path=":id" element={<OrderPage/>}/>
                         </Route>
-                        <Route
-                            path="messages"
-                            element={
-                                <ComingSoonPage
-                                    title="Обращения"
-                                    description="Сообщения клиентов и история ответов."
-                                />
-                            }
-                        />
-                        <Route
-                            path="settings"
-                            element={
-                                <ComingSoonPage
-                                    title="Настройки"
-                                    description="Параметры магазина, доставки, оплаты и уведомлений."
-                                />
-                            }
-                        />
+                        <Route path="messages">
+                            <Route index element={<MessagesListPage/>}/>
+                            <Route path=":id" element={<div>21</div>}/>
+                        </Route>
+                        <Route path="settings">
+                            <Route index element={<SettingsPage/>}/>
+                        </Route>
                     </Route>
                     <Route path="*" element={<Navigate to="/" replace/>}/>
                 </Routes>

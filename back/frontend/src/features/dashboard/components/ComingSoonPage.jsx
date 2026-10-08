@@ -11,7 +11,6 @@ export function ComingSoonPage({title, description}) {
                 <EmptyState
                     icon={Clock3}
                     title="Раздел готовится"
-                    description="Структура панели уже на месте. Наполнение этого раздела можно подключить отдельно, когда появятся данные и бизнес-правила."
                 />
             </section>
         </div>
