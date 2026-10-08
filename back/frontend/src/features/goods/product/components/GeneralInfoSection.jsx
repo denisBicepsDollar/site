@@ -3,6 +3,7 @@ import {Input} from "@/components/ui/input.jsx"
 import {Label} from "@/components/ui/label.jsx"
 import {SectionCard} from "@/components/ui/section-card.jsx"
 import {SectionTitle} from "@/components/ui/section-title.jsx"
+import {SectionField} from "@/components/ui/section-field.jsx"
 
 import {CATEGORIES, MAX_NAME_LENGTH} from "../constants.js"
 import {CategorySelect} from "../ui/CategorySelect.jsx"
@@ -35,8 +36,8 @@ export function GeneralInfoSection({
                     </span>
                 </div>
 
-                <div
-                    className="flex min-w-0 items-center gap-3 rounded-[14px] border border-black/[0.06] bg-[#F2F2F7] px-3 transition-all focus-within:border-[#007AFF]/35 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#007AFF]/15 dark:border-white/[0.08] dark:bg-[#2C2C2E] dark:focus-within:border-[#0A84FF]/40 dark:focus-within:bg-[#3A3A3C] dark:focus-within:ring-[#0A84FF]/20">
+                <SectionField
+                    className="min-w-0 gap-3 dark:bg-[#2C2C2E] dark:focus-within:border-[#0A84FF]/40 dark:focus-within:bg-[#3A3A3C]">
                     <Input
                         id="product-name"
                         required
@@ -51,7 +52,7 @@ export function GeneralInfoSection({
                         current={productName.length}
                         max={MAX_NAME_LENGTH}
                     />
-                </div>
+                </SectionField>
 
                 <div
                     className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-[#E5E5EA] pt-3 dark:border-[#38383A]">

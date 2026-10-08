@@ -14,8 +14,8 @@ import SettingsPage from "@/features/settings/settings-content.jsx";
 
 export default function App() {
     return (
-        <DevSupport ComponentPreviews={ComponentPreviews} useInitialHook={useInitial}>
-            <BrowserRouter>
+        <BrowserRouter>
+            <DevSupport ComponentPreviews={ComponentPreviews} useInitialHook={useInitial}>
                 <Routes>
                     <Route
                         path="/"
@@ -52,7 +52,7 @@ export default function App() {
                     </Route>
                     <Route path="*" element={<Navigate to="/" replace/>}/>
                 </Routes>
-            </BrowserRouter>
-        </DevSupport>
+            </DevSupport>
+        </BrowserRouter>
     );
 }

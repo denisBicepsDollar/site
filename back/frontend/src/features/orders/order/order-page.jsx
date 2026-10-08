@@ -1,8 +1,8 @@
 import {useMemo, useState} from "react"
 import {useParams} from "react-router-dom"
 import {Printer, CalendarDays} from 'lucide-react'
-import {Badge} from '@/components/ui/badge.jsx'
 import {ConfirmDialog} from "@/components/ui/confirm-dialog.jsx"
+import {StatusBadge} from "@/components/ui/status-badge.jsx"
 import {NotesSection} from "@/components/ui/notes-section.jsx"
 
 import {CustomerPaymentCard} from "@/features/orders/order/components/customer-card.jsx";
@@ -106,12 +106,7 @@ function OrderForm({id}) {
                         {21}
         </span>
                 }
-                status={
-                    <Badge
-                        className="rounded-full bg-[#007AFF]/10 text-[#007AFF] dark:bg-[#0A84FF]/20 dark:text-[#64D2FF]">
-                        {status}
-                    </Badge>
-                }
+                status={<StatusBadge tone="info">{status}</StatusBadge>}
                 actions={[
                     {
                         id: "print",

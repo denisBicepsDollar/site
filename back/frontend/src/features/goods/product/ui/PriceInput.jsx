@@ -1,6 +1,7 @@
 import {useId} from "react"
 import {Input} from "@/components/ui/input.jsx"
 import {cn} from "cn"
+import {SectionField} from "@/components/ui/section-field.jsx"
 
 export function PriceInput({
                                value,
@@ -13,7 +14,7 @@ export function PriceInput({
     const inputId = useId()
 
     return (
-        <div className="flex min-w-0 items-center gap-2">
+        <SectionField className="flex min-w-0 items-center gap-2">
             {label && (
                 <label
                     htmlFor={inputId}
@@ -26,9 +27,9 @@ export function PriceInput({
                 </label>
             )}
 
-            <div
+            <SectionField
                 className={cn(
-                    "flex h-11 min-w-[120px] items-center gap-2 rounded-[14px] border border-black/[0.06] bg-[#F2F2F7] px-3 shadow-sm transition-all focus-within:border-[#007AFF]/35 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#007AFF]/15 dark:border-white/[0.08] dark:bg-[#1C1C1E] dark:focus-within:bg-[#2C2C2E] dark:focus-within:ring-[#0A84FF]/20",
+                    "h-11 min-w-[120px] gap-2 shadow-sm dark:bg-[#1C1C1E] dark:focus-within:bg-[#2C2C2E]",
                     wrapperClassName,
                 )}
             >
@@ -54,7 +55,7 @@ export function PriceInput({
                 >
                     ₽
                 </span>
-            </div>
-        </div>
+            </SectionField>
+        </SectionField>
     )
 }

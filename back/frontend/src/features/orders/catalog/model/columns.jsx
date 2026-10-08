@@ -1,13 +1,4 @@
-import {Checkbox} from "@/components/ui/checkbox.jsx"
-import {Button} from "@/components/ui/button.jsx"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.jsx"
+import {RowActionsMenu} from "@/components/ui/row-actions-menu.jsx"
 import {MoreHorizontal} from "lucide-react"
 
 import {filterFn_equalsString} from '@tanstack/react-table'
@@ -98,26 +89,14 @@ export const columns = [
     {
         id: "actions",
         enableHiding: false,
-        cell: ({row}) => {
-            const item = row.original
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger
-                        className="h-8 w-8 inline-flex items-center justify-center rounded-md hover:bg-muted">
-                        <MoreHorizontal className="h-4 w-4"/>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(item.id)}>
-                            Копировать ID
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator/>
-                        <DropdownMenuItem className="text-red-600">
-                            Удалить
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
+        cell: ({row}) => (
+            <RowActionsMenu
+                id={row.original.id}
+                triggerClassName="hover:bg-muted"
+                actions={[
+                    {label: "Удалить", className: "text-red-600"},
+                ]}
+            />
+        ),
     },
 ]

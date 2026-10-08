@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card"
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
+import {SectionCard} from "@/components/ui/section-card.jsx"
 import {Switch} from "@/components/ui/switch"
 
 import {DEFAULT_SETTINGS} from './settings/constants.js'
@@ -171,8 +172,7 @@ function SaveMessage({message, state}) {
 
 function SettingsCard({title, description, children}) {
     return (
-        <Card
-            className="rounded-[20px] border-black/[0.06] bg-white shadow-[0_4px_18px_rgba(0,0,0,0.04)] dark:border-white/[0.08] dark:bg-[#1C1C1E]">
+        <SectionCard radius={20}>
             <CardHeader className="pb-3">
                 <CardTitle className="text-base font-semibold">{title}</CardTitle>
                 {description && (
@@ -182,7 +182,7 @@ function SettingsCard({title, description, children}) {
                 )}
             </CardHeader>
             <CardContent>{children}</CardContent>
-        </Card>
+        </SectionCard>
     )
 }
 

@@ -1,8 +1,9 @@
 import {Check, Clock3, X} from "lucide-react"
 
-import {Badge} from "@/components/ui/badge.jsx"
 import {CardContent} from "@/components/ui/card.jsx"
 import {SectionCard} from "@/components/ui/section-card.jsx"
+import {StatusBadge} from "@/components/ui/status-badge.jsx"
+
 import {cn} from "cn"
 
 export function OrderTimeline({
@@ -39,43 +40,11 @@ export function OrderTimeline({
                         </p>
                     </div>
 
-                    <Badge
-                        variant={cancelled ? "destructive" : "secondary"}
-                        className={
-                            cancelled
-                                ? "rounded-full bg-[#FF3B30]/10 text-[#D70015] dark:bg-[#FF453A]/15 dark:text-[#FF6961]"
-                                : "rounded-full bg-[#007AFF]/10 text-[#007AFF] dark:bg-[#0A84FF]/20 dark:text-[#64D2FF]"
-                        }
-                    >
+                    <StatusBadge tone={cancelled ? "danger" : "info"}>
                         {currentTitle}
-                    </Badge>
+                    </StatusBadge>
                 </div>
 
-                {/* Общий прогресс */}
-                <div className="flex items-center gap-3">
-                    <div
-                        role="progressbar"
-                        aria-label="Прогресс заказа"
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-valuenow={progress}
-                        className="h-2 flex-1 overflow-hidden rounded-full bg-[#F2F2F7] dark:bg-[#2C2C2E]"
-                    >
-                        <div
-                            className={cn(
-                                "h-full rounded-full transition-[width] duration-300",
-                                cancelled
-                                    ? "bg-[#FF3B30] dark:bg-[#FF453A]"
-                                    : "bg-[#007AFF] dark:bg-[#0A84FF]",
-                            )}
-                            style={{width: `${progress}%`}}
-                        />
-                    </div>
-
-                    <span className="shrink-0 text-xs font-medium tabular-nums text-[#6E6E73] dark:text-[#AEAEB2]">
-                        {progress}%
-                    </span>
-                </div>
 
                 {/* Один список: одновременно прогресс и история */}
                 <ol className="grid grid-cols-1 gap-y-0 sm:grid-cols-5 sm:gap-x-2">

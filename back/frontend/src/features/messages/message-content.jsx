@@ -1,12 +1,12 @@
 import {useMemo, useState} from "react"
-import {Search} from "lucide-react"
 
 import {PageHeader} from "@/features/dashboard/components/PageHeader.jsx"
 import {Avatar, AvatarFallback} from "@/components/ui/avatar.jsx"
-import {Badge} from "@/components/ui/badge.jsx"
+import {StatusBadge} from "@/components/ui/status-badge.jsx"
 import {Button} from "@/components/ui/button.jsx"
 import {Card, CardContent} from "@/components/ui/card.jsx"
-import {Input} from "@/components/ui/input.jsx"
+import {SectionPanel} from "@/components/ui/section-card.jsx"
+import {SearchInput} from "@/components/ui/search-input.jsx"
 import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs.jsx"
 import {cn} from "cn"
 
@@ -94,28 +94,23 @@ export function MessagesListPage() {
                 />
 
                 <section className="mt-5">
-                    <div
-                        className="grid min-h-[560px] overflow-hidden rounded-[20px] border border-black/[0.06] bg-white shadow-[0_4px_18px_rgba(0,0,0,0.04)] dark:border-white/[0.08] dark:bg-[#1C1C1E] lg:grid-cols-[360px_minmax(0,1fr)]">
+                    <SectionPanel
+                        radius={20}
+                        className="grid min-h-[560px] overflow-hidden border lg:grid-cols-[360px_minmax(0,1fr)]">
                         {/* Список обращений слева */}
                         <aside
                             className="flex min-h-0 min-w-0 flex-col border-b border-black/[0.06] dark:border-white/[0.08] lg:border-r lg:border-b-0">
                             <div
                                 className="flex flex-col gap-3 border-b border-black/[0.06] p-4 dark:border-white/[0.08]">
-                                <div className="relative">
-                                    <Search
-                                        aria-hidden="true"
-                                        className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#8E8E93]"
-                                    />
-                                    <Input
-                                        value={search}
-                                        onChange={(event) =>
-                                            setSearch(event.target.value)
-                                        }
-                                        placeholder="Поиск обращений..."
-                                        className="h-10 rounded-[14px] border-transparent bg-[#F2F2F7] pl-9 shadow-none focus-visible:bg-white dark:bg-[#2C2C2E] dark:focus-visible:bg-[#3A3A3C]"
-                                    />
-                                </div>
-
+                                <SearchInput
+                                    value={search}
+                                    onChange={(event) =>
+                                        setSearch(event.target.value)
+                                    }
+                                    placeholder="Поиск обращений..."
+                                    iconClassName="size-4"
+                                    inputClassName="h-10 rounded-[14px] border-transparent bg-[#F2F2F7] shadow-none focus-visible:bg-white dark:bg-[#2C2C2E] dark:focus-visible:bg-[#3A3A3C]"
+                                />
                                 <Tabs
                                     value={statusFilter}
                                     onValueChange={setStatusFilter}
@@ -175,7 +170,7 @@ export function MessagesListPage() {
                                 </div>
                             )}
                         </section>
-                    </div>
+                    </SectionPanel>
                 </section>
             </div>
         </main>
@@ -225,16 +220,10 @@ function MessageListItem({message, selected, onClick}) {
                 </span>
 
                 <span className="mt-2 flex flex-wrap items-center gap-1.5">
-                    <Badge
-                        variant="secondary"
-                        className={
-                            message.status === "new"
-                                ? "rounded-full bg-[#007AFF]/10 text-[#007AFF] dark:bg-[#0A84FF]/20 dark:text-[#64D2FF]"
-                                : "rounded-full"
-                        }
-                    >
+                    <StatusBadge
+                        tone={message.status === "new" ? "info" : "neutral"}>
                         {STATUS_LABELS[message.status]}
-                    </Badge>
+                    </StatusBadge>
 
                     <span className="text-[10px] text-[#8E8E93] dark:text-[#98989D]">
                         {message.id} · {message.source} · {orderLabel}
