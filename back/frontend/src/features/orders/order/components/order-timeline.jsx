@@ -1,7 +1,8 @@
 import {Check, Clock3, X} from "lucide-react"
 
 import {Badge} from "@/components/ui/badge.jsx"
-import {Card, CardContent} from "@/components/ui/card.jsx"
+import {CardContent} from "@/components/ui/card.jsx"
+import {SectionCard} from "@/components/ui/section-card.jsx"
 import {cn} from "cn"
 
 export function OrderTimeline({
@@ -23,12 +24,7 @@ export function OrderTimeline({
         : 0
 
     return (
-        <Card
-            className={cn(
-                "min-w-0 rounded-[20px] border-black/[0.06] bg-white shadow-[0_4px_18px_rgba(0,0,0,0.04)] dark:border-white/[0.08] dark:bg-[#1C1C1E]",
-                className,
-            )}
-        >
+        <SectionCard radius={20} className={cn("min-w-0", className)}>
             <CardContent className="flex flex-col gap-4 p-4 sm:p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
@@ -170,6 +166,6 @@ export function OrderTimeline({
                     })}
                 </ol>
             </CardContent>
-        </Card>
+        </SectionCard>
     )
 }

@@ -1,7 +1,8 @@
 import {File, Image as ImageIcon} from "lucide-react"
-import {Card, CardContent} from "@/components/ui/card.jsx"
+import {CardContent} from "@/components/ui/card.jsx"
 import {Input} from "@/components/ui/input.jsx"
 import {PhotoTile} from "../ui/PhotoTile.jsx"
+import {SectionCard} from "@/components/ui/section-card.jsx"
 
 export function CoverPanel({cover, onOpen, onUpload}) {
     const handleUpload = (event) => {
@@ -11,8 +12,7 @@ export function CoverPanel({cover, onOpen, onUpload}) {
     }
 
     return (
-        <Card
-            className="flex flex-col rounded-[18px] border-black/[0.06] bg-white shadow-[0_4px_18px_rgba(0,0,0,0.04)] dark:border-white/[0.08] dark:bg-[#1C1C1E] sm:col-start-3">
+        <SectionCard className="flex flex-col sm:col-start-3">
             <CardContent className="flex flex-col gap-4 p-4">
                 <div className="flex flex-col gap-1">
                     <span className="text-center text-sm font-semibold tracking-tight text-[#1C1C1E] dark:text-white">
@@ -64,6 +64,6 @@ export function CoverPanel({cover, onOpen, onUpload}) {
                     </label>
                 </div>
             </CardContent>
-        </Card>
+        </SectionCard>
     )
 }

@@ -1,20 +1,19 @@
-import {Card, CardContent} from "@/components/ui/card.jsx"
+import {CardContent} from "@/components/ui/card.jsx"
 import {Label} from "@/components/ui/label.jsx"
 import {
     RadioGroup,
     RadioGroupItem,
 } from "@/components/ui/radio-group.jsx"
+import {SectionCard} from "@/components/ui/section-card.jsx"
+import {SectionTitle} from "@/components/ui/section-title.jsx"
 
 import {STATUSES} from "../constants.js"
 
 export function StatusSection({status, onStatusChange}) {
     return (
-        <Card
-            className="rounded-[18px] border-black/[0.06] bg-white shadow-[0_4px_18px_rgba(0,0,0,0.04)] dark:border-white/[0.08] dark:bg-[#1C1C1E]">
+        <SectionCard>
             <CardContent className="flex flex-col gap-3 p-4">
-                <h2 className="text-xs font-semibold tracking-wide text-[#6E6E73] uppercase dark:text-[#AEAEB2]">
-                    Статус
-                </h2>
+                <SectionTitle as="h2">Статус</SectionTitle>
 
                 <RadioGroup
                     value={status}
@@ -55,6 +54,6 @@ export function StatusSection({status, onStatusChange}) {
                     })}
                 </RadioGroup>
             </CardContent>
-        </Card>
+        </SectionCard>
     )
 }
