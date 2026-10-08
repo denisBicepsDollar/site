@@ -1,5 +1,6 @@
 import {Sparkles} from "lucide-react";
-import {Button} from "../../../../shared/ui/Button.jsx";
+import {Button} from "@/components/ui/button.jsx";
+import {Badge} from "@/components/ui/badge.jsx";
 import {VariantRow} from "./VariantRow.jsx";
 
 /* Секция 4. Варианты и количество */
@@ -24,12 +25,9 @@ export function VariantsSection({
                     Варианты и количество
                 </span>
 
-                <span
-                    className="inline-flex h-5 min-w-5 items-center justify-center rounded-full
-                               bg-zinc-900 px-1.5 text-xs font-bold text-white"
-                >
+                <Badge variant="secondary" className="min-w-6 justify-center rounded-full tabular-nums">
                     {variants.length}
-                </span>
+                </Badge>
             </div>
 
             {/* Добавление варианта */}
@@ -49,19 +47,26 @@ export function VariantsSection({
                         {sizePresets.map((size) => (
                             <Button
                                 key={size}
-                                text={size}
+                                type="button"
+                                variant="outline"
                                 onClick={() => onAddVariant(size)}
-                                className="min-w-[3rem] bg-white"
-                            />
+                                className="min-w-12 rounded-full border-black/[0.08] bg-white text-[#007AFF] dark:border-white/[0.1] dark:bg-[#2C2C2E] dark:text-[#0A84FF]"
+                            >
+                                {size}
+                            </Button>
                         ))}
+
                     </div>
                 </div>
 
                 <Button
-                    text="Свой вариант"
+                    type="button"
+                    variant="outline"
                     onClick={() => onAddVariant("")}
-                    className="h-10 w-full bg-white sm:w-auto sm:min-w-40"
-                />
+                    className="h-10 w-full rounded-full border-black/[0.08] bg-white text-[#007AFF] dark:border-white/[0.1] dark:bg-[#2C2C2E] dark:text-[#0A84FF] sm:w-auto sm:min-w-40"
+                >
+                    Свой вариант
+                </Button>
             </div>
 
             <div className="w-full min-w-0">

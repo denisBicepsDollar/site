@@ -1,44 +1,61 @@
-import {ArrowLeft, Save} from "lucide-react";
-import {Button} from "../../../../shared/ui/Button.jsx";
+import {ArrowLeft, Save} from "lucide-react"
+import {Badge} from "@/components/ui/badge.jsx"
+import {Button} from "@/components/ui/button.jsx"
 
-/* Верхняя прилипающая панель: хлебные крошки, индикатор изменений и «Сохранить» */
 export function ProductHeader({name, hasChanges, onBack, onSave}) {
     return (
-        <div className="flex w-full flex-col gap-3 border-b border-zinc-200
-                bg-white p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
-            <div className="flex min-w-0 items-center gap-3">
-                <Button text="К товарам" onClick={onBack}>
-                    <ArrowLeft className="w-5 h-5" aria-hidden="true"/>
+        <header
+            className="sticky top-0 z-30 flex w-full flex-col gap-3 border-b border-black/[0.06] bg-white/85 p-4 backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#1C1C1E]/85 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <div className="flex min-w-0 items-center gap-2">
+                <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={onBack}
+                    className="shrink-0 rounded-full text-[#007AFF] hover:bg-[#007AFF]/10 dark:text-[#0A84FF] dark:hover:bg-[#0A84FF]/10"
+                >
+                    <ArrowLeft aria-hidden="true" className="size-4"/>
+                    <span>К товарам</span>
                 </Button>
-                <span className="font-medium">/</span>
-                <span className="font-medium text-xl">{name}</span>
+
+                <span aria-hidden="true" className="text-[#D1D1D6] dark:text-[#48484A]">
+                    /
+                </span>
+
+                <h1 className="min-w-0 truncate text-base font-semibold tracking-tight text-[#1C1C1E] dark:text-white sm:text-lg">
+                    {name}
+                </h1>
             </div>
 
-            <div className="flex flex-row items-center gap-3">
-                <div
-                    className={`flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-medium border transition-colors ${
+            <div className="flex flex-wrap items-center gap-3">
+                <Badge
+                    variant={hasChanges ? "destructive" : "secondary"}
+                    className={
                         hasChanges
-                            ? "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-900/50"
-                            : "bg-green-50 text-green-700 border-green-200 dark:bg-green-950/40 dark:text-green-400 dark:border-green-900/50"
-                    }`}
+                            ? "gap-1.5 rounded-full bg-[#FF3B30]/10 text-[#D70015] dark:bg-[#FF453A]/15 dark:text-[#FF6961]"
+                            : "gap-1.5 rounded-full bg-[#34C759]/10 text-[#248A3D] dark:bg-[#30D158]/15 dark:text-[#30D158]"
+                    }
                 >
-        <span
-            className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                hasChanges ? "bg-red-500 animate-pulse" : "bg-green-500"
-            }`}
-        />
+                    <span
+                        aria-hidden="true"
+                        className={`size-1.5 rounded-full ${
+                            hasChanges
+                                ? "bg-[#FF3B30] motion-safe:animate-pulse dark:bg-[#FF453A]"
+                                : "bg-[#34C759] dark:bg-[#30D158]"
+                        }`}
+                    />
                     {hasChanges ? "Изменения не сохранены" : "Изменений нет"}
-                </div>
+                </Badge>
 
                 <Button
-                    text="Сохранить"
+                    type="button"
                     onClick={onSave}
-                    disabled={!hasChanges} // Отключает кнопку, если сохранять нечего
+                    disabled={!hasChanges}
+                    className="h-10 rounded-full bg-[#007AFF] px-4 text-white shadow-sm hover:bg-[#006FE6] active:scale-[0.98] dark:bg-[#0A84FF] dark:hover:bg-[#168FFF]"
                 >
-                    <Save className="h-5 w-5" aria-hidden="true"/>
+                    <Save aria-hidden="true" className="size-4"/>
+                    Сохранить
                 </Button>
             </div>
-
-        </div>
-    );
+        </header>
+    )
 }

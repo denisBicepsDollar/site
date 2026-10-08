@@ -6,7 +6,7 @@ import {MinusIcon, CheckIcon} from 'lucide-react'
  *
  * variant="dash" — шапка таблицы (минус), variant="check" — строка товара (галка).
  */
-export function Checkbox({checked, onChange, variant = 'check'}) {
+export function CheckBox({checked, onChange, variant = 'check'}) {
     const Icon = variant === 'dash' ? MinusIcon : CheckIcon
 
     return (

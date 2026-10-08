@@ -1,5 +1,5 @@
 import {useMemo, useState} from 'react'
-import {SelectionBar} from './components/SelectionBar.jsx'
+import {SelectionBar} from '../../../ui/SelectionBar.jsx'
 import {TableBody} from './components/TableBody.jsx'
 import {TableHeader} from './components/TableHeader.jsx'
 import {TablePagination} from './components/TablePagination.jsx'

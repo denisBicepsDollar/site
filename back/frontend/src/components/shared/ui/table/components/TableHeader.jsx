@@ -1,4 +1,4 @@
-import {Checkbox} from './Checkbox.jsx'
+import {CheckBox} from './check-box.jsx'
 
 export function TableHeader({
                                 isAllSelected,
@@ -19,7 +19,7 @@ export function TableHeader({
                     text-xs
                     font-medium
                     px-4">
-            <Checkbox
+            <CheckBox
                 variant="dash"
                 checked={isAllSelected}
                 onChange={onToggleAll}

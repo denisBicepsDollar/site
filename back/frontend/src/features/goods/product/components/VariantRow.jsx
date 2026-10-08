@@ -6,6 +6,8 @@ import {PriceInput} from "../ui/PriceInput.jsx";
 import {StockStepper} from "../ui/StockStepper.jsx";
 import {UploadTile} from "../ui/UploadTile.jsx";
 import {useBreakpoint} from "../model/useWindowWidth.js";
+import {Input} from "@/components/ui/input.jsx";
+import {Button} from "@/components/ui/button.jsx";
 
 const MAX_PHOTOS_BY_BREAKPOINT = {
     xl: Infinity,
@@ -49,17 +51,15 @@ export function VariantRow({
                        sm:gap-x-3 sm:gap-y-0 sm:p-2.5"
         >
             {/* Размер */}
-            <input
-                className="h-9 w-full min-w-0 rounded-lg border border-zinc-200 bg-white
-                           text-center text-sm font-medium outline-none
-                           transition-colors focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+            <Input
                 value={name}
                 onChange={(event) => onUpdate({name: event.target.value})}
+                className="h-9 min-w-0 rounded-[12px] border-black/[0.08] bg-[#F2F2F7] text-center text-sm font-medium dark:border-white/[0.08] dark:bg-[#2C2C2E] dark:text-white"
             />
 
             {/* Остаток */}
             <StockStepper
-                className="h-9 w-full min-w-0"
+                className="w-full min-w-0"
                 value={stock}
                 onChange={(value) => onUpdate({stock: value})}
             />
@@ -95,22 +95,18 @@ export function VariantRow({
 
                 <div className="shrink-0">
                     {hasMore ? (
-                        <button
+                        <Button
                             type="button"
+                            variant="outline"
                             onClick={() => setPhotosModalOpen(true)}
                             aria-label={`Показать ещё ${hiddenCount} фото`}
-                            className="flex h-28 w-24 flex-col items-center justify-center gap-1
-                                       rounded-xl border border-zinc-200 bg-zinc-50 p-2
-                                       text-center text-xs leading-tight text-zinc-600
-                                       transition-colors hover:border-zinc-300 hover:bg-zinc-100
-                                       focus-visible:outline-none focus-visible:ring-2
-                                       focus-visible:ring-zinc-400 cursor-pointer"
+                            className="h-28 w-24 shrink-0 flex-col rounded-[16px] border-dashed border-[#D1D1D6] bg-[#F2F2F7] text-[#6E6E73] hover:border-[#007AFF]/40 hover:bg-[#007AFF]/[0.04] dark:border-[#48484A] dark:bg-[#2C2C2E] dark:text-[#AEAEB2]"
                         >
-                            <span className="font-semibold text-zinc-900">
-                                +{hiddenCount}
-                            </span>
+    <span className="font-semibold text-[#007AFF] dark:text-[#0A84FF]">
+        +{hiddenCount}
+    </span>
                             <span>Ещё фото</span>
-                        </button>
+                        </Button>
                     ) : (
                         <UploadTile size="sm" onFiles={onUploadPhotos}/>
                     )}
@@ -118,19 +114,16 @@ export function VariantRow({
             </div>
 
             {/* Удалить вариант */}
-            <button
+            <Button
                 type="button"
+                variant="ghost"
+                size="icon-sm"
                 onClick={onRemove}
                 aria-label="Удалить вариант"
-                className="col-start-4 row-start-1 ml-auto flex h-7 w-7 shrink-0
-                           items-center justify-center rounded-lg text-zinc-400
-                           transition-colors hover:bg-zinc-100 hover:text-rose-600
-                           focus-visible:outline-none focus-visible:ring-2
-                           focus-visible:ring-zinc-400
-                           sm:col-auto sm:row-auto sm:ml-0 sm:h-8 sm:w-8"
+                className="col-start-4 row-start-1 ml-auto rounded-full text-[#8E8E93] hover:bg-[#FF3B30]/10 hover:text-[#FF3B30] sm:col-auto sm:row-auto sm:ml-0 dark:hover:bg-[#FF453A]/15 dark:hover:text-[#FF6961]"
             >
-                <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true"/>
-            </button>
+                <Trash2 aria-hidden="true" className="size-4"/>
+            </Button>
 
             <VariantPhotosModal
                 open={photosModalOpen}

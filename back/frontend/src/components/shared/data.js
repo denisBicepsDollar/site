@@ -1,6 +1,6 @@
 export const data = [
     {
-        id: 1,
+        id: 0,
         name: "Монстера Делициоза",
         sku: "PL-001",
         category: "Комнатные",
@@ -28,7 +28,7 @@ export const data = [
         ]
     },
     {
-        id: 2,
+        id: 1,
         name: "Фикус Лирата",
         sku: "PL-002",
         category: "Комнатные",
@@ -56,13 +56,13 @@ export const data = [
         ]
     },
     {
-        id: 3,
+        id: 2,
         name: "Замиокулькас",
         sku: "PL-003",
         category: "Комнатные",
         price: 2900,
         stock: 3,
-        status: "active",
+        status: "draft",
         updated: "Вчера",
         description: "Неприхотливое долларовое дерево с глянцевыми листьями.",
         previewImage: "/img/pl-003_preview.png",
@@ -90,7 +90,7 @@ export const data = [
         category: "Комнатные",
         price: 1800,
         stock: 6,
-        status: "active",
+        status: "inactive",
         updated: "Сегодня",
         description: "Выносливое растение, отлично очищающее воздух.",
         previewImage: "/img/pl-004_preview.png",
@@ -360,7 +360,7 @@ export const data = [
         id: 14,
         name: "Алоэ Вера",
         sku: "PL-014",
-        category: "Суккуленты",
+        category: "Комнатные",
         price: 1100,
         stock: 1,
         status: "active",
@@ -381,7 +381,7 @@ export const data = [
         id: 15,
         name: "Крассула Овата",
         sku: "PL-015",
-        category: "Суккуленты",
+        category: "Комнатные",
         price: 1300,
         stock: 4,
         status: "active",

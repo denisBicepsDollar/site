@@ -1,5 +1,5 @@
 import {Link} from 'react-router-dom'
-import {Checkbox} from './Checkbox.jsx'
+import {CheckBox} from './check-box.jsx'
 import {Ellipsis} from 'lucide-react';
 
 export function TableRow({item, selected, onToggle}) {
@@ -13,7 +13,7 @@ export function TableRow({item, selected, onToggle}) {
                 transition-colors
                 ${selected ? "bg-stone-50/60" : "bg-white"}`}
         >
-            <Checkbox
+            <CheckBox
                 variant="check"
                 checked={selected}
                 // Останавливаем всплытие клика, чтобы при выборе чекбокса не переходило по ссылке Link

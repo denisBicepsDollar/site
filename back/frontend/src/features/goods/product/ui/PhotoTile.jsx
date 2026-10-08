@@ -1,7 +1,13 @@
-import {ArrowUp, X} from "lucide-react";
-import {SIZES} from "../constants.js";
+import {ArrowUp, X} from "lucide-react"
 
-/* Плитка фото: превью, подпись и кнопки поверх */
+import {AspectRatio} from "@/components/ui/aspect-ratio.jsx"
+import {Badge} from "@/components/ui/badge.jsx"
+import {Button} from "@/components/ui/button.jsx"
+import {Card} from "@/components/ui/card.jsx"
+import {cn} from "cn"
+
+import {SIZES} from "../constants.js"
+
 export function PhotoTile({
                               src,
                               alt,
@@ -15,96 +21,113 @@ export function PhotoTile({
                               openLabel = null,
                               className = "",
                           }) {
-    const {wrapper = "", image = ""} = SIZES[size] ?? {};
+    const {wrapper = "", image = ""} = SIZES[size] ?? {}
 
-    // fluid нужен для большой обложки на всю ширину панели.
-    const wrapperSize = fluid ? "aspect-square w-full" : wrapper;
-    const imageSize = fluid ? "" : image;
-
-    return (
-        <div
-            className={`group relative isolate shrink-0 cursor-pointer overflow-hidden rounded-2xl
-                        bg-zinc-100 shadow-sm ring-1 ring-zinc-900/5
-                        transition-shadow duration-300 hover:shadow-md
-                        ${wrapperSize} ${className}`}
-        >
-            <img
-                className={`h-full w-full object-cover transition-transform duration-500 ease-out
-                            group-hover:scale-[1.05] ${imageSize}`}
-                src={src}
-                alt={alt}
-                onClick={onOpen}
-            />
-
-            {openLabel && (
-                <div
-                    className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center
-                               bg-zinc-950/0 transition-colors duration-200
-                               group-hover:bg-zinc-950/10"
-                >
-                    <span
-                        className="rounded-lg border border-white/70 bg-white/90 px-3 py-1.5
-                                   text-xs font-medium text-zinc-700 opacity-0 shadow-sm backdrop-blur-sm
-                                   transition-opacity duration-200 group-hover:opacity-100"
-                    >
-                        {openLabel}
-                    </span>
-                </div>
+    const imageElement = (
+        <img
+            src={src}
+            alt={alt}
+            draggable={false}
+            className={cn(
+                "h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]",
+                image,
             )}
+        />
+    )
 
-            <div
-                className="absolute right-2 top-2 z-10 flex gap-1.5 opacity-100
-                           transition-all duration-200
-                           sm:translate-y-1 sm:opacity-0
-                           sm:group-hover:translate-y-0 sm:group-hover:opacity-100
-                           sm:group-focus-within:translate-y-0 sm:group-focus-within:opacity-100"
-            >
-                {onRemove && (
-                    <button
+    const content = (
+        <>
+            <div className="absolute inset-0 z-0">
+                {onOpen ? (
+                    <Button
                         type="button"
-                        title="Удалить фото"
-                        aria-label="Удалить фото"
-                        onClick={onRemove}
-                        className="flex h-8 w-8 cursor-pointer items-center justify-center
-                                   rounded-xl border border-white/20 bg-slate-950/60 text-white
-                                   shadow-lg shadow-black/20 backdrop-blur-md
-                                   transition-all duration-200 hover:scale-105 hover:bg-rose-500
-                                   active:scale-95 focus-visible:outline-none
-                                   focus-visible:ring-2 focus-visible:ring-white"
+                        variant="ghost"
+                        aria-label={openLabel || `Открыть: ${alt}`}
+                        onClick={onOpen}
+                        className="h-full w-full rounded-none border-0 bg-transparent p-0 text-inherit shadow-none hover:bg-transparent focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#007AFF] dark:focus-visible:ring-[#0A84FF]"
                     >
-                        <X className="h-4 w-4"/>
-                    </button>
-                )}
-
-                {onMakeCover && (
-                    <button
-                        type="button"
-                        title={makeCoverTitle}
-                        aria-label={makeCoverTitle}
-                        onClick={onMakeCover}
-                        className="flex h-8 w-8 cursor-pointer items-center justify-center
-                                   rounded-xl border border-white/40 bg-white/90 text-slate-800
-                                   shadow-lg shadow-black/20 backdrop-blur-md
-                                   transition-all duration-200 hover:scale-105 hover:bg-amber-300
-                                   active:scale-95 focus-visible:outline-none
-                                   focus-visible:ring-2 focus-visible:ring-white"
-                    >
-                        <ArrowUp className="h-4 w-4"/>
-                    </button>
+                        {imageElement}
+                    </Button>
+                ) : (
+                    imageElement
                 )}
             </div>
 
-            {badge && (
-                <div className="pointer-events-none absolute inset-x-2 bottom-2 z-10 flex min-w-0">
-                    <span
-                        className="max-w-full truncate rounded-lg border border-white/80
-                                   bg-white/90 px-2 py-1 text-[10px] font-medium text-zinc-700
-                                   shadow-sm backdrop-blur-sm"
+            {openLabel && (
+                <div
+                    className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover:bg-black/10">
+                    <Badge
+                        variant="secondary"
+                        className="rounded-full border border-white/60 bg-white/90 px-3 text-xs font-medium text-[#1C1C1E] opacity-0 shadow-sm backdrop-blur-xl transition-opacity group-hover:opacity-100 dark:border-white/15 dark:bg-[#2C2C2E]/90 dark:text-white"
                     >
-                        {badge}
-                    </span>
+                        {openLabel}
+                    </Badge>
                 </div>
             )}
-        </div>
-    );
+
+            {(onRemove || onMakeCover) && (
+                <div
+                    className="absolute right-2 top-2 z-10 flex gap-1.5 opacity-100 transition-all duration-200 sm:translate-y-1 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 sm:group-focus-within:translate-y-0 sm:group-focus-within:opacity-100">
+                    {onRemove && (
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            size="icon-sm"
+                            title="Удалить фото"
+                            aria-label="Удалить фото"
+                            onClick={onRemove}
+                            className="rounded-full border border-white/40 bg-white/85 text-[#1C1C1E] shadow-md backdrop-blur-xl hover:bg-[#FF3B30]/10 hover:text-[#FF3B30] active:scale-95 dark:border-white/10 dark:bg-[#2C2C2E]/90 dark:text-white dark:hover:bg-[#FF453A]/15 dark:hover:text-[#FF6961]"
+                        >
+                            <X className="size-4"/>
+                        </Button>
+                    )}
+
+                    {onMakeCover && (
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            size="icon-sm"
+                            title={makeCoverTitle}
+                            aria-label={makeCoverTitle}
+                            onClick={onMakeCover}
+                            className="rounded-full border border-white/40 bg-white/85 text-[#1C1C1E] shadow-md backdrop-blur-xl hover:bg-[#007AFF]/10 hover:text-[#007AFF] active:scale-95 dark:border-white/10 dark:bg-[#2C2C2E]/90 dark:text-white dark:hover:bg-[#0A84FF]/15 dark:hover:text-[#0A84FF]"
+                        >
+                            <ArrowUp className="size-4"/>
+                        </Button>
+                    )}
+                </div>
+            )}
+
+            {badge && (
+                <div className="pointer-events-none absolute inset-x-2 bottom-2 z-10 flex min-w-0">
+                    <Badge
+                        variant="secondary"
+                        className="max-w-full truncate rounded-full border border-white/60 bg-white/90 px-2.5 text-[10px] font-medium text-[#1C1C1E] shadow-sm backdrop-blur-xl dark:border-white/15 dark:bg-[#2C2C2E]/90 dark:text-white"
+                    >
+                        {badge}
+                    </Badge>
+                </div>
+            )}
+        </>
+    )
+
+    return (
+        <Card
+            className={cn(
+                "group relative isolate block shrink-0 overflow-hidden rounded-[18px] border-0 bg-[#F2F2F7] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.10)] ring-1 ring-black/[0.05] transition-shadow duration-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.16)] dark:bg-[#1C1C1E] dark:ring-white/[0.08]",
+                fluid ? "w-full" : wrapper,
+                className,
+            )}
+        >
+            {fluid ? (
+                <AspectRatio ratio={1} className="relative w-full">
+                    {content}
+                </AspectRatio>
+            ) : (
+                <div className="relative h-full w-full">
+                    {content}
+                </div>
+            )}
+        </Card>
+    )
 }

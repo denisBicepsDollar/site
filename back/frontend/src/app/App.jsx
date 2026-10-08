@@ -4,10 +4,11 @@ import {ComponentPreviews, useInitial} from "../dev/index.js";
 import LoginForm from "../features/auth/components/LoginForm.jsx";
 import {ComingSoonPage} from "../features/dashboard/components/ComingSoonPage.jsx";
 import Dashboard from "../features/dashboard/components/Dashboard.jsx";
-import {OrdersContent} from "../features/orders/OrdersContent.jsx";
+import {OrdersListPage} from "../features/orders/order-content.jsx";
 import {GoodsListPage} from "../features/goods/GoodsListPage.jsx";
 import {ProductPage} from "../features/goods/product/ProductPage.jsx";
-import AccessControl from "../shared/components/AccessControl.jsx";
+import AccessControl from "@/components/shared/components/AccessControl.jsx";
+import {OrderPage} from "@/features/orders/order/order-page.jsx";
 
 export default function App() {
     return (
@@ -35,7 +36,10 @@ export default function App() {
                             <Route index element={<GoodsListPage/>}/>
                             <Route path=":id" element={<ProductPage/>}/>
                         </Route>
-                        <Route path="orders" element={<OrdersContent/>}/>
+                        <Route path="orders">
+                            <Route index element={<OrdersListPage/>}/>
+                            <Route path=":id" element={<OrderPage/>}/>
+                        </Route>
                         <Route
                             path="messages"
                             element={
