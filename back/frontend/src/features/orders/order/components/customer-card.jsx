@@ -3,12 +3,13 @@ import {CreditCard, UserRound} from "lucide-react"
 import {Avatar, AvatarFallback} from "@/components/ui/avatar.jsx"
 import {Badge} from "@/components/ui/badge.jsx"
 import {
-    Card,
     CardContent,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card.jsx"
 import {Separator} from "@/components/ui/separator.jsx"
+import {SectionCard} from "@/components/ui/section-card.jsx"
+
 
 export function CustomerPaymentCard({customer, payment}) {
     const paymentStatus = payment.status.toLowerCase()
@@ -20,8 +21,7 @@ export function CustomerPaymentCard({customer, payment}) {
             : "bg-[#FF9F0A]/10 text-[#A65E00] dark:bg-[#FF9F0A]/15 dark:text-[#FFB340]"
 
     return (
-        <Card
-            className="min-w-0 rounded-[20px] border-black/[0.06] bg-white shadow-[0_4px_18px_rgba(0,0,0,0.04)] dark:border-white/[0.08] dark:bg-[#1C1C1E]">
+        <SectionCard radius={20} className="min-w-0">
             <CardHeader className="p-4 pb-3 sm:px-5">
                 <CardTitle className="text-sm font-semibold text-[#1C1C1E] dark:text-white">
                     Покупатель и оплата
@@ -84,6 +84,6 @@ export function CustomerPaymentCard({customer, payment}) {
                     </Badge>
                 </section>
             </CardContent>
-        </Card>
+        </SectionCard>
     )
 }

@@ -1,7 +1,9 @@
 import {CoverPanel} from "./CoverPanel.jsx"
 import {PhotoTile} from "../ui/PhotoTile.jsx"
-import {Card, CardContent} from "@/components/ui/card.jsx"
+import {CardContent} from "@/components/ui/card.jsx"
 import {Separator} from "@/components/ui/separator.jsx"
+import {SectionCard} from "@/components/ui/section-card.jsx"
+import {SectionTitle} from "@/components/ui/section-title.jsx"
 
 /* Секция 3. Фото вариантов слева, обложка товара справа. */
 export function PhotosSection({
@@ -18,12 +20,10 @@ export function PhotosSection({
         .filter(({variant}) => variant.images?.length > 0)
 
     return (
-        <Card
-            className="min-w-0 rounded-[18px] border-black/[0.06] bg-white shadow-[0_4px_18px_rgba(0,0,0,0.04)] dark:border-white/[0.08] dark:bg-[#1C1C1E]">
+        <SectionCard className="min-w-0">
             <CardContent className="flex min-w-0 flex-col gap-4 p-4">
-                <h2 className="text-xs font-semibold tracking-wide text-[#6E6E73] uppercase dark:text-[#AEAEB2]">
-                    Фотографии
-                </h2>
+                <SectionTitle as="h2">Фотографии</SectionTitle>
+
 
                 <div
                     className="grid min-w-0 grid-cols-1 items-stretch gap-6 sm:grid-cols-[minmax(0,1fr)_1px_280px] lg:grid-cols-[minmax(0,1fr)_1px_320px]">
@@ -135,6 +135,6 @@ export function PhotosSection({
                     />
                 </div>
             </CardContent>
-        </Card>
+        </SectionCard>
     )
 }

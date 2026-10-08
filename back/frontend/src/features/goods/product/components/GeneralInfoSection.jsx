@@ -1,6 +1,8 @@
-import {Card, CardContent} from "@/components/ui/card.jsx"
+import {CardContent} from "@/components/ui/card.jsx"
 import {Input} from "@/components/ui/input.jsx"
 import {Label} from "@/components/ui/label.jsx"
+import {SectionCard} from "@/components/ui/section-card.jsx"
+import {SectionTitle} from "@/components/ui/section-title.jsx"
 
 import {CATEGORIES, MAX_NAME_LENGTH} from "../constants.js"
 import {CategorySelect} from "../ui/CategorySelect.jsx"
@@ -22,16 +24,12 @@ export function GeneralInfoSection({
     const productName = name ?? ""
 
     return (
-        <Card
-            className="rounded-[18px] border-black/[0.06] bg-white shadow-[0_4px_18px_rgba(0,0,0,0.04)] dark:border-white/[0.08] dark:bg-[#1C1C1E]">
+        <SectionCard>
             <CardContent className="flex flex-col gap-4 p-4">
                 <div className="flex items-center gap-2">
-                    <Label
-                        htmlFor="product-name"
-                        className="text-xs font-semibold tracking-wide text-[#6E6E73] uppercase dark:text-[#AEAEB2]"
-                    >
+                    <SectionTitle as={Label} htmlFor="product-name">
                         Название товара
-                    </Label>
+                    </SectionTitle>
                     <span className="text-[10px] font-medium text-[#FF3B30]">
                         *
                     </span>
@@ -85,6 +83,6 @@ export function GeneralInfoSection({
                     />
                 </div>
             </CardContent>
-        </Card>
+        </SectionCard>
     )
 }

@@ -2,14 +2,17 @@ import {useState} from "react"
 import {ChevronDown, FileText} from "lucide-react"
 
 import {Button} from "@/components/ui/button.jsx"
-import {Card, CardContent} from "@/components/ui/card.jsx"
+import {CardContent} from "@/components/ui/card.jsx"
+
 import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible.jsx"
 import {Label} from "@/components/ui/label.jsx"
-import {Textarea} from "@/components/ui/textarea.jsx"
+import {SectionCard} from "@/components/ui/section-card.jsx"
+import {SectionTitle} from "@/components/ui/section-title.jsx"
+import {SectionTextarea} from "@/components/ui/section-textarea.jsx"
 
 import {CharCounter} from "../../features/goods/product/ui/CharCounter.jsx"
 
@@ -19,8 +22,7 @@ export function NotesSection({note, onNoteChange, MAX_NOTE_LENGTH}) {
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-            <Card
-                className="rounded-[18px] border-black/[0.06] bg-white shadow-[0_4px_18px_rgba(0,0,0,0.04)] dark:border-white/[0.08] dark:bg-[#1C1C1E]">
+            <SectionCard>
                 <CardContent className="p-4">
                     <CollapsibleTrigger asChild>
                         <Button
@@ -34,11 +36,9 @@ export function NotesSection({note, onNoteChange, MAX_NOTE_LENGTH}) {
                                     isOpen ? "rotate-180" : ""
                                 }`}
                             />
-                            <span
-                                className="text-xs font-semibold tracking-wide text-[#6E6E73] uppercase dark:text-[#AEAEB2]">
-                                Заметки
-                            </span>
+                            <SectionTitle>Заметки</SectionTitle>
                         </Button>
+
                     </CollapsibleTrigger>
 
                     <CollapsibleContent className="pt-3">
@@ -54,9 +54,10 @@ export function NotesSection({note, onNoteChange, MAX_NOTE_LENGTH}) {
                                 Внутренняя заметка
                             </Label>
 
-                            <Textarea
+                            <SectionTextarea
+
                                 id="product-note"
-                                className="min-h-[100px] resize-none rounded-[14px] border-black/[0.06] bg-[#F2F2F7] px-3 py-3 text-sm leading-relaxed text-[#1C1C1E] shadow-none placeholder:text-[#AEAEB2] focus-visible:border-[#007AFF]/35 focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#007AFF]/15 dark:border-white/[0.08] dark:bg-[#2C2C2E] dark:text-white dark:focus-visible:border-[#0A84FF]/40 dark:focus-visible:bg-[#3A3A3C] dark:focus-visible:ring-[#0A84FF]/20"
+                                className="min-h-[100px]"
                                 value={currentNote}
                                 placeholder="Для себя..."
                                 maxLength={MAX_NOTE_LENGTH}
@@ -73,7 +74,7 @@ export function NotesSection({note, onNoteChange, MAX_NOTE_LENGTH}) {
                         </div>
                     </CollapsibleContent>
                 </CardContent>
-            </Card>
+            </SectionCard>
         </Collapsible>
     )
 }
