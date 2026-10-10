@@ -1,5 +1,5 @@
 import {Clock3} from "lucide-react";
-import {EmptyState} from "@/components/shared/ui/EmptyState.jsx";
+import {EmptyState} from "@/shared/components/EmptyState.jsx";
 import {PageHeader} from "./PageHeader.jsx";
 
 export function ComingSoonPage({title, description}) {

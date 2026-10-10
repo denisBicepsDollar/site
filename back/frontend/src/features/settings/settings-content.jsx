@@ -1,20 +1,20 @@
 import {useState} from "react"
 import {Bell, Check, Mail, RotateCcw, Save} from "lucide-react"
 
-import {Button} from "@/components/ui/button"
+import {Button} from "@/shared/ui/actions/button.jsx"
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
-import {Input} from "@/components/ui/input"
-import {Label} from "@/components/ui/label"
-import {SectionCard} from "@/components/ui/section-card.jsx"
-import {Switch} from "@/components/ui/switch"
+} from "@/shared/ui/display/card.jsx"
+import {Input} from "@/shared/ui/forms/input.jsx"
+import {Label} from "@/shared/ui/forms/label.jsx"
+import {SectionCard} from "@/shared/ui/sections/section-card.jsx"
+import {Switch} from "@/shared/ui/forms/switch.jsx"
 
-import {DEFAULT_SETTINGS} from './settings/constants.js'
+import {DEFAULT_SETTINGS} from './constants.js'
 import {PageHeader} from "@/features/dashboard/components/PageHeader.jsx";
 
 

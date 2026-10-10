@@ -1,13 +1,13 @@
 import {useMemo, useState} from "react"
 
 import {PageHeader} from "@/features/dashboard/components/PageHeader.jsx"
-import {Avatar, AvatarFallback} from "@/components/ui/avatar.jsx"
-import {StatusBadge} from "@/components/ui/status-badge.jsx"
-import {Button} from "@/components/ui/button.jsx"
-import {Card, CardContent} from "@/components/ui/card.jsx"
-import {SectionPanel} from "@/components/ui/section-card.jsx"
-import {SearchInput} from "@/components/ui/search-input.jsx"
-import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs.jsx"
+import {Avatar, AvatarFallback} from "@/shared/ui/display/avatar.jsx"
+import {StatusBadge} from "@/shared/ui/display/status-badge.jsx"
+import {Button} from "@/shared/ui/actions/button.jsx"
+import {Card, CardContent} from "@/shared/ui/display/card.jsx"
+import {SectionPanel} from "@/shared/ui/sections/section-card.jsx"
+import {SearchInput} from "@/shared/ui/forms/search-input.jsx"
+import {Tabs, TabsList, TabsTrigger} from "@/shared/ui/layout/tabs.jsx"
 import {cn} from "cn"
 
 const INITIAL_MESSAGES = [
