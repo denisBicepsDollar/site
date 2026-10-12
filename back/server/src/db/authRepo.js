@@ -1,9 +1,11 @@
-import pool from './authClient.js';
+import pool from './defaultClient.js';
+
+const schema = 'users';
 
 export async function findUserByUsername(username) {
     const sql = `
         SELECT *
-        FROM users
+        FROM ${schema}.users
         WHERE username = $1
     `;
 

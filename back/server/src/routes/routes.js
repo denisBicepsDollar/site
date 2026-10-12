@@ -1,17 +1,18 @@
-import * as shopController from "../controllers/shopController.js";
 import * as authController from "../controllers/authController.js";
+import * as productController from "../controllers/productController.js";
 import adminRouter from "./admin.js";
 import authHandler from "../middleware/authHandler.js";
 import {authLimiter} from "../middleware/rateLimiters.js";
 import healthRouter from "./health.js";
+
 //import {upload, uploadImage} from './controllers/uploadController.js';
 
 export function registerRoutes(app) {
     // Public API
-    app.get('/api/products', shopController.list);
-    app.get('/api/products/:productId', shopController.get);
-    app.post('/api/orders', shopController.create);
-    app.post('/api/contacts', shopController.createContact);
+    app.get('/api/products', productController.list);
+    // app.get('/api/products/:productId', shopController.get);
+    // app.post('/api/orders', shopController.create);
+    // app.post('/api/contacts', shopController.createContact);
 
     // Auth
 
@@ -20,8 +21,8 @@ export function registerRoutes(app) {
         return res.status(200).json('ok');
     });
 
-    // Admin
-    app.use('/admin', adminRouter);
+    // // api
+    // app.use('/api', adminRouter);
 
 
     // HealthCheck

@@ -9,7 +9,6 @@ export default {
 
     db:
         {
-            catalogConnectionString: process.env.CATALOG_URL || null,
-            usersConnectionString: process.env.USERS_URL || null,
+            connectionString: process.env.CONNECTION_STRING || null,
         },
 };

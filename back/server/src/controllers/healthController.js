@@ -1,4 +1,4 @@
-import * as healthService from "../services/Health/healthService.js";
+import * as healthService from "../services/healthService.js";
 
 export async function health(req, res) {
 

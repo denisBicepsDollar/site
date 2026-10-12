@@ -1,4 +1,4 @@
-import * as authService from '../services/Auth/authService.js';
+import * as authService from '../services/authService.js';
 import getLogger from "../utils/logger.js";
 
 const moduleName = 'authController';

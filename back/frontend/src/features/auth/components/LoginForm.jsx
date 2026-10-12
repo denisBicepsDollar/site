@@ -1,20 +1,16 @@
-import { useState} from "react";
-import postSignIn from "../authApi.js";
+import {useState} from "react";
+import {useSignIn} from "@/features/auth/model/useSignIn.js";
 
 export default function LoginForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState("");
 
-    async function handleClick(e) {
+    const {mutate, isPending, error, isError} = useSignIn();
+
+    function handleClick(e) {
         e.preventDefault();
-        try {
-            setError("");
-            await postSignIn(username, password);
-            window.location.href = '/dashboard';
-        } catch (e) {
-            setError(e.message);
-        }
+
+        mutate({username, password});
     }
 
     return (
@@ -93,10 +89,10 @@ export default function LoginForm() {
                         items-center
                         flex-col
                         gap-2">
-                        {error &&
+                        {isError &&
                             <p
                                 className="--af-danger">
-                                {error}
+                                {error.message}
                             </p>
                         }
                         <button
