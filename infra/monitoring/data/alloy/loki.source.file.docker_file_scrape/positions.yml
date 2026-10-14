@@ -1,0 +1,16 @@
+positions:
+  ? path: /var/lib/docker/containers/6cf8a03f3535d4c6aa621422875ac939a191e53572edc36a40e5d416493a7434/6cf8a03f3535d4c6aa621422875ac939a191e53572edc36a40e5d416493a7434-json.log
+    labels: '{container="loki"}'
+  : "943320"
+  ? path: /var/lib/docker/containers/92ea11abc76e38c80f8fb3607b6fbd1312fdcb3b93440dc7b36c1ab797608a36/92ea11abc76e38c80f8fb3607b6fbd1312fdcb3b93440dc7b36c1ab797608a36-json.log
+    labels: '{container="postgresDataBase"}'
+  : "1756"
+  ? path: /var/lib/docker/containers/720a9c9b5258b16b00c9d823be29e04e83ece218ee4d5a79b684860f88b32eee/720a9c9b5258b16b00c9d823be29e04e83ece218ee4d5a79b684860f88b32eee-json.log
+    labels: '{container="grafana"}'
+  : "577371"
+  ? path: /var/lib/docker/containers/5309cbc35265085ebc694118d98e87af34092f251e944df557d57318536c09c9/5309cbc35265085ebc694118d98e87af34092f251e944df557d57318536c09c9-json.log
+    labels: '{container="alloy"}'
+  : "23240"
+  ? path: /var/lib/docker/containers/e5d1c46f5f21325e644684fc917e74eaedf16d115a61eaba747d064f90dfcf23/e5d1c46f5f21325e644684fc917e74eaedf16d115a61eaba747d064f90dfcf23-json.log
+    labels: '{container="nginx"}'
+  : "7934"
