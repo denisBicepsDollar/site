@@ -44,9 +44,9 @@ export function Header() {
                 >
                     <div className="mx-auto flex h-[72px] max-w-[1400px] items-center justify-between px-5 md:px-10">
                         <Link href="/" className="group flex items-center gap-2.5">
-                            {/* ИСПРАВЛЕНИЕ 2: Выпрямили строку className в одну линию без скрытых переносов \(\r\\)n */}
                             <span
-                                className="grid size-10 place-items-center rounded-full bg-forest text-cream transition-transform duration-500 group-hover:rotate-[20deg]">
+                                className="grid size-10 place-items-center rounded-full bg-forest text-cream 
+                                           transition-transform duration-500 group-hover:rotate-[20deg]">
                                 <Leaf className="size-5" strokeWidth={1.8}/>
                             </span>
                             <span className="font-display text-[26px] font-semibold leading-none tracking-tight">
@@ -78,10 +78,11 @@ export function Header() {
 
                         <div className="flex items-center gap-3 md:gap-5">
                             <a
-                                href="tel:+74951204567"
+                                href="contact"
                                 className="hidden items-center gap-2 text-[13px] font-semibold text-ink/70 transition-colors hover:text-forest xl:flex"
                             >
-                                <Phone className="size-4" strokeWidth={1.8}/>
+                                <Phone className="size-4 " strokeWidth={1.8}/>
+                                Связаться
                                 +7 (495) 120-45-67
                             </a>
 
