@@ -22,27 +22,75 @@ export function ProductList() {
   // 2. Следим за появлением маячка на экране
   useEffect(() => {
     const currentTarget = loadMoreRef.current;
-    if (!currentTarget || !hasNextPage || isFetchingNextPage || isFetchNextPageError) {
+    if (
+      !currentTarget ||
+      !hasNextPage ||
+      isFetchingNextPage ||
+      isFetchNextPageError
+    ) {
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const isIntersecting = entries.some((entry) => entry.isIntersecting);
-        if (isIntersecting && hasNextPage && !isFetchingNextPage && !isFetchNextPageError) {
-          fetchNextPage();
-        }
-      },
-      {
-        // Начинаем подгрузку заранее — за 300px до конца списка, чтобы юзер не видел пустоту
-        rootMargin: "300px",
-      },
-    );
+    let triggered = false;
+    const triggerLoadMore = () => {
+      if (triggered) return;
+      triggered = true;
+      fetchNextPage();
+    };
 
-    observer.observe(currentTarget);
+    const checkVisibility = () => {
+      if (triggered) return;
+      const rect = currentTarget.getBoundingClientRect();
+      const viewportHeight =
+        window.innerHeight || document.documentElement.clientHeight;
+      if (rect.height > 0 && rect.top <= viewportHeight + 300) {
+        triggerLoadMore();
+      }
+    };
+
+    const observer =
+      typeof IntersectionObserver !== "undefined"
+        ? new IntersectionObserver(
+            (entries) => {
+              const isIntersecting = entries.some(
+                (entry) => entry.isIntersecting,
+              );
+              if (isIntersecting) {
+                triggerLoadMore();
+              }
+            },
+            {
+              // Начинаем подгрузку заранее — за 300px до конца списка, чтобы юзер не видел пустоту
+              rootMargin: "300px",
+            },
+          )
+        : null;
+
+    observer?.observe(currentTarget);
+
+    let rafId = 0;
+    const scheduleCheck = () => {
+      if (triggered || rafId) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = 0;
+        checkVisibility();
+      });
+    };
+
+    scheduleCheck();
+    window.addEventListener("scroll", scheduleCheck, {
+      passive: true,
+      capture: true,
+    });
+    window.addEventListener("resize", scheduleCheck, { passive: true });
 
     return () => {
-      observer.disconnect();
+      observer?.disconnect();
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
+      window.removeEventListener("scroll", scheduleCheck, { capture: true });
+      window.removeEventListener("resize", scheduleCheck);
     };
   }, [
     hasNextPage,
@@ -96,6 +144,15 @@ export function ProductList() {
           <span className="text-sm text-muted-foreground">
             Загружаем еще товары...
           </span>
+        )}
+        {!isFetchingNextPage && hasNextPage && !isFetchNextPageError && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fetchNextPage()}
+          >
+            Загрузить еще
+          </Button>
         )}
         {isFetchNextPageError && (
           <div className="flex items-center gap-3">

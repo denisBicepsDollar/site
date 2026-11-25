@@ -55,6 +55,12 @@ function buildFilters(
 ): Record<string, string> {
   const filters: Record<string, string> = {};
 
+  searchParams.forEach((value, key) => {
+    if (key !== "page" && value) {
+      filters[key] = value;
+    }
+  });
+
   if (routeParams?.category) {
     filters.category = Array.isArray(routeParams.category)
       ? routeParams.category[0]
@@ -65,12 +71,6 @@ function buildFilters(
       ? routeParams.subcategory[0]
       : routeParams.subcategory;
   }
-
-  searchParams.forEach((value, key) => {
-    if (key !== "page" && value) {
-      filters[key] = value;
-    }
-  });
 
   return filters;
 }
