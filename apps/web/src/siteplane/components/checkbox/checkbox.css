@@ -1,0 +1,66 @@
+@layer theme, base, components, siteplane, utilities;
+
+@layer components {
+  .sp-checkbox-motion {
+    color: var(--color-neutral-800);
+  }
+
+  .dark .sp-checkbox-motion,
+  [data-theme="dark"] .sp-checkbox-motion {
+    color: rgb(242 242 243);
+  }
+
+  .sp-checkbox-motion .sp-checkbox-indicator {
+    background-color: transparent;
+    opacity: 0;
+    transform: scale(var(--motion-check-pop-scale));
+    transform-origin: center;
+    transition-duration: var(--motion-duration-slow);
+    transition-property: background-color, opacity, transform;
+    transition-timing-function: var(--motion-ease-standard);
+  }
+
+  .sp-checkbox-motion .sp-checkbox-indicator[data-checked],
+  .sp-checkbox-motion .sp-checkbox-indicator[data-indeterminate] {
+    background-color: var(--sp-semantic-color-primary);
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .sp-checkbox-motion .sp-checkbox-indicator[data-starting-style],
+  .sp-checkbox-motion .sp-checkbox-indicator[data-ending-style] {
+    background-color: transparent;
+    opacity: 0;
+    transform: scale(var(--motion-check-pop-scale));
+  }
+
+  /* A checked indicator lingers on its way out, as the Radio's does. */
+  .sp-checkbox-motion .sp-checkbox-indicator[data-ending-style] {
+    transition-duration: var(--motion-duration-linger);
+  }
+
+  /* A checkbox before text centres on the first text line (rulebook I5): the
+   * shared rule of the checkbox, radio and switch in design-rework.css. */
+
+  /* The check and the indeterminate dash draw through the shared check motion
+   * in motion.css, which the check of a menu row uses too. */
+
+  /* Reduced motion is instant in the three channels the kit has: the forced
+   * document mode, the provider preset and the system setting. The system rule
+   * leads with :root so the state rules above, which are as specific as the
+   * indicator selector plus one attribute, do not outrank it. */
+  html[data-motion-reduce="true"] .sp-checkbox-motion .sp-checkbox-indicator,
+  [data-sp-motion="reduced"] .sp-checkbox-motion .sp-checkbox-indicator {
+    animation: none;
+    transform: none;
+    transition-duration: 1ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root .sp-checkbox-motion .sp-checkbox-indicator {
+      animation: none;
+      transform: none;
+      transition-duration: 1ms;
+    }
+  }
+}

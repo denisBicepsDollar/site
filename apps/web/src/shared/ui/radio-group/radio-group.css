@@ -1,0 +1,85 @@
+@layer theme, base, components, siteplane, utilities;
+
+@layer components {
+  /* A radio before text centres on the first text line (rulebook I5): the
+   * shared rule of the checkbox, radio and switch in design-rework.css. */
+
+  /* The indicator pops and fades with the Checkbox's motion: the same slow
+   * duration, standard curve and pop scale, and the same linger on the way
+   * out (--motion-duration-linger). Every duration and curve is a
+   * motion token (rulebook M1). */
+  .sp-radio-motion .sp-radio-indicator {
+    background-color: transparent;
+    opacity: 0;
+    transform: scale(var(--motion-check-pop-scale));
+    transform-origin: center;
+    transition-duration: var(--motion-duration-slow);
+    transition-property: background-color, opacity, transform;
+    transition-timing-function: var(--motion-ease-standard);
+  }
+
+  .sp-radio-motion .sp-radio-indicator[data-checked] {
+    background-color: var(--sp-semantic-color-primary);
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .sp-radio-motion
+    .sp-radio-indicator:is([data-starting-style], [data-ending-style]) {
+    background-color: transparent;
+    opacity: 0;
+    transform: scale(var(--motion-check-pop-scale));
+  }
+
+  .sp-radio-motion .sp-radio-indicator[data-ending-style] {
+    transition-duration: var(--motion-duration-linger);
+  }
+
+  /* The dot grows after its box has started to pop: half a base duration. */
+  .sp-radio-motion .sp-radio-indicator::before {
+    transform: scale(0);
+    transform-origin: center;
+    transition-duration: var(--motion-duration-slow);
+    transition-delay: calc(var(--motion-duration-base) / 2);
+    transition-property: transform;
+    transition-timing-function: var(--motion-ease-standard);
+  }
+
+  .sp-radio-motion .sp-radio-indicator[data-checked]::before {
+    transform: scale(1);
+  }
+
+  .sp-radio-motion
+    .sp-radio-indicator:is([data-starting-style], [data-ending-style])::before {
+    transform: scale(0);
+  }
+
+  .sp-radio-motion .sp-radio-indicator[data-ending-style]::before {
+    transition-delay: 0ms;
+    transition-duration: var(--motion-duration-linger);
+  }
+
+  html[data-motion-reduce="true"] .sp-radio-motion .sp-radio-indicator,
+  html[data-motion-reduce="true"] .sp-radio-motion .sp-radio-indicator::before,
+  [data-sp-motion="reduced"] .sp-radio-motion .sp-radio-indicator,
+  [data-sp-motion="reduced"] .sp-radio-motion .sp-radio-indicator::before {
+    animation: none;
+    transform: none;
+    transition-delay: 0ms;
+    transition-duration: 1ms;
+  }
+}
+
+/* The reduced-motion override sits in the kit layer, where it keeps its order
+ * against design-rework.css. */
+@layer siteplane {
+  @media (prefers-reduced-motion: reduce) {
+    .sp-radio-motion .sp-radio-indicator,
+    .sp-radio-motion .sp-radio-indicator::before {
+      animation: none;
+      transform: none;
+      transition-delay: 0ms;
+      transition-duration: 1ms;
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "semantic": {
+    "color": {
+      "$type": "color",
+      "$description": "The grey text colours, the info colours, the focus colour, the primary colours and the hover colours (primary-hover, destructive-hover and control-hover) alias the kit's role tokens in every theme (semantic.tokens.json), so this theme leaves them out.",
+      "background": { "$value": "{primitive.color.background-dark}" },
+      "surface": { "$value": "{primitive.color.surface-dark}" },
+      "card": { "$value": "{primitive.color.surface-dark}" },
+      "surface-muted": { "$value": "{primitive.color.white-alpha-4}" },
+      "surface-subtle": { "$value": "{primitive.color.white-alpha-4}" },
+      "muted": { "$value": "{primitive.color.white-alpha-4}" },
+      "border": { "$value": "{primitive.color.white-alpha-6}" },
+      "border-strong": { "$value": "{primitive.color.neutral-500}" },
+      "success": { "$value": "{primitive.color.green-500}" },
+      "success-foreground": { "$value": "{primitive.color.green-400}" },
+      "warning": { "$value": "{primitive.color.amber-500}" },
+      "ring": { "$value": "{primitive.color.neutral-500}" },
+      "input": { "$value": "{primitive.color.white-alpha-8}" },
+      "control-disabled": { "$value": "{primitive.color.neutral-800}" },
+      "overlay-backdrop": { "$value": "{primitive.color.black-alpha-40}" }
+    }
+  }
+}

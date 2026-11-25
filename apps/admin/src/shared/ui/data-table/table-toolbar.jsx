@@ -1,6 +1,6 @@
 import {useMemo} from "react"
 import {Search, Upload} from "lucide-react"
-import {statusLabels} from '@/shared/components/localization.jsx'
+import {statusLabels} from '@/shared/components/localization.js'
 import {Tabs, TabsList, TabsTrigger} from "@/shared/ui/layout/tabs.jsx"
 import {Input} from "@/shared/ui/forms/input.jsx"
 import {Button} from "@/shared/ui/actions/button.jsx"

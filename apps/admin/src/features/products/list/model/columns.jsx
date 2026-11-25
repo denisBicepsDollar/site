@@ -1,6 +1,6 @@
 import {Checkbox} from "@/shared/ui/forms/checkbox.jsx"
 import {RowActionsMenu} from "@/shared/ui/actions/row-actions-menu.jsx"
-import {statusLabels} from '@/shared/components/localization.jsx'
+import {statusLabels} from '@/shared/components/localization.js'
 
 import {filterFn_equalsString, sortFn_datetime, filterFn_inNumberRange} from '@tanstack/react-table'
 

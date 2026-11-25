@@ -1,0 +1,102 @@
+"use client";
+
+import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
+import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
+import type React from "react";
+
+import { cn, type WithStringClassName } from "@/siteplane/system/utils/cn";
+import { slotClass } from "@/siteplane/system/utils/slot-class";
+import { KitButton } from "../button/button-internal";
+import { Plus } from "lucide-react";
+
+export function Accordion(
+  props: WithStringClassName<AccordionPrimitive.Root.Props>,
+): React.ReactElement {
+  return (
+    <AccordionPrimitive.Root
+      data-slot="accordion"
+      {...props}
+      className={cn(slotClass("accordion", props), props.className)}
+    />
+  );
+}
+
+export function AccordionItem({
+  className,
+  ...props
+}: WithStringClassName<AccordionPrimitive.Item.Props>): React.ReactElement {
+  return (
+    <AccordionPrimitive.Item
+      className={cn(slotClass("accordion-item", props), className)}
+      data-slot="accordion-item"
+      {...props}
+    />
+  );
+}
+
+export function AccordionTrigger({
+  className,
+  children,
+  render,
+  ...props
+}: WithStringClassName<AccordionPrimitive.Trigger.Props>): React.ReactElement {
+  return (
+    <AccordionPrimitive.Header className="flex">
+      <AccordionPrimitive.Trigger
+        className={cn(
+          slotClass("accordion-trigger", props, render),
+          "sp-accordion-motion group min-w-0 flex-1",
+          className,
+        )}
+
+        data-profile="accordion-trigger"
+        data-slot="accordion-trigger"
+        render={
+          render ?? (
+            <KitButton
+              align="between"
+              multiline
+              profile="accordion-trigger"
+              variant="link"
+              width="full"
+            />
+          )
+        }
+        {...props}
+      >
+        <span className="min-w-0 flex-1 wrap-anywhere">{children}</span>
+        <Plus
+          aria-hidden="true"
+          className={`sp-accordion-indicator p-6 sp-accordion-motion pointer-events-none shrink-0 rounded-full ${
+            open
+              ? "border-clay bg-clay text-cream"
+              : "border-forest/15 text-forest"
+          }`}
+          data-slot="accordion-indicator"
+        />
+      </AccordionPrimitive.Trigger>
+    </AccordionPrimitive.Header>
+  );
+}
+
+export function AccordionPanel({
+  className,
+  children,
+  ...props
+}: WithStringClassName<AccordionPrimitive.Panel.Props>): React.ReactElement {
+  return (
+    <AccordionPrimitive.Panel
+      className={cn(
+        slotClass("accordion-panel", props),
+        "sp-accordion-motion h-(--accordion-panel-height) overflow-hidden data-ending-style:h-0 data-starting-style:h-0",
+        className,
+      )}
+      data-slot="accordion-panel"
+      {...props}
+    >
+      <div>{children}</div>
+    </AccordionPrimitive.Panel>
+  );
+}
+
+export { AccordionPrimitive, AccordionPanel as AccordionContent };

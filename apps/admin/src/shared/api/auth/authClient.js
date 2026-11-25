@@ -1,5 +1,5 @@
 import axios from "axios";
-import {errorTranslations} from "@/shared/components/localization.jsx";
+import {errorTranslations} from "@/shared/components/localization.js";
 
 export const authClient = axios.create({
     baseURL: '/auth',

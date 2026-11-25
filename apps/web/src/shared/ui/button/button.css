@@ -1,0 +1,118 @@
+@layer theme, base, components, siteplane, utilities;
+
+@layer siteplane {
+  /* The Button reads the theme's colours where it is, as every part does: it
+   * declares no copy of a theme token, so a dot, a glyph or text inside it is
+   * the colour it is outside it (3 November 2026). Its text is the chassis'
+   * --sp-rw-button-text, which each variant sets from a role of the theme
+   * (design-rework.css, "Button and IconButton"). */
+
+  /* The spinner of a loading Button stands in the middle of it, as large as a
+   * glyph of the Button (button.tsx); with showTextWhileLoading it stands in the
+   * content before the label instead (data-loading-text). */
+  .sp-button-motion .sp-button-loading-indicator {
+    position: absolute;
+  }
+
+  .sp-button-motion[data-loading]:not([data-loading-text])
+    > .sp-button-content {
+    color: transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-button-motion,
+    .sp-button-motion .sp-button-loading-indicator {
+      transition-duration: 1ms;
+    }
+
+    .sp-button-motion .sp-button-loading-indicator {
+      animation: none;
+    }
+  }
+
+  html[data-motion-reduce="true"] .sp-button-motion,
+  [data-sp-motion="reduced"] .sp-button-motion,
+  html[data-motion-reduce="true"]
+    .sp-button-motion
+    .sp-button-loading-indicator,
+  [data-sp-motion="reduced"] .sp-button-motion .sp-button-loading-indicator {
+    transition-duration: 1ms;
+  }
+
+  html[data-motion-reduce="true"]
+    .sp-button-motion
+    .sp-button-loading-indicator,
+  [data-sp-motion="reduced"] .sp-button-motion .sp-button-loading-indicator {
+    animation: none;
+  }
+
+  /* Placement only: a Badge in an icon button is an overlay on the control's top
+   * trailing corner, never a second flex item. Its presentation (the count
+   * geometry) belongs to Badge's `count` profile. Only an icon button that
+   * contains a Badge anchors it to the control instead of the smaller content
+   * wrapper; every other icon button keeps its content above the chassis layers. */
+  :root
+    [data-chassis][data-size^="icon"]
+    > .sp-button-content:has(> .sp-base-badge) {
+    position: static;
+  }
+
+  :root
+    [data-chassis][data-size^="icon"]
+    > .sp-button-content
+    > .sp-base-badge {
+    position: absolute;
+    inset-block-start: -0.25rem;
+    inset-inline-end: -0.25rem;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Avatar controls keep the portrait, interaction surface and focus ring
+   * circular. Around a square avatar, a company's or a workspace's, they take
+   * the square's corners instead, with every layer and the focus ring
+   * (design-rework.css, beside the Avatar's square shape). */
+  :root [data-chassis][data-profile="avatar"][data-size] {
+    border-radius: 50%;
+    padding: 0;
+  }
+
+  :root [data-chassis][data-profile="avatar"] > .sp-button-content {
+    height: 100%;
+    border-radius: inherit;
+  }
+
+  /* The portrait fills the whole control and has a surface of its own (a photo or
+   * the fallback fill), so the shared interaction layer, which lies beneath the
+   * content (z-index 30) in every other Button, would never show. Here it lies over
+   * the portrait instead. Its colour, hover, pressed and open levels stay the
+   * variant's own and it stays circular through the control's radius, so a hover,
+   * a press and an open menu darken the portrait, also over a photo. Only the
+   * stacking order differs: no state of its own is declared for the avatar. */
+  :root [data-chassis][data-profile="avatar"] > .sp-button-chassis-interaction {
+    z-index: 31;
+  }
+
+  /* An Avatar that names no size fills the control, and so does the wrapper of an
+   * Avatar with a presence dot or a corner mark, with the avatar in it, so the dot
+   * does not change the fill. An Avatar that names its own size keeps it, centred
+   * in the circle, as an avatar in a menu row does: the 32 px avatar of an
+   * AccountCard's avatar trigger stays 32 px in its 36 px button. */
+  :root
+    [data-chassis][data-profile="avatar"]
+    > .sp-button-content
+    > .sp-avatar:not([data-size]),
+  :root
+    [data-chassis][data-profile="avatar"]
+    > .sp-button-content
+    > .sp-avatar-status-root:not([data-size]),
+  :root
+    [data-chassis][data-profile="avatar"]
+    > .sp-button-content
+    > .sp-avatar-status-root:not([data-size])
+    > .sp-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+  }
+}

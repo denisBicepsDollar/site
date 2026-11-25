@@ -1,0 +1,50 @@
+{
+  "name": "@site/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./lib/utils": "./lib/utils.js",
+    "./accordion": "./src/layout/accordion.jsx",
+    "./aspect-ratio": "./src/display/aspect-ratio.jsx",
+    "./avatar": "./src/display/avatar.jsx",
+    "./badge": "./src/display/badge.jsx",
+    "./button": "./src/actions/button.jsx",
+    "./card": "./src/display/card.jsx",
+    "./carousel": "./src/display/carousel.jsx",
+    "./checkbox": "./src/forms/checkbox.jsx",
+    "./input": "./src/forms/input.jsx",
+    "./label": "./src/forms/label.jsx",
+    "./select": "./src/forms/select.jsx",
+    "./separator": "./src/display/separator.jsx",
+    "./sheet": "./src/layout/sheet.jsx",
+    "./skeleton": "./src/layout/skeleton.jsx",
+    "./textarea": "./src/forms/textarea.jsx",
+    "./radio-group": "./src/forms/radio-group.jsx"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "tsx --tsconfig jsconfig.json --test tests/*.test.jsx"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.9.0",
+    "class-variance-authority": "^0.7.1",
+    "cn": "^0.4.0",
+    "embla-carousel-react": "^8.6.0",
+    "lucide-react": "^1.56.0"
+  },
+  "peerDependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^16.5.0",
+    "jsdom": "28.1.0",
+    "tsx": "^4.20.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.10"
+  }
+}

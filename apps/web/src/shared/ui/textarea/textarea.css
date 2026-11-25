@@ -1,0 +1,129 @@
+@layer theme, base, components, siteplane, utilities;
+
+@layer siteplane {
+  /* The field reads the theme's colours where it is, as every part does: it
+   * declares no copy of a theme token (3 November 2026). */
+  .sp-textarea-control {
+    /* The grip in the corner is a hint, not a control to look for: it takes
+     * the colour of the field's own edge, the control rim's 16 % of
+     * --sp-rw-control-interaction, at rest and on hover,
+     * and three fifths of the kit's muted icon
+     * colour while the field has keyboard focus (Lukas, 2 November 2026; from
+     * 31 October it took three fifths at rest and the full colour on focus). */
+    --textarea-resize-handle-color: color-mix(
+      in oklab,
+      var(--sp-rw-control-interaction) 16%,
+      transparent
+    );
+    --textarea-resize-handle-color-focus: color-mix(
+      in oklab,
+      var(--sp-rw-fg-quaternary) 60%,
+      transparent
+    );
+  }
+
+  /* resize="none" keeps the textarea at the height its content and its lines
+   * give it, without the grip (design-rework.css draws the vertical one). */
+  .sp-textarea-control[data-resize="none"] .sp-textarea {
+    resize: none;
+  }
+
+  .sp-base-textarea[data-profile="input-group"] {
+    display: contents;
+  }
+
+  .sp-base-textarea[data-profile="input-group"]::before {
+    display: none;
+  }
+
+  /* The padding and the least height of its size are the kit base of every
+   * textarea, the same as outside a group. A textarea in an InputGroup grows
+   * with its content and has no grip: the
+   * group's addons, such as a composer's actions, sit where the grip would. */
+  .sp-base-textarea[data-profile="input-group"] .sp-textarea {
+    border-radius: 0;
+    resize: none;
+  }
+
+  textarea.sp-textarea:focus-visible {
+    --textarea-resize-handle-color: var(--textarea-resize-handle-color-focus);
+  }
+
+  textarea.sp-textarea::-webkit-resizer {
+    border: 0;
+    background:
+      linear-gradient(
+          135deg,
+          transparent calc(50% - 0.65px),
+          var(--textarea-resize-handle-color) 0 calc(50% + 0.65px),
+          transparent 0
+        )
+        right 3px bottom 3px / 9px 9px no-repeat,
+      linear-gradient(
+          135deg,
+          transparent calc(50% - 0.65px),
+          var(--textarea-resize-handle-color) 0 calc(50% + 0.65px),
+          transparent 0
+        )
+        right 3px bottom 3px / 4.75px 4.75px no-repeat;
+  }
+
+  [data-radius="none"] textarea.sp-textarea::-webkit-resizer,
+  [data-radius="sm"] textarea.sp-textarea::-webkit-resizer {
+    background:
+      linear-gradient(
+          135deg,
+          transparent calc(50% - 0.65px),
+          var(--textarea-resize-handle-color) 0 calc(50% + 0.65px),
+          transparent 0
+        )
+        right 3px bottom 3px / 9px 9px no-repeat,
+      linear-gradient(
+          135deg,
+          transparent calc(50% - 0.65px),
+          var(--textarea-resize-handle-color) 0 calc(50% + 0.65px),
+          transparent 0
+        )
+        right 3px bottom 3px / 4.75px 4.75px no-repeat;
+  }
+
+  [data-radius="lg"] textarea.sp-textarea::-webkit-resizer {
+    background:
+      linear-gradient(
+          135deg,
+          transparent calc(50% - 0.65px),
+          var(--textarea-resize-handle-color) 0 calc(50% + 0.65px),
+          transparent 0
+        )
+        right 5px bottom 5px / 9px 9px no-repeat,
+      linear-gradient(
+          135deg,
+          transparent calc(50% - 0.65px),
+          var(--textarea-resize-handle-color) 0 calc(50% + 0.65px),
+          transparent 0
+        )
+        right 5px bottom 5px / 4.75px 4.75px no-repeat;
+  }
+
+  [data-radius="xl"] textarea.sp-textarea::-webkit-resizer {
+    background:
+      linear-gradient(
+          135deg,
+          transparent calc(50% - 0.65px),
+          var(--textarea-resize-handle-color) 0 calc(50% + 0.65px),
+          transparent 0
+        )
+        right 6px bottom 6px / 8.5px 8.5px no-repeat,
+      linear-gradient(
+          135deg,
+          transparent calc(50% - 0.65px),
+          var(--textarea-resize-handle-color) 0 calc(50% + 0.65px),
+          transparent 0
+        )
+        right 6px bottom 6px / 4.75px 4.75px no-repeat;
+  }
+
+  /* A disabled textarea takes the grey fill of every disabled field from the
+   * one block in design-rework.css ("A disabled field lays the subtle fill"),
+   * in Light and Dark. */
+}

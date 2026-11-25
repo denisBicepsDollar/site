@@ -1,0 +1,124 @@
+@layer theme, base, components, siteplane, utilities;
+
+@layer siteplane {
+  /* The field reads the theme's colours where it is, as every part does: it
+   * declares no copy of a theme token, so its placeholder, its addons and its
+   * fills take the theme's values (3 November 2026). */
+  .sp-base-input[data-profile="input-group"] {
+    display: contents;
+  }
+
+  /* The native input fills its field, also one that a host gave a slot of its
+   * own (the Sidebar's and the Toolbar's); a segment of an InputGroup keeps
+   * its own width (input-group.css). */
+  :where(.sp-input),
+  :where(.sp-input-control > input) {
+    width: 100%;
+  }
+
+  .sp-base-input[data-profile="input-group"]::before {
+    display: none;
+  }
+
+  /* Embedded Combobox inputs keep the public Input layout contract while the
+   * surrounding popup owns the visible surface and focus treatment. The input
+   * is as high as a field of its size (the field scale). */
+  .sp-base-input[data-profile="combobox"][data-profile-mode="embedded"] {
+    position: relative;
+    display: inline-flex;
+    width: 100%;
+    min-width: 0;
+    height: var(--sp-rw-field-height);
+  }
+
+  .sp-base-input[data-profile="input-group"] .sp-input {
+    flex: 1 1 0%;
+    height: var(--sp-composite-control-height, 100%);
+    border-radius: 0;
+    padding-block-start: var(--sp-composite-control-padding-block-start, 0);
+    padding-block-end: var(--sp-composite-control-padding-block-end, 0);
+    padding-inline-start: var(
+      --sp-composite-control-padding-inline-start,
+      var(--sp-rw-field-padding-inline)
+    );
+    padding-inline-end: var(
+      --sp-composite-control-padding-inline-end,
+      var(--sp-rw-field-padding-inline)
+    );
+  }
+
+  /* The soft surface is the field family's one soft block in
+   * design-rework.css. An autofilled field shows its tint over it. */
+  .sp-input-control:not([data-unstyled]):has(:autofill) {
+    background-color: color-mix(
+      in oklab,
+      var(--sp-semantic-color-foreground) 4%,
+      transparent
+    );
+  }
+
+  :is(.dark, [data-theme="dark"])
+    .sp-input-control:not([data-unstyled]):has(:autofill) {
+    background-color: color-mix(
+      in oklab,
+      var(--sp-semantic-color-foreground) 8%,
+      transparent
+    );
+  }
+
+  /* A browser paints an autofilled input with its own colour, `!important` in
+   * its stylesheet so page CSS cannot replace it (Chrome blue, Safari yellow),
+   * and Safari also turns the text black. The colour covers only the native
+   * input: beside an InputGroup addon it was a square block. The field marks
+   * autofill with its tint (above, or the group's), so the input clips the
+   * browser's colour to its text, where the text covers it, and keeps the kit
+   * text colour. A segment keeps its own focus fill. */
+  .sp-input-control:not([data-unstyled]) > .sp-input:autofill,
+  .sp-base-input[data-profile="input-group"]:not(.sp-input-segment)
+    > .sp-input:autofill {
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: var(--sp-rw-fg-primary);
+    caret-color: var(--sp-rw-fg-primary);
+  }
+
+  /* The alert icon of an invalid Input is the status of the field
+   * (FieldStatus, input-group.css), as in an InputGroup: it shows while the
+   * input is invalid (aria-invalid, which an invalid Field sets), and the text
+   * ends 8 px before its glyph, which ends at the field's inline padding. */
+  .sp-input-control:has(> .sp-input[aria-invalid="true"])
+    > .sp-field-status[data-alert] {
+    display: flex;
+  }
+
+  .sp-input-control:has(> .sp-input[aria-invalid="true"])
+    > .sp-field-status[data-alert]
+    > .sp-input-invalid-icon {
+    display: block;
+  }
+
+  .sp-input-control:has(> .sp-field-status[data-alert])
+    > .sp-input[aria-invalid="true"] {
+    padding-inline-end: calc(
+      var(--sp-rw-space-2) - (var(--sp-rw-space-6) - var(--sp-rw-space-4)) / 2
+    );
+  }
+
+  /* Embedded search headers: Input owns sizing, typography and native states. */
+  :root .sp-base-input[data-profile="command"] {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    height: var(--sp-rw-line-24);
+  }
+  :root .sp-base-input[data-profile="command"] .sp-input {
+    flex: 1;
+    height: var(--sp-rw-line-24);
+    padding: 0;
+    font-size: var(--sp-rw-font-16);
+    line-height: var(--sp-rw-line-24);
+  }
+  :root .sp-base-input[data-profile="command"]:has([aria-invalid="true"]) {
+    outline: 1px solid var(--destructive);
+  }
+}

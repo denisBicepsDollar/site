@@ -1,13 +1,12 @@
 "use client";
 
-import {APIProductFiltersResult} from "commerce-kit";
 import {SlidersHorizontalIcon} from "lucide-react";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {ReactNode, startTransition, useOptimistic, useState} from "react";
 import {useStoreConfig} from "@/shared/store-config";
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/shared/ui/accordion";
-import {Button} from "@/shared/ui/button";
-import {Checkbox} from "@/shared/ui/checkbox";
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@site/ui/accordion";
+import {Button} from "@site/ui/button";
+import {Checkbox} from "@site/ui/checkbox";
 import {
     Sheet,
     SheetContent,
@@ -15,10 +14,10 @@ import {
     SheetHeader,
     SheetTitle,
     SheetTrigger,
-} from "@/shared/ui/sheet";
+} from "@site/ui/sheet";
 import {Slider} from "@/shared/ui/slider";
 import {formatMoney} from "@/shared/lib/money";
-import {cn} from "@/shared/lib/utils";
+import {cn} from "@site/ui/lib/utils";
 import {encodeVts, parseVts} from "@/shared/lib/vts";
 
 // Search params owned by the filters, cleared by "Clear all".

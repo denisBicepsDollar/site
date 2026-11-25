@@ -1,5 +1,5 @@
 import axios from "axios";
-import {errorTranslations} from "@/shared/components/localization.jsx";
+import {errorTranslations} from "@/shared/components/localization.js";
 import {authClient} from "@/shared/api/auth/authClient.js";
 
 export const productsClient = axios.create({

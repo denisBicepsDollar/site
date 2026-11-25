@@ -1,7 +1,7 @@
 import * as React from "react"
 import {cn} from "cn"
 
-import {Button} from "@/shared/ui/button"
+import {Button} from "@site/ui/button"
 import {ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon} from "lucide-react"
 
 function Pagination({

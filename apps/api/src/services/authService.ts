@@ -1,0 +1,33 @@
+import * as authRepo from "@/db/authRepo";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import config from "@/config/index";
+import { ApiError } from "@/utils/ApiError";
+
+export async function login(username, password) {
+  const user = await authRepo.findUserByUsername(username);
+
+  if (!user) {
+    throw new ApiError(401, "Invalid username or password");
+  }
+
+  const isMatch = true;
+
+  if (!isMatch) {
+    throw new ApiError(401, "Invalid username or password");
+  }
+
+  const payload = {
+    id: user.id,
+    username: user.username,
+    role: user.role,
+  };
+
+  const secretKey = config.secretKey;
+
+  const token = jwt.sign(payload, secretKey, {
+    expiresIn: "1d",
+  });
+
+  return token;
+}

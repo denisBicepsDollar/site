@@ -1,0 +1,47 @@
+@layer theme, base, components, siteplane, utilities;
+
+@layer siteplane {
+  /* A Number Field fills its container, like Input
+   * (Lukas, 31 October 2026). width="fit" keeps the compact width: two
+   * square step buttons and a 7rem value field, room for a formatted amount
+   * such as $1,250.00. The heights are the field scale's (36, 40, 44 and
+   * 48 px, design-rework.css) and a step button is as wide as its control is
+   * tall, so the value field keeps its width at every size. The root of a fit
+   * field reads --number-field-width; a width utility in className replaces
+   * it.
+   *
+   * Stacked steppers (steppers="stacked") share a column at the end of the
+   * group (Lukas, 30 October 2026): 28 px
+   * wide at sm and md, 30 px at lg and 32 px at xl, with a 12 px chevron, 14 px
+   * from lg. A fit field is that column and the 7rem value field wide. */
+  .sp-number-field {
+    --number-field-width: calc(var(--sp-rw-field-height) * 2 + 7rem);
+    --number-field-stepper-width: var(--sp-rw-space-7);
+    --number-field-stepper-icon: var(--sp-rw-control-icon-2xs);
+  }
+
+  .sp-number-field[data-size="lg"] {
+    --number-field-stepper-width: calc(var(--sp-rw-space) * 7.5);
+    --number-field-stepper-icon: var(--sp-rw-control-icon-xs);
+  }
+
+  .sp-number-field[data-size="xl"] {
+    --number-field-stepper-width: var(--sp-rw-space-8);
+    --number-field-stepper-icon: var(--sp-rw-control-icon-xs);
+  }
+
+  .sp-number-field[data-steppers="stacked"] {
+    --number-field-width: calc(var(--number-field-stepper-width) + 7rem);
+  }
+
+  /* The value spans both rows of the group's grid; the steppers take the
+   * column at its end, one row each (design-rework.css, the joined steppers). */
+  .sp-number-field[data-steppers="stacked"] .sp-number-field-group {
+    grid-template-columns: minmax(0, 1fr) var(--number-field-stepper-width);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+
+  .sp-number-field[data-steppers="stacked"] .sp-number-field-input {
+    grid-area: 1 / 1 / -1 / 2;
+  }
+}

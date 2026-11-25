@@ -1,0 +1,39 @@
+@layer theme, base, components, siteplane, utilities;
+
+@layer components {
+  /* The switch reads the theme's colours where it is, as every part does: it
+   * declares no copy of a theme token (3 November 2026). */
+  .sp-switch-motion {
+    /* The track's fill changes on the state step, as Checkbox and Radio do,
+     * so the track and the thumb finish together. */
+    transition-duration: var(--motion-duration-fast);
+    transition-property: background-color, box-shadow;
+    transition-timing-function: var(--motion-ease-state);
+  }
+
+  /* The thumb's travel, stretch and origin move over one step and curve; they
+   * are set with the thumb's geometry in design-rework.css. */
+
+  /* A switch before text centres on the first text line (rulebook I5): the
+   * shared rule of the checkbox, radio and switch in design-rework.css. */
+
+  html[data-motion-reduce="true"] .sp-switch-motion,
+  html[data-motion-reduce="true"] .sp-switch-motion .sp-switch-thumb {
+    animation: none;
+    transition-delay: 0ms;
+    transition-duration: 1ms;
+  }
+}
+
+/* The reduced-motion override sits in the kit layer, where it keeps its order
+ * against design-rework.css. */
+@layer siteplane {
+  @media (prefers-reduced-motion: reduce) {
+    .sp-switch-motion,
+    .sp-switch-motion .sp-switch-thumb {
+      animation: none;
+      transition-delay: 0ms;
+      transition-duration: 1ms;
+    }
+  }
+}

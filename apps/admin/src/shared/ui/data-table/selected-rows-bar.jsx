@@ -2,7 +2,7 @@ import {Button} from "@/shared/ui/actions/button.jsx";
 import {Separator} from "@/shared/ui/display/separator.jsx"
 import {Badge} from "@/shared/ui/display/badge.jsx"
 import {createPortal} from "react-dom";
-import {statusLabels} from "@/shared/components/localization.jsx";
+import {statusLabels} from "@/shared/components/localization.js";
 import {X, Trash2} from "lucide-react";
 
 import {useState} from "react";

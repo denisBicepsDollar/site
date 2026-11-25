@@ -1,0 +1,1246 @@
+{
+  "type": "base",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "10eb54b0-4e99-4498-b4c6-d86e37e18d0d",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_schema",
+      "statementTarget": [
+        "schema",
+        "messages"
+      ],
+      "writes": [
+        "s|sch|messages",
+        "n|sch|messages",
+        "e|sch|messages"
+      ]
+    },
+    {
+      "statementType": "create_schema",
+      "statementTarget": [
+        "schema",
+        "orders"
+      ],
+      "writes": [
+        "s|sch|orders",
+        "n|sch|orders",
+        "e|sch|orders"
+      ]
+    },
+    {
+      "statementType": "create_schema",
+      "statementTarget": [
+        "schema",
+        "products"
+      ],
+      "writes": [
+        "s|sch|products",
+        "n|sch|products",
+        "e|sch|products"
+      ]
+    },
+    {
+      "statementType": "create_schema",
+      "statementTarget": [
+        "schema",
+        "users"
+      ],
+      "writes": [
+        "s|sch|users",
+        "n|sch|users",
+        "e|sch|users"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "messages",
+        "contacts"
+      ],
+      "writes": [
+        "s|tbl|messages.contacts",
+        "n|tbl|messages.contacts",
+        "e|tbl|messages.contacts",
+        "n|rel|messages.contacts",
+        "n|type|messages.contacts",
+        "n|rel|messages.contacts_pkey"
+      ],
+      "reads": [
+        "n|sch|messages"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "orders",
+        "order_items"
+      ],
+      "writes": [
+        "s|tbl|orders.order_items",
+        "n|tbl|orders.order_items",
+        "e|tbl|orders.order_items",
+        "n|rel|orders.order_items",
+        "n|type|orders.order_items",
+        "n|rel|orders.order_items_pkey"
+      ],
+      "reads": [
+        "n|sch|orders"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "orders",
+        "orders"
+      ],
+      "writes": [
+        "s|tbl|orders.orders",
+        "n|tbl|orders.orders",
+        "e|tbl|orders.orders",
+        "n|rel|orders.orders",
+        "n|type|orders.orders",
+        "n|rel|orders.orders_pkey"
+      ],
+      "reads": [
+        "n|sch|orders"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "products",
+        "product_variants"
+      ],
+      "writes": [
+        "s|tbl|products.product_variants",
+        "n|tbl|products.product_variants",
+        "e|tbl|products.product_variants",
+        "n|rel|products.product_variants",
+        "n|type|products.product_variants",
+        "n|rel|products.product_variants_pkey"
+      ],
+      "reads": [
+        "n|sch|products"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "products",
+        "product_variants_images"
+      ],
+      "writes": [
+        "s|tbl|products.product_variants_images",
+        "n|tbl|products.product_variants_images",
+        "e|tbl|products.product_variants_images",
+        "n|rel|products.product_variants_images",
+        "n|type|products.product_variants_images",
+        "n|rel|products.product_variants_images_pkey"
+      ],
+      "reads": [
+        "n|sch|products"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "products",
+        "products"
+      ],
+      "writes": [
+        "s|tbl|products.products",
+        "n|tbl|products.products",
+        "e|tbl|products.products",
+        "n|rel|products.products",
+        "n|type|products.products",
+        "n|rel|products.products_pkey",
+        "n|rel|products.products_slug_key"
+      ],
+      "reads": [
+        "n|sch|products"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "users",
+        "users"
+      ],
+      "writes": [
+        "s|tbl|users.users",
+        "n|tbl|users.users",
+        "e|tbl|users.users",
+        "n|rel|users.users",
+        "n|type|users.users",
+        "n|rel|users.users_pkey"
+      ],
+      "reads": [
+        "n|sch|users"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "products",
+        "product_variants"
+      ],
+      "writes": [
+        "s|fk|products.product_variants.fk_product_variants__products",
+        "n|fk|products.product_variants.fk_product_variants__products",
+        "e|fk|products.product_variants.fk_product_variants__products",
+        "n|con|products.product_variants.fk_product_variants__products"
+      ],
+      "reads": [
+        "n|tbl|products.product_variants",
+        "n|sch|products",
+        "n|tbl|products.products",
+        "n|sch|products",
+        "n|col|products.product_variants.product_id",
+        "n|col|products.products.id",
+        "e|uniqueness|products.products.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "products",
+        "product_variants_images"
+      ],
+      "writes": [
+        "s|fk|products.product_variants_images.fk_product_variants_images__product_variants",
+        "n|fk|products.product_variants_images.fk_product_variants_images__product_variants",
+        "e|fk|products.product_variants_images.fk_product_variants_images__product_variants",
+        "n|con|products.product_variants_images.fk_product_variants_images__product_variants"
+      ],
+      "reads": [
+        "n|tbl|products.product_variants_images",
+        "n|sch|products",
+        "n|tbl|products.product_variants",
+        "n|sch|products",
+        "n|col|products.product_variants_images.variant_id",
+        "n|col|products.product_variants.id",
+        "e|uniqueness|products.product_variants.id"
+      ]
+    }
+  ],
+  "ddl": [
+    {
+      "name": "messages",
+      "entityType": "schemas"
+    },
+    {
+      "name": "orders",
+      "entityType": "schemas"
+    },
+    {
+      "name": "products",
+      "entityType": "schemas"
+    },
+    {
+      "name": "users",
+      "entityType": "schemas"
+    },
+    {
+      "schema": "messages",
+      "name": "contacts",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "orders",
+      "name": "order_items",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "orders",
+      "name": "orders",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "products",
+      "name": "product_variants",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "products",
+      "name": "product_variants_images",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "products",
+      "name": "products",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "users",
+      "name": "users",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants",
+      "name": "price",
+      "type": "numeric(10,2)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'0'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "users",
+      "table": "users",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "messages",
+      "table": "contacts",
+      "name": "id",
+      "type": "serial",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "name",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "order_items",
+      "name": "id",
+      "type": "serial",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants_images",
+      "name": "img_url",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "id",
+      "type": "serial",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants",
+      "name": "old_price",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "customer_name",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "users",
+      "table": "users",
+      "name": "username",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "order_items",
+      "name": "order_id",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "messages",
+      "table": "contacts",
+      "name": "name",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "description",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants_images",
+      "name": "alt_text",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "subcategory",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "messages",
+      "table": "contacts",
+      "name": "email",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "order_items",
+      "name": "product_id",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "email",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants",
+      "name": "stock",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants_images",
+      "name": "title_text",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "users",
+      "table": "users",
+      "name": "password_hash",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants_images",
+      "name": "is_main",
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "subtype",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "phone",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "order_items",
+      "name": "variant_id",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "messages",
+      "table": "contacts",
+      "name": "phone",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants",
+      "name": "preview_image",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants_images",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "order_items",
+      "name": "name",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "delivery_method",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "tags",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 1,
+      "default": "'{}'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "messages",
+      "table": "contacts",
+      "name": "message",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants_images",
+      "name": "variant_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "order_items",
+      "name": "price",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "messages",
+      "table": "contacts",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants",
+      "name": "name",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "delivery_company",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "delivery_type",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "order_items",
+      "name": "quantity",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "preview_image",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "delivery_price",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "order_items",
+      "name": "volume",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants",
+      "name": "product_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "category",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "address",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "status",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "'draft'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "pochta_tariff_id",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "sku",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "pochta_tariff_name",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "price",
+      "type": "numeric(10,2)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "cdek_tariff_id",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "updated",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "cdek_tariff_name",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "total_price",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "slug",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "short_description",
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "status",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "'new'",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "created_at",
+      "type": "timestamp with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "care_instructions",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "comment",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants",
+      "name": "fk_product_variants__products",
+      "nameExplicit": true,
+      "columns": [
+        "product_id"
+      ],
+      "schemaTo": "products",
+      "tableTo": "products",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants_images",
+      "name": "fk_product_variants_images__product_variants",
+      "nameExplicit": true,
+      "columns": [
+        "variant_id"
+      ],
+      "schemaTo": "products",
+      "tableTo": "product_variants",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "entityType": "fks"
+    },
+    {
+      "schema": "messages",
+      "table": "contacts",
+      "name": "contacts_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": true,
+      "entityType": "pks"
+    },
+    {
+      "schema": "orders",
+      "table": "order_items",
+      "name": "order_items_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": true,
+      "entityType": "pks"
+    },
+    {
+      "schema": "orders",
+      "table": "orders",
+      "name": "orders_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": true,
+      "entityType": "pks"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants",
+      "name": "product_variants_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": true,
+      "entityType": "pks"
+    },
+    {
+      "schema": "products",
+      "table": "product_variants_images",
+      "name": "product_variants_images_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": true,
+      "entityType": "pks"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "products_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": true,
+      "entityType": "pks"
+    },
+    {
+      "schema": "users",
+      "table": "users",
+      "name": "users_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": true,
+      "entityType": "pks"
+    },
+    {
+      "schema": "products",
+      "table": "products",
+      "name": "products_slug_key",
+      "nameExplicit": true,
+      "columns": [
+        "slug"
+      ],
+      "nullsNotDistinct": false,
+      "entityType": "uniques"
+    }
+  ]
+}
