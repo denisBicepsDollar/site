@@ -7,7 +7,7 @@ import {
 } from "@/shared/ui/input-group";
 import { Search, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function ProductsSearch() {
   const router = useRouter();
@@ -16,13 +16,23 @@ export function ProductsSearch() {
 
   const urlQuery = searchParams.get("q") ?? "";
   const [value, setValue] = useState(urlQuery);
+  const lastPushedRef = useRef(urlQuery);
+
+  useEffect(() => {
+    if (urlQuery !== lastPushedRef.current) {
+      lastPushedRef.current = urlQuery;
+      setValue(urlQuery);
+    }
+  }, [urlQuery]);
 
   const applySearchToUrl = (rawText: string) => {
     const trimmed = rawText.trim();
 
     if (trimmed === urlQuery) return;
 
+    lastPushedRef.current = trimmed;
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("page");
 
     if (trimmed) {
       params.set("q", trimmed);
@@ -35,8 +45,8 @@ export function ProductsSearch() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      (applySearchToUrl(value), 400);
-    });
+      applySearchToUrl(value);
+    }, 400);
     return () => clearTimeout(timer);
   }, [value]);
 
@@ -67,7 +77,7 @@ export function ProductsSearch() {
         <InputGroupAddon align="inline-end">
           <Button
             onClick={handleClear}
-            aria-label="Show password"
+            aria-label="Очистить поиск"
             profile="field-action"
             shape="square"
           >

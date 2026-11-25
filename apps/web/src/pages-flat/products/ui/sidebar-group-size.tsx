@@ -1,19 +1,17 @@
 "use client";
-import { Field, FieldItem, FieldLabel } from "@/shared/ui/field";
+import { Field } from "@/shared/ui/field";
 import { Fieldset } from "@/shared/ui/fieldset";
-import { Radio, RadioGroup } from "@/shared/ui/radio-group";
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuBadge,
 } from "@/shared/ui/sidebar";
 import { Label } from "@/shared/ui/label";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { CheckboxGroup } from "@/shared/ui/checkbox-group";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "@/shared/ui/badge";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useProductsCatalog } from "../model/useProductsStore";
 
 export function SidebarGroupSize() {
@@ -21,11 +19,16 @@ export function SidebarGroupSize() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { sizes } = useProductsCatalog();
-  console.log("sizes", sizes);
 
-  const sortedSizes = [...sizes].sort((a, b) => b.stock - a.stock);
-  const selectedSizes =
-    searchParams.get("size")?.split(",").filter(Boolean) || [];
+  const sortedSizes = useMemo(
+    () => [...sizes].sort((a, b) => b.stock - a.stock),
+    [sizes],
+  );
+  const sizeParam = searchParams.get("size") ?? "";
+  const selectedSizes = useMemo(
+    () => sizeParam.split(",").filter(Boolean),
+    [sizeParam],
+  );
 
   useEffect(() => {
     if (!sizes.length || !selectedSizes.length) return;
@@ -35,17 +38,22 @@ export function SidebarGroupSize() {
 
     if (validSizes.length !== selectedSizes.length) {
       const params = new URLSearchParams(searchParams.toString());
+      params.delete("page");
 
       validSizes.length
         ? params.set("size", validSizes.join(","))
         : params.delete("size");
 
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      const query = params.toString();
+      router.replace(`${pathname}${query ? `?${query}` : ""}`, {
+        scroll: false,
+      });
     }
-  }, [sizes]);
+  }, [sizes, selectedSizes, pathname, router, searchParams]);
 
   const handleSizeChange = (newValues: string[]) => {
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("page");
 
     if (newValues.length > 0) {
       params.set("size", newValues.join(","));
@@ -53,37 +61,36 @@ export function SidebarGroupSize() {
       params.delete("size");
     }
 
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    const query = params.toString();
+    router.push(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
   };
 
   return (
-    <>
-      <SidebarGroup>
-        <SidebarGroupLabel>Размер</SidebarGroupLabel>
-        <SidebarMenu>
-          <Fieldset>
-            <Field>
-              <CheckboxGroup
-                className="w-full"
-                value={selectedSizes}
-                onValueChange={handleSizeChange}
-              >
-                {sortedSizes.map(({ size, stock }) => {
-                  return (
-                    <Label className="w-full" key={size}>
-                      <Checkbox value={size} disabled={stock <= 0} />
-                      {size}
-                      <Badge size="sm" variant="secondary" className="ml-auto">
-                        {stock}
-                      </Badge>
-                    </Label>
-                  );
-                })}
-              </CheckboxGroup>
-            </Field>
-          </Fieldset>
-        </SidebarMenu>
-      </SidebarGroup>
-    </>
+    <SidebarGroup>
+      <SidebarGroupLabel>Размер</SidebarGroupLabel>
+      <SidebarMenu>
+        <Fieldset>
+          <Field>
+            <CheckboxGroup
+              className="w-full"
+              value={selectedSizes}
+              onValueChange={handleSizeChange}
+            >
+              {sortedSizes.map(({ size, stock }) => {
+                return (
+                  <Label className="w-full" key={size}>
+                    <Checkbox value={size} disabled={stock <= 0} />
+                    {size}
+                    <Badge size="sm" variant="secondary" className="ml-auto">
+                      {stock}
+                    </Badge>
+                  </Label>
+                );
+              })}
+            </CheckboxGroup>
+          </Field>
+        </Fieldset>
+      </SidebarMenu>
+    </SidebarGroup>
   );
 }

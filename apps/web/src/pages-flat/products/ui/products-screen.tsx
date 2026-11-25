@@ -1,11 +1,24 @@
 "use client";
 
 import { SidebarInsetContent } from "./sidebar-inset-content";
-import { useProductsCatalog } from "../model/useProductsStore";
+import {
+  ProductsCatalogProvider,
+  type ProductsApiResponse,
+} from "../model/useProductsStore";
 
-export default function ProductsScreen({ initialData }: { initialData: any }) {
-  console.log("data", initialData);
-  useProductsCatalog(initialData);
-
-  return <SidebarInsetContent className="m-0" />;
+export default function ProductsScreen({
+  initialData,
+  initialFilters = {},
+}: {
+  initialData?: ProductsApiResponse;
+  initialFilters?: Record<string, string>;
+}) {
+  return (
+    <ProductsCatalogProvider
+      initialData={initialData}
+      initialFilters={initialFilters}
+    >
+      <SidebarInsetContent className="m-0" />
+    </ProductsCatalogProvider>
+  );
 }
