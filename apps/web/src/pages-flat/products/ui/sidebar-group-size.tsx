@@ -8,19 +8,20 @@ import {
   SidebarMenu,
   SidebarMenuBadge,
 } from "@/shared/ui/sidebar";
-import { useProductsStore } from "../model/useProductsStore";
 import { Label } from "@/shared/ui/label";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { CheckboxGroup } from "@/shared/ui/checkbox-group";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "@/shared/ui/badge";
 import { useEffect } from "react";
+import { useProductsCatalog } from "../model/useProductsStore";
 
 export function SidebarGroupSize() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const sizes = useProductsStore((state) => state.sizes);
+  const { sizes } = useProductsCatalog();
+  console.log("sizes", sizes);
 
   const sortedSizes = [...sizes].sort((a, b) => b.stock - a.stock);
   const selectedSizes =

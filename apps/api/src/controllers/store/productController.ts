@@ -10,6 +10,7 @@ export type SearchParams = {
   minPrice?: string | undefined;
   maxPrice?: string | undefined;
   q?: string | undefined;
+  page?: string | undefined;
 };
 
 export async function list(req, res) {
@@ -18,9 +19,19 @@ export async function list(req, res) {
   });
 
   const searchParams: SearchParams = { ...req.query };
+  const page = Math.max(1, Number(searchParams.page) || 1);
 
-  console.log(searchParams);
+  // Если это 2-я страница и дальше — не грузим базу лишними запросами за sizes, prices и counts
+  if (page > 1) {
+    const data = await productService.list(searchParams);
 
+    return res.status(200).json({
+      data,
+      meta: {}, // Отдаем пустой объект, чтобы не сломать типизацию { data, meta } на фронте
+    });
+  }
+
+  // Только для первой страницы (или при смене фильтров) считаем всю мету
   const [data, sizes, prices, counts] = await Promise.all([
     productService.list(searchParams),
     productService.sizes(searchParams),

@@ -13,7 +13,7 @@ import {
   SidebarMenuSubItem,
 } from "@/shared/ui/sidebar";
 import { useEffect, useState } from "react";
-import { useProductsStore } from "../model/useProductsStore";
+import { useProductsCatalog } from "../model/useProductsStore";
 
 export function SidebarGroupCategory() {
   const pathname = usePathname();
@@ -31,8 +31,7 @@ export function SidebarGroupCategory() {
 
   const indoorCategory = [{ label: "Англаонема", key: "aglaonema" }] as const;
   const outdoorCategory = [{ label: "Гортензия", key: "gortenzia" }] as const;
-
-  const counts = useProductsStore((state) => state.counts);
+  const { counts } = useProductsCatalog();
   const total = counts?.total ?? 0;
   const categories = counts?.categories ?? {};
   const subcategories = counts?.subcategories ?? {};

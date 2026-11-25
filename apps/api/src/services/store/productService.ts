@@ -36,6 +36,11 @@ function parseSort(value?: string): ProductSort {
   return "score";
 }
 
+function parsePage(value?: string): number {
+  const num = Number(value);
+  return Number.isInteger(num) && num > 0 ? num : 1;
+}
+
 export async function list(searchParams: SearchParams) {
   const category = searchParams?.category;
   const subcategory = searchParams?.subcategory;
@@ -45,6 +50,11 @@ export async function list(searchParams: SearchParams) {
   const sort = parseSort(searchParams?.sort);
   const search = parseSearch(searchParams.q);
 
+  const page = parsePage(searchParams?.page);
+  const limit = 12;
+  const offset = (page - 1) * limit;
+
+  // Передаем limit и offset в репозиторий
   const products = await productRepo.list(
     category,
     subcategory,
@@ -53,6 +63,8 @@ export async function list(searchParams: SearchParams) {
     maxPrice,
     sort,
     search,
+    limit,
+    offset,
   );
 
   return products.map((product) => {

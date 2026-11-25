@@ -10,16 +10,15 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
 } from "@/shared/ui/sidebar";
-import { useProductsStore } from "../model/useProductsStore";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useProductsCatalog } from "../model/useProductsStore";
 
 export function SidebarGroupPrice() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
+  const { prices } = useProductsCatalog();
   // Базовые границы цен из бэкенда (meta)
-  const prices = useProductsStore((state) => state.prices);
   const metaMin = prices?.minPrice ?? 0;
   const metaMax = prices?.maxPrice ?? 0;
 

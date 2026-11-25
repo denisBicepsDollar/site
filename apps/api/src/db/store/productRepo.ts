@@ -18,6 +18,8 @@ export async function list(
   maxPrice?: number,
   sort: ProductSort = "score",
   search?: string,
+  limit = 12,
+  offset = 0,
 ) {
   const variantFilter: Record<string, any> = {};
 
@@ -68,7 +70,8 @@ export async function list(
         ],
       }),
     },
-    // Первый аргумент `p` — это таблица с правильным алиасом "d0" от Drizzle!
+    limit, // <-- берём 12 записей
+    offset,
     orderBy: (p, { asc, desc }) => {
       const minVariantPrice = sql<number>`(
         select min(${productVariantsInProducts.price})
@@ -89,11 +92,11 @@ export async function list(
 
       switch (sort) {
         case "price":
-          return [desc(hasStock), asc(minVariantPrice)];
+          return [desc(hasStock), asc(minVariantPrice), desc(p.id)];
         case "price_desc":
-          return [desc(hasStock), desc(minVariantPrice)];
+          return [desc(hasStock), desc(minVariantPrice), desc(p.id)];
         case "new":
-          return [desc(hasStock), desc(p.createdAt)];
+          return [desc(hasStock), desc(p.createdAt), desc(p.id)];
         case "score":
         default:
           return [

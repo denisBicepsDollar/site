@@ -26,7 +26,7 @@ export function SidebarInsetContent({ searchParams }) {
           <ProductsSearch />
           <ProductsSortCombobox />
         </header>
-        <div className="p-4 h- text-sm text-[var(--sp-rw-fg-tertiary)] overflow-y-scroll">
+        <div className="p-4 h- text-sm text-[var(--sp-rw-fg-tertiary)] ">
           <ProductSection />
         </div>
       </SidebarInset>
