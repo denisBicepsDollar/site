@@ -38,6 +38,7 @@ export function SidebarGroupPrice() {
   // Запись в URL (если число совпадает с границей из meta, не засоряем URL лишним параметром)
   const updateUrlPrices = (newMin: string, newMax: string) => {
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("page");
 
     const numMin = Number(newMin);
     const numMax = Number(newMax);

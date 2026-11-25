@@ -11,6 +11,7 @@ export type SearchParams = {
   maxPrice?: string | undefined;
   q?: string | undefined;
   page?: string | undefined;
+  sort?: string | undefined;
 };
 
 export async function list(req, res) {
