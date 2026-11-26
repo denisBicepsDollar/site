@@ -1,51 +1,180 @@
-export async function generateMetadata({ searchParams }) {
-  // 1. Получаем текущую страницу из параметров строки (URL)
-  const { page } = await searchParams;
-  const pageNum = Math.max(1, Number(page) || 1);
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import {
+  getCachedCatalogLabels,
+  getCachedCatalogProducts,
+} from "@/shared/api/catalog-cache";
+import { DEFAULT_OG_IMAGE, SITE_NAME } from "@/shared/config/site";
+import {
+  decodeRouteSegment,
+  getCategoryLabel,
+  getCategoryPageTitle,
+  getSubcategoryLabel,
+  getTypeLabel,
+} from "../config/catalog-labels";
+import { isUnknownEmptyCatalogRoute } from "./catalog-route";
 
-  // 2. Настройки вашего бренда (замените на свои значения)
-  const storeName = "Имя Вашего Бренда";
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://your-site.com";
+type RawSearchParams = Record<string, string | string[] | undefined>;
 
-  // 3. Формируем канонический URL и заголовки в зависимости от пагинации
-  const canonicalPath = pageNum > 1 ? `/products?page=${pageNum}` : "/products";
-  const fullCanonicalUrl = `${siteUrl}${canonicalPath}`;
+export interface CatalogMetadataInput {
+  category?: string;
+  subcategory?: string;
+  type?: string;
+  searchParams?: Promise<RawSearchParams>;
+}
+
+function getSingleParam(value: string | string[] | undefined): string | undefined {
+  if (value === undefined) return undefined;
+  const raw = Array.isArray(value) ? value[value.length - 1] : value;
+  const trimmed = raw?.trim();
+  return trimmed || undefined;
+}
+
+export async function buildCatalogMetadata({
+  category,
+  subcategory,
+  type,
+  searchParams,
+}: CatalogMetadataInput = {}): Promise<Metadata> {
+  const resolvedSearch: RawSearchParams = searchParams
+    ? await searchParams
+    : {};
+
+  const pageNum = Math.max(
+    1,
+    Number(getSingleParam(resolvedSearch.page)) || 1,
+  );
+  const q = getSingleParam(resolvedSearch.q);
+  const size = getSingleParam(resolvedSearch.size);
+  const minPrice = getSingleParam(resolvedSearch.minPrice);
+  const maxPrice = getSingleParam(resolvedSearch.maxPrice);
+  const sort = getSingleParam(resolvedSearch.sort);
+  const typeQuery = getSingleParam(resolvedSearch.type);
+
+  const hasFacetParams = Boolean(
+    q ||
+      size ||
+      minPrice ||
+      maxPrice ||
+      (sort && sort !== "score") ||
+      typeQuery,
+  );
+
+  const decodedCategory = decodeRouteSegment(category);
+  const decodedSubcategory = decodeRouteSegment(subcategory);
+  const decodedType = decodeRouteSegment(type ?? typeQuery);
+
+  const [labels, routeData] = await Promise.all([
+    getCachedCatalogLabels(),
+    decodedCategory && !q && !size && !minPrice && !maxPrice
+      ? getCachedCatalogProducts({
+          category: decodedCategory,
+          subcategory: decodedSubcategory,
+          type: type ? decodedType : undefined,
+          page: "1",
+        })
+      : Promise.resolve(undefined),
+  ]);
+
+  if (
+    decodedCategory &&
+    routeData &&
+    isUnknownEmptyCatalogRoute(routeData, {
+      category: decodedCategory,
+      subcategory: decodedSubcategory,
+      ...(type && decodedType ? { type: decodedType } : {}),
+    })
+  ) {
+    notFound();
+  }
+
+  const categoryLabel = decodedCategory
+    ? getCategoryLabel(decodedCategory, labels)
+    : undefined;
+  const categoryTitle = decodedCategory
+    ? getCategoryPageTitle(decodedCategory, labels)
+    : undefined;
+  const subcategoryLabel = decodedSubcategory
+    ? getSubcategoryLabel(decodedSubcategory, labels)
+    : undefined;
+  const typeLabel = decodedType
+    ? getTypeLabel(decodedType, labels)
+    : undefined;
+
+  let baseTitle = "Каталог растений";
+  let description = `Полный каталог комнатных и садовых растений интернет-магазина «${SITE_NAME}». Фильтры по категориям, размеру горшка и цене с доставкой.`;
+
+  if (decodedCategory && decodedSubcategory && decodedType && subcategoryLabel && typeLabel && categoryLabel) {
+    const combinedHeading =
+      typeLabel !== subcategoryLabel
+        ? `${subcategoryLabel} — ${typeLabel}`
+        : subcategoryLabel;
+    baseTitle = `${combinedHeading} (${categoryLabel})`;
+    description = `${combinedHeading} в разделе «${categoryLabel}»: актуальные цены, размеры горшков и наличие в интернет-магазине «${SITE_NAME}».`;
+  } else if (decodedCategory && decodedSubcategory && subcategoryLabel && categoryLabel) {
+    baseTitle = `${subcategoryLabel} — ${categoryLabel}`;
+    description = `${subcategoryLabel} в категории «${categoryLabel}»: подбор по сорту, размеру и цене с бережной доставкой в «${SITE_NAME}».`;
+  } else if (decodedCategory && categoryTitle) {
+    baseTitle = categoryTitle;
+    description = `${categoryTitle} в интернет-магазине «${SITE_NAME}». Удобный подбор по видам, размеру горшка и цене с доставкой.`;
+  }
 
   const title =
     pageNum > 1
-      ? `Каталог товаров — Страница ${pageNum} | ${storeName}`
-      : `Каталог товаров | Интернет-магазин ${storeName}`;
+      ? `${baseTitle} — страница ${pageNum} | ${SITE_NAME}`
+      : `${baseTitle} | ${SITE_NAME}`;
 
-  const description = `Изучите полный каталог товаров от ${storeName}. На этой странице собраны лучшие предложения нашей коллекции. Страница ${pageNum}.`;
+  const finalDescription =
+    pageNum > 1 ? `${description} Страница ${pageNum}.` : description;
 
-  // 4. Возвращаем структурированный объект для поисковых систем
+  const segments = [
+    decodedCategory,
+    decodedSubcategory,
+    type ? decodedType : undefined,
+  ].filter(Boolean) as string[];
+
+  const canonicalPath =
+    segments.length > 0
+      ? `/products/${segments.map((s) => encodeURIComponent(s)).join("/")}`
+      : "/products";
+
   return {
     title,
-    description,
+    description: finalDescription,
     alternates: {
-      canonical: fullCanonicalUrl,
+      canonical: canonicalPath,
     },
+    robots:
+      hasFacetParams || pageNum > 1
+        ? { index: false, follow: true }
+        : { index: true, follow: true },
     openGraph: {
       type: "website",
+      locale: "ru_RU",
       title,
-      description,
-      url: fullCanonicalUrl,
-      siteName: storeName,
-      // Сюда можно добавить общую картинку-превью для соцсетей (лежащую в папке public)
+      description: finalDescription,
+      url: canonicalPath,
+      siteName: SITE_NAME,
       images: [
         {
-          url: `${siteUrl}/og-catalog-image.jpg`,
-          width: 1200,
-          height: 630,
-          alt: `Каталог товаров ${storeName}`,
+          url: DEFAULT_OG_IMAGE,
+          alt: baseTitle,
         },
       ],
     },
-    // Настройки для Twitter/X
     twitter: {
       card: "summary_large_image",
       title,
-      description,
+      description: finalDescription,
+      images: [DEFAULT_OG_IMAGE],
     },
   };
+}
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams?: Promise<RawSearchParams>;
+}) {
+  return buildCatalogMetadata({ searchParams });
 }

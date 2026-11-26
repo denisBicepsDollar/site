@@ -1,42 +1,21 @@
-import { ProductsScreen } from "@/pages-flat/products";
-import { getProducts } from "@/shared/api";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
+import { ProductsScreen } from "@/pages-flat/products";
+import {
+  isUnknownEmptyCatalogRoute,
+  normalizeCatalogFilters,
+} from "@/pages-flat/products/model/catalog-route";
+import { buildCatalogMetadata } from "@/pages-flat/products/model/generate-metadata";
+import { fetchCatalogPageData } from "@/shared/api/catalog-cache";
 
 type PageProps = {
   params: Promise<{ category: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-function decodeParam(value: string): string {
-  try {
-    return decodeURIComponent(value);
-  } catch {
-    return value;
-  }
-}
-
-function normalizeFilters(
-  search: Record<string, string | string[] | undefined>,
-  route: Record<string, string>,
-): Record<string, string> {
-  const filters: Record<string, string> = {};
-
-  for (const [key, value] of Object.entries(search)) {
-    if (key === "page" || value === undefined) continue;
-    const normalized = Array.isArray(value) ? value[value.length - 1] : value;
-    if (normalized) {
-      filters[key] = normalized;
-    }
-  }
-
-  for (const [key, value] of Object.entries(route)) {
-    if (value) {
-      filters[key] = decodeParam(value);
-    }
-  }
-
-  return filters;
+export async function generateMetadata({ params, searchParams }: PageProps) {
+  const { category } = await params;
+  return buildCatalogMetadata({ category, searchParams });
 }
 
 async function CategoryCatalogLoader({ params, searchParams }: PageProps) {
@@ -45,11 +24,8 @@ async function CategoryCatalogLoader({ params, searchParams }: PageProps) {
     params,
   ]);
 
-  const initialFilters = normalizeFilters(resolvedSearch, resolvedRoute);
-  const data = await getProducts(
-    { ...initialFilters, page: "1" },
-    { noStore: true },
-  );
+  const initialFilters = normalizeCatalogFilters(resolvedSearch, resolvedRoute);
+  const data = await fetchCatalogPageData(initialFilters);
 
   if (
     !data?.isError &&
@@ -68,8 +44,12 @@ async function CategoryCatalogLoader({ params, searchParams }: PageProps) {
 
     const query = newParams.toString();
     redirect(
-      `/products/${encodeURIComponent(decodeParam(resolvedRoute.category))}${query ? `?${query}` : ""}`,
+      `/products/${encodeURIComponent(initialFilters.category ?? "")}${query ? `?${query}` : ""}`,
     );
+  }
+
+  if (isUnknownEmptyCatalogRoute(data, initialFilters)) {
+    notFound();
   }
 
   return <ProductsScreen initialData={data} initialFilters={initialFilters} />;

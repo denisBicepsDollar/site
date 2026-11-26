@@ -17,7 +17,7 @@ const CardDropdown = () => {
     if (cartItems?.length === 0 || !cartItems) {
         return (
             <section className="text-center">
-                <h1 className="mb-4 text-sm font-semibold">Корзина пуста</h1>
+                <p className="mb-4 text-sm font-semibold">Корзина пуста</p>
                 <p className="mb-4 text-xs text-muted-foreground">
                     Кажется вы еще ничего не добавили
                 </p>
