@@ -52,36 +52,42 @@ export function VariantRow({
                 sm:gap-x-3 sm:gap-y-0 sm:px-3 sm:py-2
             "
         >
-            {/* Размер */}
-            {/* Инпут размера товара */}
-            <Input
-                value={name}
-                onChange={(event) => onUpdate({name: event.target.value})}
-                placeholder="Размер"
-                className="
-        h-9 min-w-0 w-full rounded-full text-center text-sm font-semibold px-3
-        border border-black/[0.06] bg-[#F2F2F7] text-[#1C1C1E]
-        transition-all duration-200 shadow-none outline-none
-        focus-visible:border-[#007AFF]/35 focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#007AFF]/15
-        dark:border-white/[0.08] dark:bg-[#1C1C1E] dark:text-white
-        dark:focus-visible:border-[#0A84FF]/40 dark:focus-visible:bg-[#2C2C2E] dark:focus-visible:ring-[#0A84FF]/20
-    "
-            />
+            <div className="min-w-0">
+                <span className="mb-1 block text-[10px] font-medium text-[#8E8E93] sm:hidden">Размер</span>
+                <Input
+                    value={name}
+                    onChange={(event) => onUpdate({name: event.target.value})}
+                    placeholder="Размер"
+                    aria-label={`Размер варианта ${name || "товара"}`}
+                    className="
+            h-9 min-w-0 w-full rounded-full text-center text-sm font-semibold px-3
+            border border-black/[0.06] bg-[#F2F2F7] text-[#1C1C1E]
+            transition-all duration-200 shadow-none outline-none
+            focus-visible:border-[#007AFF]/35 focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-[#007AFF]/15
+            dark:border-white/[0.08] dark:bg-[#1C1C1E] dark:text-white
+            dark:focus-visible:border-[#0A84FF]/40 dark:focus-visible:bg-[#2C2C2E] dark:focus-visible:ring-[#0A84FF]/20
+        "
+                />
+            </div>
 
-            {/* Остаток (Степпер теперь не сжимается до искажения) */}
-            <StockStepper
-                className="w-full min-w-0"
-                value={stock}
-                onChange={(value) => onUpdate({stock: value})}
-            />
+            <div className="min-w-0">
+                <span className="mb-1 block text-center text-[10px] font-medium text-[#8E8E93] sm:hidden">Остаток</span>
+                <StockStepper
+                    className="w-full min-w-0"
+                    value={stock}
+                    onChange={(value) => onUpdate({stock: value})}
+                />
+            </div>
 
-            {/* Своя цена */}
-            <PriceInput
-                value={price}
-                onChange={(value) => onUpdate({price: value})}
-                wrapperClassName="w-full min-w-0 gap-1.5"
-                inputClassName="w-full min-w-0 h-9"
-            />
+            <div className="min-w-0">
+                <span className="mb-1 block text-center text-[10px] font-medium text-[#8E8E93] sm:hidden">Цена</span>
+                <PriceInput
+                    value={price}
+                    onChange={(value) => onUpdate({price: value})}
+                    wrapperClassName="w-full min-w-0 gap-1.5"
+                    inputClassName="w-full min-w-0 h-9"
+                />
+            </div>
 
             {/* Фотографии варианта */}
             <div
@@ -127,7 +133,7 @@ export function VariantRow({
                             </span>
                         </Button>
                     ) : (
-                        <UploadTile className="h-28 w-28" size="sm" onFiles={onUploadPhotos}/>
+                        <UploadTile className="h-28 w-28" onFiles={onUploadPhotos}/>
                     )}
                 </div>
             </div>
@@ -146,17 +152,14 @@ export function VariantRow({
                     sm:col-5
                 "
             >
-                <span className="sm:hidden mr-2">Удалить товар</span>
+                <span className="sm:hidden mr-2">Удалить вариант</span>
                 <Trash2 aria-hidden="true" className="h-4 w-4 text-red-500"/>
             </Button>
 
             <VariantPhotosModal
                 open={photosModalOpen}
                 onClose={closePhotosModal}
-                name={name}
                 variant={variant}
-                images={images}
-                previewImage={previewImage}
                 onOpenPhoto={onOpenPhoto}
                 onRemovePhoto={onRemovePhoto}
                 onMakeVariantCover={onMakeVariantCover}

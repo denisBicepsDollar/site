@@ -41,7 +41,7 @@ export function OrderTimeline({
 
 
                 {/* Один список: одновременно прогресс и история */}
-                <ol className="grid grid-cols-1 gap-y-0 sm:grid-cols-5 sm:gap-x-2">
+                <ol className="grid grid-cols-1 gap-y-0 lg:grid-cols-5 lg:gap-x-2">
                     {steps.map((step, index) => {
                         const complete = index < currentStep
                         const active = index === currentStep && !cancelled
@@ -58,13 +58,13 @@ export function OrderTimeline({
                         return (
                             <li
                                 key={step.title}
-                                className="relative grid grid-cols-[32px_minmax(0,1fr)] gap-x-3 pb-4 last:pb-0 sm:flex sm:flex-col sm:items-center sm:gap-2 sm:pb-0 sm:text-center"
+                                className="relative grid grid-cols-[32px_minmax(0,1fr)] gap-x-3 pb-4 last:pb-0 lg:flex lg:flex-col lg:items-center lg:gap-2 lg:pb-0 lg:text-center"
                             >
                                 {index < stepCount - 1 && (
                                     <span
                                         aria-hidden="true"
                                         className={cn(
-                                            "absolute left-[15px] top-8 bottom-0 w-px sm:left-[calc(50%+16px)] sm:right-[-50%] sm:top-4 sm:bottom-auto sm:h-px sm:w-auto",
+                                            "absolute left-[15px] top-8 bottom-0 w-px lg:left-[calc(50%+16px)] lg:right-[-50%] lg:top-4 lg:bottom-auto lg:h-px lg:w-auto",
                                             index < currentStep
                                                 ? cancelled
                                                     ? "bg-[#34C759] dark:bg-[#30D158]"

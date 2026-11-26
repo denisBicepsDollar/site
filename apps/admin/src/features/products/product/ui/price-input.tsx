@@ -5,7 +5,7 @@ import {cn} from "@site/ui/lib/utils"
 export function PriceInput({
                                value,
                                onChange,
-                               label,
+                               label = "",
                                required = false,
                                wrapperClassName = "",
                                inputClassName = "",
