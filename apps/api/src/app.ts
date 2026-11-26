@@ -9,6 +9,32 @@ import { requestContext } from "@/middleware/requestContext";
 import { accessLogger } from "@/middleware/accessLogger";
 import { adminProductImageDirectory } from "@/controllers/admin/productImagesController.js";
 
+const ALLOWED_ORIGINS = new Set([
+  "http://localhost:5173",
+  "http://localhost:4173",
+  "http://localhost:3001",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:4173",
+  "http://127.0.0.1:3001",
+]);
+
+function isAllowedOrigin(origin: string | undefined): boolean {
+  if (!origin) return true;
+  if (ALLOWED_ORIGINS.has(origin)) return true;
+  try {
+    const { hostname, protocol } = new URL(origin);
+    if (
+      (protocol === "http:" || protocol === "https:") &&
+      (hostname === "localhost" || hostname === "127.0.0.1" || hostname.endsWith(".e2b.app"))
+    ) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
+
 export function createApp() {
   const app = express();
 
@@ -16,11 +42,9 @@ export function createApp() {
 
   app.use(
     cors({
-      origin: [
-        "http://localhost:5173",
-        "http://localhost:3001",
-        "http://127.0.0.1:5173",
-      ],
+      origin(origin, callback) {
+        callback(null, isAllowedOrigin(origin));
+      },
       credentials: true,
     }),
   );

@@ -1,5 +1,3 @@
-import * as React from "react"
-
 import {VersionSwitcher} from "@/shared/ui/layout/aside/version-switcher.tsx"
 import {
     Sidebar,
@@ -22,30 +20,26 @@ export function AppSidebar({
                            }) {
 
     const [selectedVariant, setSelectedVariant] = useState('Все фото')
-    const variantsNames = new Set(photos.map(p => p.variantName));
-    const variantsArray = [...variantsNames];
-    const allVariants = ['Все фото', ...variantsArray]
+    const variantKeys = Array.from(new Set(photos.map(p => p.variantName ?? '__cover__')));
+    const keyToLabel = (key) => key === '__cover__' ? 'Общие фото' : key;
+    const allVariants = ['Все фото', ...variantKeys.map(keyToLabel)];
 
-    const activeVariant = selectedVariant !== 'Все фото'
-        ? variantsArray.filter(variant => variant === selectedVariant)
-        : variantsArray;
+    const activeVariantKeys = selectedVariant !== 'Все фото'
+        ? variantKeys.filter(key => keyToLabel(key) === selectedVariant)
+        : variantKeys;
 
-    const data = activeVariant.map(variantName => {
-
-        const filteredPhotos = photos.filter(photo => photo.variantName === variantName);
-
-        const photoInfo = filteredPhotos.map(p => ({
-            src: p.src,
-            variantIndex: p.variantIndex,
-            imageIndex: p.imageIndex,
-        }));
-
+    const groups = activeVariantKeys.map(key => {
+        const filteredPhotos = photos.filter(photo => (photo.variantName ?? '__cover__') === key);
         return {
-            [variantName]: [...photoInfo]
-
+            key,
+            label: key === '__cover__' ? 'Общие фото' : `Размер ${key}`,
+            items: filteredPhotos.map((p) => ({
+                src: p.src,
+                variantIndex: p.variantIndex,
+                imageIndex: p.imageIndex,
+            })),
         };
     });
-
 
     return (
         <Sidebar {...props}>
@@ -57,29 +51,26 @@ export function AppSidebar({
                 />
             </SidebarHeader>
             <SidebarContent>
-                {data.map((item) => {
-                    const [variantName, photosArray] = Object.entries(item)[0];
-                    return <SidebarGroup key={variantName} className="items-center">
+                {groups.map((group) => (
+                    <SidebarGroup key={group.key} className="items-center">
                         <SidebarGroupLabel>
-                            Размер {variantName}
+                            {group.label}
                         </SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu className="flex flex-col gap-3 items-center">
-                                {
-                                    photosArray.map(({src, imageIndex, variantIndex}) => {
-                                        return <SidebarMenuItem key={src}>
-                                            <PhotoTile
-                                                src={src}
-                                                alt={src}
-                                                onOpen={() => onOpenPhoto(variantIndex, imageIndex)}
-                                            />
-                                        </SidebarMenuItem>
-                                    })
-                                }
+                                {group.items.map(({src, imageIndex, variantIndex}, idx) => (
+                                    <SidebarMenuItem key={`${group.key}-${variantIndex ?? 'cover'}-${imageIndex ?? idx}`}>
+                                        <PhotoTile
+                                            src={src}
+                                            alt={src}
+                                            onOpen={() => onOpenPhoto(variantIndex, imageIndex)}
+                                        />
+                                    </SidebarMenuItem>
+                                ))}
                             </SidebarMenu>
                         </SidebarGroupContent>
                     </SidebarGroup>
-                })}
+                ))}
             </SidebarContent>
             <SidebarRail/>
         </Sidebar>

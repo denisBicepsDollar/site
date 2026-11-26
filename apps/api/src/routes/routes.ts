@@ -21,6 +21,7 @@ export function registerRoutes(app) {
 
   // Auth
   app.post("/auth/v1/login", authLimiter, authController.login);
+  app.post("/auth/v1/logout", authController.logout);
   app.get("/auth/v1/validation", authHandler, (req, res) => {
     return res.status(200).json("ok");
   });

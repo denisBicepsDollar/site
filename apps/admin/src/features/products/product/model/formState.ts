@@ -1,9 +1,5 @@
 /* ============================================================================
    FORM STATE — состояние формы товара и чистые операции над ним.
-
-   Здесь нет React: обычные функции «было состояние → стало состояние».
-   Благодаря этому логику легко читать и покрывать тестами, а useProductForm
-   просто вызывает их и складывает результат в useState.
    ============================================================================ */
 
 import {DEFAULT_CATEGORY, DEFAULT_STATUS} from '../constants.ts';
@@ -14,23 +10,44 @@ export const createClientId = () =>
         ? crypto.randomUUID()
         : `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
+const cleanImage = (url) => {
+    if (typeof url !== 'string') return '';
+    const trimmed = url.trim();
+    if (!trimmed || trimmed === '/default-image.png') return '';
+    return trimmed;
+};
+
 /* Начальное состояние формы: берём товар и раскладываем его по полям */
 export function createFormState(item) {
+    const rawCover = item?.rawPreviewImage !== undefined
+        ? cleanImage(item.rawPreviewImage)
+        : cleanImage(item?.previewImage);
+
     return {
         name: item?.name ?? "",
         description: item?.description ?? "",
         status: item?.status ?? DEFAULT_STATUS,
         category: item?.category ?? DEFAULT_CATEGORY,
         basePrice: item?.price ?? "",
-        note: item?.note ?? "",
-        cover: item?.previewImage ?? "",
-        variants: (item?.variants ?? []).map((variant, index) => ({
-            ...variant,
-            images: [variant.previewImage, ...variant.images.filter(img => img !== variant.previewImage)],
+        note: item?.note ?? item?.careInstructions ?? "",
+        cover: rawCover,
+        variants: (item?.variants ?? []).map((variant, index) => {
+            const previewImage = cleanImage(variant.previewImage);
+            const rawImages = (variant.images ?? []).map(cleanImage).filter(Boolean);
+            const images = previewImage
+                ? [previewImage, ...rawImages.filter(img => img !== previewImage)]
+                : Array.from(new Set(rawImages));
 
-            /* clientId нужен как стабильный key в списках, пока вариант не сохранён на сервере */
-            clientId: `existing-${index}`,
-        })),
+            return {
+                ...(variant.id ? {id: variant.id} : {}),
+                name: variant.name ?? "",
+                stock: Number(variant.stock) || 0,
+                price: variant.price ?? "",
+                previewImage,
+                images,
+                clientId: variant.id || `existing-${index}`,
+            };
+        }),
     };
 }
 
@@ -40,7 +57,7 @@ export function createVariant(name, basePrice) {
         clientId: createClientId(),
         name,
         stock: 0,
-        price: Number(basePrice),
+        price: basePrice === "" || basePrice === null || basePrice === undefined ? 0 : Number(basePrice),
         images: [],
         previewImage: "",
     };
@@ -61,11 +78,12 @@ export function updateVariantCover(state, index, {previewImage}) {
             i === index
                 ? {
                     ...variant,
-                    previewImage, // записываем строку-ссылку
-                    // Переносим обложку на первое место в массиве, убирая дубликаты
-                    images: [previewImage, ...variant.images.filter(img => img !== previewImage)],
+                    previewImage,
+                    images: previewImage
+                        ? [previewImage, ...variant.images.filter(img => img !== previewImage)]
+                        : variant.images,
                 }
-                : variant // остальные варианты возвращаем без изменений
+                : variant
         )
     };
 }
@@ -105,8 +123,6 @@ export function removeVariantPhoto(state, variantIndex, imageIndex) {
         };
     });
 
-    /* Если удалённое фото было обложкой товара и больше нигде не используется —
-       переносим обложку на первое оставшееся фото */
     const stillUsed = variants.some(variant => variant.images.includes(removedSrc));
 
     return {

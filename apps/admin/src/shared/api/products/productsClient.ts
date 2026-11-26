@@ -14,7 +14,7 @@ productsClient.interceptors.response.use(
     (response) => response,
     (error: unknown) => {
         const serverMessage = axios.isAxiosError(error)
-            ? error.response?.data?.message ?? error.response?.data
+            ? error.response?.data?.message ?? error.response?.data?.error ?? error.response?.data
             : undefined;
         const message = typeof serverMessage === "string"
             ? serverMessage

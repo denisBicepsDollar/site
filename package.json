@@ -12,7 +12,7 @@
     "npm": ">=10"
   },
   "scripts": {
-    "dev:admin": "npm run dev --workspace @site/admin",
+    "dev:admin": "npm run dev --workspace admin",
     "dev:web": "npm run dev --workspace web",
     "dev:api": "npm run dev --workspace api",
     "build": "npm run build --workspaces --if-present",

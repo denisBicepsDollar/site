@@ -37,6 +37,7 @@ export const columns = [
     {
         accessorKey: "items",
         header: "Товары",
+        enableSorting: false,
         cell: ({row}) => (
             <div className="flex flex-col gap-1">
                 {row.original.items.map((item) => (

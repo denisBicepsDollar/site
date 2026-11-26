@@ -48,8 +48,14 @@ describe("Frontend/backend API contracts", () => {
         assert.match(routesText, /app\.use\("\/api\/v1\/admin",\s*adminRouter\)/);
         assert.match(adminRoutesText, /adminRouter\.use\(authHandler\)/);
         assert.match(adminRoutesText, /adminRouter\.get\("\/products"/);
+        assert.match(adminRoutesText, /adminRouter\.get\("\/products\/:id"/);
         assert.match(adminRoutesText, /adminRouter\.post\("\/products"/);
+        assert.match(adminRoutesText, /adminRouter\.patch\("\/products\/bulk"/);
+        assert.match(adminRoutesText, /adminRouter\.post\("\/products\/bulk-delete"/);
+        assert.match(adminRoutesText, /adminRouter\.patch\("\/products\/:id"/);
+        assert.match(adminRoutesText, /adminRouter\.delete\("\/products\/:id"/);
         assert.match(adminRoutesText, /adminRouter\.post\("\/products\/images"/);
+        assert.match(routesText, /\/auth\/v1\/logout/);
         assert.match(adminRoutesText, /adminRouter\.get\("\/orders"/);
         assert.match(adminRoutesText, /adminRouter\.get\("\/orders\/:id"/);
         assert.match(adminRoutesText, /adminRouter\.patch\("\/orders\/:id\/status"/);
