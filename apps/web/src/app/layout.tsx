@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Header } from "@/widgets/header";
 import "./globals.css";
 import { Footer } from "@/widgets/footer";
@@ -21,13 +22,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ru">
-      <body className="min-h-full overflow-x-clip flex flex-col bg-cream pt-30 px-4 sm:px-8 md:px-16 xl:px-42">
+      <body className="min-h-screen overflow-x-clip flex flex-col bg-cream pt-24 md:pt-28">
         <QueryProvider>
           <Header />
-          {children}
+          <div className="flex-1 w-full pb-16 md:pb-24">
+            <div className="mx-auto w-full max-w-[1400px] px-5 md:px-10">
+              {children}
+            </div>
+          </div>
           <Footer />
         </QueryProvider>
       </body>

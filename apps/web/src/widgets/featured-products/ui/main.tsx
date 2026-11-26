@@ -1,19 +1,24 @@
-// src/app/page.js
-import { FeaturedProducts } from "./featured-products";
+import { Suspense } from "react";
 import { getProducts } from "@/shared/api";
+import { getCachedCatalogProducts } from "@/shared/api/server";
+import { FeaturedProducts } from "./featured-products";
 
+async function FeaturedProductsLoader() {
+  const cached = await getCachedCatalogProducts({ page: "1" });
+  const response =
+    cached && !cached.isError && Array.isArray(cached.data) && cached.data.length > 0
+      ? cached
+      : await getProducts({ page: "1" }, { noStore: true });
 
-export default async function FeaturedProd() {
-    const featuredProducts = await getProducts();
+  const products = Array.isArray(response?.data) ? response.data : [];
 
-    return (
-        <main>
-            {/* Другие ваши блоки */}
+  return <FeaturedProducts products={products} />;
+}
 
-            {/* 2. Передаем чистые данные в клиентский анимированный компонент */}
-            <FeaturedProducts products={featuredProducts}/>
-
-            {/* Другие ваши блоки */}
-        </main>
-    );
+export default function FeaturedProd() {
+  return (
+    <Suspense fallback={<FeaturedProducts products={[]} isLoading />}>
+      <FeaturedProductsLoader />
+    </Suspense>
+  );
 }

@@ -1,58 +1,75 @@
-import { Button } from "@site/ui/button";
-import { Input } from "@site/ui/input";
-import { Label } from "@site/ui/label";
-import { Textarea } from "@site/ui/textarea";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Textarea } from "@/shared/ui/textarea";
 import { ContactScreen } from "./contact-screen";
 
 export function ContactPageContent() {
   return (
-    <main className="relative flex size-full min-h-screen w-full items-center justify-center p-4">
-      <div className="mx-auto max-w-5xl">
-        <ContactScreen
-          title="Get in touch"
-          description="If you have any questions regarding our Services or need help, please fill out the form here. We do our best to respond within 1 business day."
-          contactInfo={[
-            {
-              icon: "mail",
-              label: "Email",
-              value: "contact@21st.dev",
-            },
-            {
-              icon: "phone",
-              label: "Phone",
-              value: "+92 312 1234567",
-            },
-            {
-              icon: "map",
-              label: "Address",
-              value: "Faisalabad, Pakistan",
-              className: "col-span-2",
-            },
-          ]}
-        >
-          <form action="" className="w-full space-y-4">
-            <div className="flex flex-col gap-2">
-              <Label>Name</Label>
-              <Input type="text" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label>Email</Label>
-              <Input type="email" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label>Phone</Label>
-              <Input type="phone" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label>Message</Label>
-              <Textarea />
-            </div>
-            <Button className="w-full" type="button">
-              Submit
-            </Button>
-          </form>
-        </ContactScreen>
-      </div>
+    <main className="w-full py-6 md:py-10">
+      <ContactScreen
+        title="Контакты"
+        description="Ответим на вопросы по наличию, подбору растений и условиям доставки. Самовывоз в Новозыбкове, отправка по всей России Почтой России и СДЭК."
+        className=""
+        formSectionClassName=""
+        contactInfo={[
+          {
+            icon: "mail",
+            label: "Email",
+            value: "info@zelenyeusy.ru",
+          },
+          {
+            icon: "phone",
+            label: "Телефон",
+            value: "+7 (919) 292-63-24",
+          },
+          {
+            icon: "map",
+            label: "Адрес и режим работы",
+            value: "Брянская обл., г. Новозыбков · Пн–Вс 10:00–20:00",
+            className: "col-span-2",
+          },
+        ]}
+      >
+        <div className="w-full space-y-4">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="contact-name">Имя</Label>
+            <Input id="contact-name" type="text" placeholder="Ваше имя" />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="contact-email">Email</Label>
+            <Input
+              id="contact-email"
+              type="email"
+              placeholder="name@example.ru"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="contact-phone">Телефон</Label>
+            <Input
+              id="contact-phone"
+              type="tel"
+              placeholder="+7 (999) 123-45-67"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="contact-message">Сообщение</Label>
+            <Textarea
+              id="contact-message"
+              placeholder="Напишите, какое растение ищете или задайте вопрос..."
+            />
+          </div>
+          <Button
+            className="w-full"
+            variant="accent"
+            render={
+              <a href="mailto:info@zelenyeusy.ru">
+                Написать на info@zelenyeusy.ru
+              </a>
+            }
+          />
+        </div>
+      </ContactScreen>
     </main>
   );
 }

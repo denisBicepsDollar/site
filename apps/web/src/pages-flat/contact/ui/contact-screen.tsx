@@ -2,9 +2,17 @@
 import React from 'react';
 import {cn} from '@site/ui/lib/utils';
 import {
-    LucideIcon,
+    Mail,
+    MapPin,
+    Phone,
     PlusIcon,
 } from 'lucide-react';
+
+const ICON_MAP = {
+    mail: Mail,
+    phone: Phone,
+    map: MapPin,
+} as const;
 
 
 export function ContactScreen({
@@ -56,12 +64,13 @@ export function ContactScreen({
 }
 
 function ContactInfo({
-                         icon: Icon,
+                         icon,
                          label,
                          value,
                          className,
                          ...props
                      }) {
+    const Icon = typeof icon === 'string' ? (ICON_MAP[icon] ?? Mail) : icon;
     return (
         <div className={cn('flex items-center gap-3 py-3', className)} {...props}>
             <div className="bg-muted/40 rounded-lg p-3">

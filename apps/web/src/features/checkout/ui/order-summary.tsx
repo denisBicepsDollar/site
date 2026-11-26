@@ -61,7 +61,7 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
 
   return (
     <section className={cn("py-4 md:py-8", className)}>
-      <div className="container max-w-4xl mx-auto space-y-6">
+      <div className="mx-auto max-w-4xl space-y-6">
         <Card>
           <CardContent className="text-center space-y-3">
             <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-500/10">

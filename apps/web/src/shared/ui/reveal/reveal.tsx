@@ -29,7 +29,7 @@ export function Eyebrow({
         <div className="flex items-center gap-3">
             <span className={`h-px w-10 ${light ? 'bg-cream/40' : 'bg-clay'}`}/>
             <span
-                className={`text-[11px] font-semibold uppercase [0.3em] ${
+                className={`text-[11px] font-semibold uppercase tracking-[0.3em] ${
                     light ? 'text-cream/70' : 'text-leaf'
                 }`}
             >

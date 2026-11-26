@@ -9,7 +9,11 @@ async function HeroContent() {
 
 export function Hero() {
   return (
-    <Suspense fallback={<HeroView featuredProduct={null} totalCount={null} />}>
+    <Suspense
+      fallback={
+        <HeroView featuredProduct={null} totalCount={null} isPending />
+      }
+    >
       <HeroContent />
     </Suspense>
   );

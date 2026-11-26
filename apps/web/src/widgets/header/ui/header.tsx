@@ -49,7 +49,7 @@ export function Header() {
               >
                 <Leaf className="size-5" strokeWidth={1.8} />
               </span>
-              <span className="font-display text-[26px] font-semibold leading-none tight">
+              <span className="font-display text-[26px] font-semibold leading-none tracking-tight">
                 Зеленые усы
               </span>
             </Link>
@@ -64,7 +64,7 @@ export function Header() {
                 className="hidden items-center gap-2 text-[13px] font-semibold text-ink/70 transition-colors hover:text-forest xl:flex"
               >
                 <Phone className="size-4" strokeWidth={1.8} />
-                Связаться +7 (495) 120-45-67
+                +7 (919) 292-63-24
               </Link>
 
               <div className="relative group">
@@ -109,6 +109,20 @@ export function Header() {
                   </div>
                 </div>
               </div>
+
+              <button
+                type="button"
+                onClick={() => setMenuOpen((prev) => !prev)}
+                aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+                aria-expanded={menuOpen}
+                className="grid size-11 place-items-center rounded-full border border-forest/15 text-forest transition-colors hover:bg-forest hover:text-cream lg:hidden"
+              >
+                {menuOpen ? (
+                  <X className="size-5" />
+                ) : (
+                  <Menu className="size-5" />
+                )}
+              </button>
             </div>
           </div>
         </div>

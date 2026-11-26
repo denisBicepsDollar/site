@@ -46,8 +46,8 @@ export function CartScreen() {
 
   if (isError && variants.length === 0 && cartStorage.length > 0) {
     return (
-      <section className="bg-white mt-10 py-16 antialiased dark:bg-gray-900">
-        <div className="mx-auto max-w-screen-md px-4 text-center space-y-4">
+      <section className="w-full py-12 antialiased">
+        <div className="mx-auto max-w-2xl text-center space-y-4">
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
             Не удалось загрузить корзину
           </h1>
@@ -65,8 +65,8 @@ export function CartScreen() {
 
   if (variants.length === 0) {
     return (
-      <section className=" mt-10 py-16 antialiased dark:bg-gray-900">
-        <div className="mx-auto max-w-screen-md px-4 text-center space-y-5">
+      <section className="w-full py-12 antialiased">
+        <div className="mx-auto max-w-2xl text-center space-y-5">
           <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-gray-100 text-gray-500">
             <ShoppingBag className="size-8" aria-hidden="true" />
           </div>
@@ -91,8 +91,8 @@ export function CartScreen() {
   }
 
   return (
-    <section className=" mt-10 py-8 antialiased dark:bg-gray-900 md:py-16">
-      <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
+    <section className="w-full py-6 md:py-10 antialiased">
+      <div className="w-full">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
             Корзина

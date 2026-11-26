@@ -28,15 +28,16 @@ const FAQ = [
 export function Faq() {
   const [open, setOpen] = useState(0);
   return (
-    <div>
-      <section className="mx-auto max-w-4xl px-5 pb-24 lg:px-8">
-        <Reveal className="text-center">
+    <section id="faq" className="w-full scroll-mt-28">
+      <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+        <Reveal className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
           <Eyebrow>Вопросы</Eyebrow>
-          <h2 className="mt-4 font-display text-4xl font-medium leading-[1.05] md:text-5xl">
+          <h2 className="mt-4 font-display text-4xl font-medium leading-[1.05] text-forest md:text-5xl">
             Всё, что спрашивают <em className="italic text-clay">чаще всего</em>
           </h2>
         </Reveal>
-        <div className="mt-12">
+
+        <div className="lg:col-span-8">
           {FAQ.map((f, i) => {
             const isOpen = open === i;
             return (
@@ -46,7 +47,7 @@ export function Faq() {
                     type="button"
                     aria-expanded={isOpen}
                     onClick={() => setOpen(isOpen ? -1 : i)}
-                    className="flex w-full items-center justify-between gap-6 py-6 text-left cursor-pointer"
+                    className="flex w-full cursor-pointer items-center justify-between gap-6 py-6 text-left"
                   >
                     <span
                       className={cn(
@@ -90,7 +91,7 @@ export function Faq() {
             );
           })}
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 }
