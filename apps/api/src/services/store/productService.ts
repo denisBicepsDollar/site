@@ -96,6 +96,7 @@ function formatCatalogProduct(product: any) {
 export async function listPage(searchParams: SearchParams = {}) {
   const category = searchParams.category?.trim() || undefined;
   const subcategory = searchParams.subcategory?.trim() || undefined;
+  const type = searchParams.type?.trim() || undefined;
   const sizes = parseSizes(searchParams.size);
   const minPrice = parsePrice(searchParams.minPrice);
   const maxPrice = parsePrice(searchParams.maxPrice);
@@ -109,6 +110,7 @@ export async function listPage(searchParams: SearchParams = {}) {
   const rows = await productRepo.list(
     category,
     subcategory,
+    type,
     sizes,
     minPrice,
     maxPrice,
@@ -137,6 +139,7 @@ export async function list(searchParams: SearchParams = {}) {
 export async function sizes(searchParams: SearchParams = {}) {
   const category = searchParams.category?.trim() || undefined;
   const subcategory = searchParams.subcategory?.trim() || undefined;
+  const type = searchParams.type?.trim() || undefined;
   const minPrice = parsePrice(searchParams.minPrice);
   const maxPrice = parsePrice(searchParams.maxPrice);
   const search = parseSearch(searchParams.q);
@@ -144,6 +147,7 @@ export async function sizes(searchParams: SearchParams = {}) {
   return await productVariants.sizes(
     category,
     subcategory,
+    type,
     minPrice,
     maxPrice,
     search,
@@ -153,10 +157,17 @@ export async function sizes(searchParams: SearchParams = {}) {
 export async function prices(searchParams: SearchParams = {}) {
   const category = searchParams.category?.trim() || undefined;
   const subcategory = searchParams.subcategory?.trim() || undefined;
+  const type = searchParams.type?.trim() || undefined;
   const sizes = parseSizes(searchParams.size);
   const search = parseSearch(searchParams.q);
 
-  return await productVariants.prices(category, subcategory, sizes, search);
+  return await productVariants.prices(
+    category,
+    subcategory,
+    type,
+    sizes,
+    search,
+  );
 }
 
 export async function counts(searchParams: SearchParams = {}) {

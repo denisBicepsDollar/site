@@ -7,6 +7,7 @@ export type SearchParams = {
   size?: string | undefined; // приходит строкой а надо массивом
   category?: string | undefined;
   subcategory?: string | undefined;
+  type?: string | undefined;
   minPrice?: string | undefined;
   maxPrice?: string | undefined;
   q?: string | undefined;

@@ -19,6 +19,7 @@ export type ScrollAreaProps =
      */
     tabbable?: boolean;
     scrollbar?: "auto" | "hidden";
+    scrollbarVisibility?: "hover" | "overflow";
     scrollbarGutter?: boolean;
     fill?: boolean;
     clampContentMinWidth?: boolean;
@@ -39,6 +40,7 @@ export function ScrollArea({
   scrollFade = false,
   tabbable = true,
   scrollbar = "auto",
+  scrollbarVisibility = "hover",
   scrollbarGutter = false,
   fill = false,
   clampContentMinWidth = true,
@@ -90,8 +92,14 @@ export function ScrollArea({
       </ScrollAreaPrimitive.Viewport>
       {scrollbar === "auto" ? (
         <>
-          <ScrollBar orientation="vertical" />
-          <ScrollBar orientation="horizontal" />
+          <ScrollBar
+            orientation="vertical"
+            visibility={scrollbarVisibility}
+          />
+          <ScrollBar
+            orientation="horizontal"
+            visibility={scrollbarVisibility}
+          />
         </>
       ) : null}
       <ScrollAreaPrimitive.Corner
@@ -105,13 +113,17 @@ export function ScrollArea({
 export function ScrollBar({
   className,
   orientation = "vertical",
+  visibility = "hover",
   ...props
-}: WithStringClassName<ScrollAreaPrimitive.Scrollbar.Props>): React.ReactElement {
+}: WithStringClassName<ScrollAreaPrimitive.Scrollbar.Props> & {
+  visibility?: "hover" | "overflow";
+}): React.ReactElement {
   return (
     <ScrollAreaPrimitive.Scrollbar
       className={cn(
         slotClass("scroll-area-scrollbar", props),
-        "sp-scroll-area-scrollbar-motion m-1 flex opacity-0 data-[orientation=horizontal]:h-1.5 data-[orientation=vertical]:w-1.5 data-[orientation=horizontal]:flex-col data-hovering:opacity-100 data-scrolling:opacity-100",
+        "sp-scroll-area-scrollbar-motion m-1 flex data-[orientation=horizontal]:h-1.5 data-[orientation=vertical]:w-1.5 data-[orientation=horizontal]:flex-col data-hovering:opacity-100 data-scrolling:opacity-100",
+        visibility === "overflow" ? "opacity-60" : "opacity-0",
         className,
       )}
       data-slot="scroll-area-scrollbar"

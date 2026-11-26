@@ -44,10 +44,10 @@ export default function ProductsLayout({
           mobileBreakpoint="lg"
         >
           <Sidebar
-            className="lg:sticky! lg:top-24! lg:bottom-auto! lg:h-fit!"
+            className="lg:sticky! lg:top-24! lg:bottom-auto! lg:h-[calc(100svh-7rem)]! lg:max-h-[calc(100svh-7rem)]! group-data-[state=collapsed]:lg:h-fit!"
             collapsible="icon"
           >
-            <SidebarHeader className="flex-row items-center gap-1">
+            <SidebarHeader className="shrink-0 flex-row items-center gap-1">
               <SidebarBrand className="group-data-[state=collapsed]:hidden">
                 Фильтры
               </SidebarBrand>

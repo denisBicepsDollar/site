@@ -8,6 +8,14 @@ type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
+function decodeParam(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 function normalizeFilters(
   search: Record<string, string | string[] | undefined>,
   route: Record<string, string>,
@@ -24,7 +32,7 @@ function normalizeFilters(
 
   for (const [key, value] of Object.entries(route)) {
     if (value) {
-      filters[key] = value;
+      filters[key] = decodeParam(value);
     }
   }
 
@@ -59,7 +67,9 @@ async function CategoryCatalogLoader({ params, searchParams }: PageProps) {
     }
 
     const query = newParams.toString();
-    redirect(`/products/${resolvedRoute.category}${query ? `?${query}` : ""}`);
+    redirect(
+      `/products/${encodeURIComponent(decodeParam(resolvedRoute.category))}${query ? `?${query}` : ""}`,
+    );
   }
 
   return <ProductsScreen initialData={data} initialFilters={initialFilters} />;

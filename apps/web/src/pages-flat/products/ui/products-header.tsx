@@ -2,19 +2,33 @@
 
 import { usePathname } from "next/navigation";
 import {
-  CATEGORY_PAGE_TITLES,
-  SUBCATEGORY_LABELS,
+  decodeRouteSegment,
+  getCategoryPageTitle,
+  getSubcategoryLabel,
+  getTypeLabel,
 } from "../config/catalog-labels";
 
 export function ProductsHeader() {
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
-  const category = segments[0] === "products" ? segments[1] : undefined;
-  const subcategory = segments[0] === "products" ? segments[2] : undefined;
+  const category =
+    segments[0] === "products" ? decodeRouteSegment(segments[1]) : undefined;
+  const subcategory =
+    segments[0] === "products" ? decodeRouteSegment(segments[2]) : undefined;
+  const type =
+    segments[0] === "products" ? decodeRouteSegment(segments[3]) : undefined;
+
+  const subcategoryTitle = subcategory
+    ? getSubcategoryLabel(subcategory)
+    : undefined;
+  const typeTitle = type ? getTypeLabel(type) : undefined;
 
   const title =
-    (subcategory && SUBCATEGORY_LABELS[subcategory]) ||
-    (category && CATEGORY_PAGE_TITLES[category]) ||
+    (typeTitle && subcategoryTitle && typeTitle !== subcategoryTitle
+      ? `${subcategoryTitle} — ${typeTitle}`
+      : typeTitle) ||
+    subcategoryTitle ||
+    (category && getCategoryPageTitle(category)) ||
     "Все товары";
 
   return (

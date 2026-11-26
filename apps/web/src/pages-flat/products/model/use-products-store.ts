@@ -21,6 +21,7 @@ export interface ProductsMeta {
     categories?: Record<string, number>;
     subcategories?: Record<string, number>;
     byCategory?: Record<string, Record<string, number>>;
+    typesByCategory?: Record<string, Record<string, Record<string, number>>>;
   };
   prices?: { minPrice?: number | null; maxPrice?: number | null };
   sizes?: Array<{ size: string; stock: number }>;
@@ -53,6 +54,16 @@ async function fetchProducts(
   return res.json();
 }
 
+function decodeParamValue(value?: string | string[]): string | undefined {
+  const raw = Array.isArray(value) ? value[0] : value;
+  if (!raw) return undefined;
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
 function buildFilters(
   routeParams: Record<string, string | string[] | undefined> | null,
   searchParams: { forEach(cb: (value: string, key: string) => void): void },
@@ -65,15 +76,19 @@ function buildFilters(
     }
   });
 
-  if (routeParams?.category) {
-    filters.category = Array.isArray(routeParams.category)
-      ? routeParams.category[0]
-      : routeParams.category;
+  const category = decodeParamValue(routeParams?.category);
+  if (category) {
+    filters.category = category;
   }
-  if (routeParams?.subcategory) {
-    filters.subcategory = Array.isArray(routeParams.subcategory)
-      ? routeParams.subcategory[0]
-      : routeParams.subcategory;
+
+  const subcategory = decodeParamValue(routeParams?.subcategory);
+  if (subcategory) {
+    filters.subcategory = subcategory;
+  }
+
+  const type = decodeParamValue(routeParams?.type);
+  if (type) {
+    filters.type = type;
   }
 
   return filters;
