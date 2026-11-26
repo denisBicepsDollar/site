@@ -16,6 +16,7 @@ import { Button, buttonVariants } from "@/shared/ui/button";
 export default function CheckoutScreen() {
   const currentStep = useOrderStore((state) => state.currentStep);
   const createdOrder = useOrderStore((state) => state.createdOrder);
+  const resetOrderFlow = useOrderStore((state) => state.resetOrderFlow);
 
   const initCart = useCartStore((state) => state.initCart);
   const fetchCartProducts = useCartStore((state) => state.fetchCartProducts);
@@ -27,9 +28,22 @@ export default function CheckoutScreen() {
 
   useEffect(() => {
     initCart();
+
+    return () => {
+      if (useOrderStore.getState().currentStep === 4) {
+        useOrderStore.getState().resetOrderFlow();
+      }
+    };
   }, [initCart]);
 
-  if (currentStep === 4 && createdOrder) {
+  // If user added new items after completing a previous order, start a fresh checkout
+  useEffect(() => {
+    if (cartStorage.length > 0 && currentStep === 4) {
+      resetOrderFlow();
+    }
+  }, [cartStorage.length, currentStep, resetOrderFlow]);
+
+  if (currentStep === 4 && createdOrder && cartStorage.length === 0) {
     return (
       <div className="w-full mt-20 mx-auto p-6 flex flex-col gap-6">
         <OrderSummary order={createdOrder} />
@@ -106,17 +120,43 @@ export default function CheckoutScreen() {
     );
   }
 
+  const steps = [
+    { step: 1, label: "Доставка и контакты" },
+    { step: 2, label: "Оплата" },
+    { step: 3, label: "Подтверждение" },
+  ];
+
   return (
     <div className="w-full mt-20 mx-auto p-6 flex flex-col gap-6">
+      <nav
+        aria-label="Этапы оформления заказа"
+        className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground"
+      >
+        {steps.map((item, idx) => (
+          <div key={item.step} className="flex items-center gap-2">
+            <span
+              className={
+                currentStep === item.step
+                  ? "font-semibold text-foreground"
+                  : currentStep > item.step
+                    ? "text-foreground/70"
+                    : ""
+              }
+            >
+              {item.step}. {item.label}
+            </span>
+            {idx < steps.length - 1 && <span aria-hidden="true">→</span>}
+          </div>
+        ))}
+      </nav>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content */}
         <div className="lg:col-span-2 flex flex-col gap-6">
           {currentStep === 1 && <ShippingInformation />}
           {currentStep === 2 && <PaymentInformation />}
           {currentStep === 3 && <ReviewOrder />}
         </div>
 
-        {/* Order Summary Sidebar */}
         <div className="flex flex-col gap-4">
           <OrderSummaryCard />
         </div>

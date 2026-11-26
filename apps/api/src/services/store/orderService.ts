@@ -126,6 +126,15 @@ export async function createOrder(
     itemQuantities.set(variantId, (itemQuantities.get(variantId) ?? 0) + qty);
   }
 
+  const rawPaymentMethod = cleanString(payment.method, 40);
+  const paymentMethod = rawPaymentMethod || "email_confirmation";
+  if (paymentMethod !== "email_confirmation") {
+    fields.paymentMethod =
+      paymentMethod === "sbp"
+        ? "Оплата по СБП временно недоступна. Выберите оплату после подтверждения."
+        : "Выбран недоступный способ оплаты";
+  }
+
   if (Object.keys(fields).length > 0) {
     const firstMessage =
       Object.values(fields)[0] ?? "Проверьте корректность данных заказа";
@@ -143,9 +152,8 @@ export async function createOrder(
     .filter(Boolean)
     .join(" ");
 
-  const paymentMethod = cleanString(payment.method, 40) || "sbp";
   const paymentNote =
-    paymentMethod === "sbp" ? "Оплата: СБП" : `Оплата: ${paymentMethod}`;
+    "Оплата: после подтверждения заказа (письмо на указанный email)";
   const fullComment = userComment
     ? `${userComment}\n${paymentNote}`
     : paymentNote;
@@ -169,6 +177,7 @@ export async function createOrder(
     pochtaTariffName: isPochta ? tariffName : null,
     cdekTariffId: isCdek ? tariffId : null,
     cdekTariffName: isCdek ? tariffName : null,
+    paymentMethod,
     comment: fullComment,
     items: Array.from(itemQuantities.entries()).map(([variantId, quantity]) => ({
       variantId,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AddressSuggestions } from "react-dadata";
 import type { DaDataAddress, DaDataSuggestion } from "react-dadata";
 import "react-dadata/dist/react-dadata.css";
@@ -12,6 +12,7 @@ const DADATA_TOKEN =
   "1c7e7688522344e4a329ef6d21221a321e230ff1";
 
 export function DeliveryAddress() {
+  const suggestionsRef = useRef<AddressSuggestions | null>(null);
   const [selectedSuggestion, setSelectedSuggestion] = useState<
     DaDataSuggestion<DaDataAddress> | undefined
   >(undefined);
@@ -19,6 +20,15 @@ export function DeliveryAddress() {
   const handleAddressChange = useOrderStore(
     (state) => state.handleAddressChange,
   );
+
+  // Keep DaData input synced if address changes externally (e.g. RussianPost widget or reset)
+  useEffect(() => {
+    const instance = suggestionsRef.current;
+    if (!instance) return;
+    if (instance.state.query !== shippingAddress.fullAddress) {
+      instance.setInputValue(shippingAddress.fullAddress);
+    }
+  }, [shippingAddress.fullAddress]);
 
   return (
     <Field className="mt-3">
@@ -28,6 +38,7 @@ export function DeliveryAddress() {
       </FieldLabel>
 
       <AddressSuggestions
+        ref={suggestionsRef}
         token={DADATA_TOKEN}
         value={selectedSuggestion}
         defaultQuery={shippingAddress.fullAddress}

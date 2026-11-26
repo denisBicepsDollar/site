@@ -25,6 +25,7 @@ export interface CreateOrderRepoInput {
   pochtaTariffName: string | null;
   cdekTariffId: string | null;
   cdekTariffName: string | null;
+  paymentMethod: string;
   comment: string | null;
   items: CreateOrderItemInput[];
 }
@@ -54,6 +55,7 @@ export interface CreatedOrderRecord {
   pochtaTariffName: string | null;
   cdekTariffId: string | null;
   cdekTariffName: string | null;
+  paymentMethod: string;
   comment: string | null;
   productsTotal: number;
   totalPrice: number;
@@ -281,6 +283,7 @@ export async function createOrder(
         pochtaTariffName: insertedOrder.pochtaTariffName ?? null,
         cdekTariffId: insertedOrder.cdekTariffId ?? null,
         cdekTariffName: insertedOrder.cdekTariffName ?? null,
+        paymentMethod: input.paymentMethod,
         comment: insertedOrder.comment ?? null,
         productsTotal,
         totalPrice: insertedOrder.totalPrice,
