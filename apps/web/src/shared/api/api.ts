@@ -74,7 +74,7 @@ export async function getProductBySlug(slug: string) {
 
 export async function getProductsByVariant(variantIds: Array<string | number>) {
   if (!Array.isArray(variantIds) || variantIds.length === 0) {
-    return { data: [] };
+    return { data: [], isError: false };
   }
 
   try {
@@ -84,7 +84,7 @@ export async function getProductsByVariant(variantIds: Array<string | number>) {
       .map((variantId) => `variantId=${encodeURIComponent(variantId)}`);
 
     if (varIds.length === 0) {
-      return { data: [] };
+      return { data: [], isError: false };
     }
 
     const isBrowser = typeof window !== "undefined";
@@ -99,11 +99,59 @@ export async function getProductsByVariant(variantIds: Array<string | number>) {
         ? { cache: "no-store", signal: AbortSignal.timeout(8000) }
         : { next: { revalidate: 60 }, signal: AbortSignal.timeout(8000) },
     );
-    if (!res.ok) return { data: [] };
-    const products = { data: await res.json() };
-    return products;
+    if (!res.ok) return { data: [], isError: true };
+    const raw = await res.json();
+    return { data: Array.isArray(raw) ? raw : [], isError: false };
   } catch (err) {
     console.error(err);
-    return { data: [] };
+    return { data: [], isError: true };
+  }
+}
+
+export async function createOrder(payload: unknown) {
+  try {
+    const isBrowser = typeof window !== "undefined";
+    const url = isBrowser ? "/api/orders" : `${getBackendUrl()}/api/v1/orders`;
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+      signal: AbortSignal.timeout(10000),
+    });
+
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      return {
+        ok: false as const,
+        status: res.status,
+        code: typeof data?.code === "string" ? data.code : undefined,
+        message:
+          typeof data?.message === "string"
+            ? data.message
+            : "Не удалось оформить заказ",
+        items: Array.isArray(data?.items) ? data.items : undefined,
+      };
+    }
+
+    return {
+      ok: true as const,
+      status: res.status,
+      data,
+    };
+  } catch (err) {
+    const message =
+      err instanceof Error &&
+      (err.name === "TimeoutError" || err.name === "AbortError")
+        ? "Превышено время ожидания сервера"
+        : "Не удалось соединиться с сервером";
+    return {
+      ok: false as const,
+      status: 500,
+      message,
+    };
   }
 }

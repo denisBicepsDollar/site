@@ -1,5 +1,15 @@
 "use client";
 
+import { ArrowRightIcon, MapPin } from "lucide-react";
+import { useOrderStore } from "@/entities/order";
+import { useCartStore } from "@/entities/cart";
+import { ShippingMethods } from "./shipping-methods";
+import { Form } from "@/shared/ui/form";
+import { Fieldset } from "@/shared/ui/fieldset";
+import { Field, FieldError, FieldLabel } from "@/shared/ui/field";
+import { Input } from "@/shared/ui/input";
+import { Separator } from "@/shared/ui/separator";
+import { ButtonWithIcon } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
@@ -7,72 +17,56 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/ui/card";
-import { ArrowRightIcon, Mail, MapPin, Phone, User } from "lucide-react";
-import { useCheckoutSteps } from "../model/use-order";
-import { useOrderStore } from "@/entities/order";
-import { ShippingMethods } from "./shipping-methods";
-import { Form } from "@/shared/ui/form";
-import { Fieldset } from "@/shared/ui/fieldset";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "@/shared/ui/field";
-import { Input } from "@/shared/ui/input";
-import { Label } from "@/shared/ui/label";
-import { Separator } from "@/shared/ui/separator";
-import { Button, ButtonWithIcon } from "@/shared/ui/button";
 
 export function ShippingInformation() {
   const nextStep = useOrderStore((state) => state.nextStep);
   const validateStep = useOrderStore((state) => state.validateStep);
-  const currentStep = useOrderStore((state) => state.currentStep);
-  const isLoading = useOrderStore((state) => state.isLoading);
-  const selectedPaymentType = useOrderStore(
-    (state) => state.selectedPaymentType,
+  const getStep1ValidationMessage = useOrderStore(
+    (state) => state.getStep1ValidationMessage,
   );
-  const sameAsShipping = useOrderStore((state) => state.sameAsShipping);
-  const savePaymentMethod = useOrderStore((state) => state.savePaymentMethod);
-  const appliedPromo = useOrderStore((state) => state.appliedPromo);
-  const selectedShipping = useOrderStore((state) => state.selectedShipping);
   const shippingAddress = useOrderStore((state) => state.shippingAddress);
-  const paymentMethod = useOrderStore((state) => state.paymentMethod);
-  const setSelectedShipping = useOrderStore(
-    (state) => state.setSelectedShipping,
-  );
-
-  const calculateSummary = useOrderStore((state) => state.calculateSummary);
+  useOrderStore((state) => state.selectedShippingPath);
+  useCartStore((state) => state.cartItems);
   const handleAddressChange = useOrderStore(
     (state) => state.handleAddressChange,
   );
-  const handlePaymentChange = useOrderStore(
-    (state) => state.handlePaymentChange,
-  );
-  const removePromo = useOrderStore((state) => state.removePromo);
-  const summary = calculateSummary();
+
+  const isStepValid = validateStep(1);
+  const validationHint = getStep1ValidationMessage();
+
   return (
     <Card className="flex flex-col">
       <CardHeader>
         <CardTitle className="flex gap-3 items-center">
-          <MapPin className="h-5 w-5" />
+          <MapPin className="h-5 w-5" aria-hidden="true" />
           Информация о доставке
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <Form validationMode="onBlur">
+        <Form
+          validationMode="onBlur"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (isStepValid) nextStep();
+          }}
+        >
           <Fieldset>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <Field
                 labelPlacement="floating"
                 name="firstName"
                 requiredIndicator
               >
                 <FieldLabel>Имя</FieldLabel>
-                <Input autoComplete="given-name" required />
-                <FieldError match="valueMissing">
-                  Enter your first name.
-                </FieldError>
+                <Input
+                  autoComplete="given-name"
+                  required
+                  value={shippingAddress.firstName}
+                  onChange={(e) =>
+                    handleAddressChange("firstName", e.currentTarget.value)
+                  }
+                />
+                <FieldError match="valueMissing">Укажите имя.</FieldError>
               </Field>
               <Field
                 labelPlacement="floating"
@@ -80,57 +74,91 @@ export function ShippingInformation() {
                 requiredIndicator
               >
                 <FieldLabel>Фамилия</FieldLabel>
-                <Input autoComplete="family-name" required />
-                <FieldError match="valueMissing">
-                  Enter your last name.
-                </FieldError>
+                <Input
+                  autoComplete="family-name"
+                  required
+                  value={shippingAddress.lastName}
+                  onChange={(e) =>
+                    handleAddressChange("lastName", e.currentTarget.value)
+                  }
+                />
+                <FieldError match="valueMissing">Укажите фамилию.</FieldError>
               </Field>
-              <Field
-                labelPlacement="floating"
-                name="lastName"
-                requiredIndicator
-              >
+              <Field labelPlacement="floating" name="middleName">
                 <FieldLabel>Отчество</FieldLabel>
-                <Input autoComplete="family-name" />
-                <FieldError match="valueMissing">
-                  Enter your last name.
-                </FieldError>
+                <Input
+                  autoComplete="additional-name"
+                  value={shippingAddress.middleName}
+                  onChange={(e) =>
+                    handleAddressChange("middleName", e.currentTarget.value)
+                  }
+                />
               </Field>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Field labelPlacement="floating" name="phone" requiredIndicator>
                 <FieldLabel>Номер телефона</FieldLabel>
                 <Input
                   autoComplete="tel"
-                  placeholder="+49 123 4567"
+                  placeholder="+7 900 123-45-67"
                   required
                   type="tel"
+                  value={shippingAddress.phone}
+                  onChange={(e) =>
+                    handleAddressChange("phone", e.currentTarget.value)
+                  }
                 />
                 <FieldError match="valueMissing">
-                  Enter your phone number.
+                  Укажите номер телефона.
                 </FieldError>
               </Field>
-              <Field labelPlacement="floating" name="email">
+              <Field labelPlacement="floating" name="email" requiredIndicator>
                 <FieldLabel>Эл. Почта</FieldLabel>
-                <Input />
+                <Input
+                  autoComplete="email"
+                  type="email"
+                  required
+                  value={shippingAddress.email}
+                  onChange={(e) =>
+                    handleAddressChange("email", e.currentTarget.value)
+                  }
+                />
+                <FieldError match="valueMissing">
+                  Укажите электронную почту.
+                </FieldError>
+                <FieldError match="typeMismatch">
+                  Некорректный формат электронной почты.
+                </FieldError>
               </Field>
             </div>
+            <Field labelPlacement="floating" name="comment">
+              <FieldLabel>Комментарий к заказу</FieldLabel>
+              <Input
+                value={shippingAddress.comment}
+                onChange={(e) =>
+                  handleAddressChange("comment", e.currentTarget.value)
+                }
+              />
+            </Field>
           </Fieldset>
         </Form>
       </CardContent>
 
       <Separator />
 
-      <CardContent>
-        {/* Shipping Methods */}
+      <CardContent className="flex flex-col gap-4">
         <CardTitle>Как хотите получить заказ</CardTitle>
         <ShippingMethods />
       </CardContent>
 
-      <CardFooter>
+      <CardFooter className="flex flex-wrap items-center justify-between gap-3">
+        {validationHint && (
+          <p className="text-xs text-muted-foreground">{validationHint}</p>
+        )}
         <ButtonWithIcon
+          type="button"
           onClick={nextStep}
-          disabled={!validateStep(1)}
+          disabled={!isStepValid}
           className="ml-auto"
           variant="accent"
           size="lg"

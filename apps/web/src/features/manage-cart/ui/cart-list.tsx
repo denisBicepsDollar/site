@@ -1,14 +1,15 @@
 import { CartItem } from "./cart-item";
-import { getProductsByVariant } from "@/shared/api";
 
-export function CartList({variantsIds}) {
-    return (
-        <>
-            {
-                variantsIds.map(id => (
-                    <CartItem key={id} variantId={id}/>
-                ))
-            }
-        </>
-    )
+interface CartListProps {
+  variantsIds: string[];
+}
+
+export function CartList({ variantsIds }: CartListProps) {
+  return (
+    <>
+      {variantsIds.map((id) => (
+        <CartItem key={id} variantId={id} />
+      ))}
+    </>
+  );
 }
