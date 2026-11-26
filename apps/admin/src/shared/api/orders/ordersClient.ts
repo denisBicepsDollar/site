@@ -11,6 +11,10 @@ export const ordersClient = axios.create({
 ordersClient.interceptors.response.use(
     (response) => response,
     (error: unknown) => {
+        if (axios.isAxiosError(error) && error.response?.status === 401 && typeof window !== "undefined") {
+            window.dispatchEvent(new window.Event("admin:unauthorized"));
+        }
+
         const serverMessage = axios.isAxiosError(error)
             ? error.response?.data?.message ?? error.response?.data?.error ?? error.response?.data
             : undefined;

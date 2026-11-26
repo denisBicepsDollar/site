@@ -4,6 +4,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "@fontsource-variable/geist";
+@source "../../../packages/ui/src";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -32,6 +33,9 @@ input[type="number"]::-webkit-inner-spin-button {
     --color-accent: #0062ca;
     --color-accent2: #2ecc71;
     --color-danger: #ff4f6e;
+    --color-cream: #f7f3e9;
+    --color-forest: #14261b;
+    --color-clay: #bc6c44;
 
     /* Текст */
     --color-text: #333333;
@@ -119,150 +123,207 @@ input[type="number"]::-webkit-inner-spin-button {
    ОБЩАЯ СТРУКТУРА ПРИЛОЖЕНИЯ
    ───────────────────────────────────────────────────────────────────────── */
 
-.muted {
-    color: var(--color-muted);
-    font-family: var(--color-font2);
-    font-size: var(--color-font-size-etc);
-    margin: 0;
-    padding: 13px;
-}
+@layer components {
+    .muted {
+        color: var(--color-muted);
+        font-family: var(--color-font2);
+        font-size: var(--color-font-size-etc);
+        margin: 0;
+        padding: 13px;
+    }
 
-/* ─────────────────────────────────────────────────────────────────────────
-   КНОПКИ
-   ───────────────────────────────────────────────────────────────────────── */
+    /* ─────────────────────────────────────────────────────────────────────────
+       КНОПКИ
+       ───────────────────────────────────────────────────────────────────────── */
 
-/* Основная кнопка (создание, добавление) */
-.btn-accent {
-    font-family: var(--color-font2);
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    background: linear-gradient(180deg, var(--color-accent) 0%, #0052a3 100%);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 10px;
-    margin: 5px;
-    cursor: pointer;
-    transition: opacity 0.15s;
-    box-shadow: 0 2px 4px rgba(0, 102, 204, 0.25);
-}
+    /* Основная кнопка (создание, добавление, вход) */
+    .btn-accent {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        font-family: var(--color-font2);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.2;
+        letter-spacing: 0.02em;
+        background: linear-gradient(180deg, #007aff 0%, #0058bd 100%);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 16px;
+        margin: 0;
+        cursor: pointer;
+        transition: opacity 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+        box-shadow: 0 2px 8px rgba(0, 122, 255, 0.28);
+    }
 
-.btn-accent:hover {
-    opacity: 0.85;
-}
+    .btn-accent:hover:not(:disabled) {
+        opacity: 0.92;
+    }
 
-.btn-accent:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-}
+    .btn-accent:active:not(:disabled) {
+        transform: scale(0.985);
+    }
 
-/* Кнопка опасного действия (удаление) */
-.btn-danger {
-    font-family: var(--color-font2);
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, var(--color-danger) 0%, var(--color-danger-dark) 100%);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 10px;
-    margin: 5px;
-    cursor: pointer;
-    transition: opacity 0.15s;
-    box-shadow: 0 2px 4px rgba(0, 102, 204, 0.25);
-}
+    .btn-accent:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
 
-.btn-danger:hover {
-    opacity: 0.85;
-}
+    /* Кнопка опасного действия (удаление) */
+    .btn-danger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        font-family: var(--color-font2);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.2;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background: linear-gradient(180deg, var(--color-danger) 0%, var(--color-danger-dark) 100%);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 16px;
+        margin: 0;
+        cursor: pointer;
+        transition: opacity 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+        box-shadow: 0 2px 8px rgba(255, 59, 48, 0.25);
+    }
 
-.btn-danger:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-}
+    .btn-danger:hover:not(:disabled) {
+        opacity: 0.9;
+    }
 
-/* Кнопка успеха (скачивание, экспорт) */
-.btn-accent2 {
-    font-family: var(--color-font2);
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, var(--color-accent2) 0%, var(--color-accent2-dark) 100%);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 10px;
-    margin: 5px;
-    cursor: pointer;
-    transition: opacity 0.15s;
-    box-shadow: 0 2px 4px rgba(0, 102, 204, 0.25);
-}
+    .btn-danger:active:not(:disabled) {
+        transform: scale(0.985);
+    }
 
-.btn-accent2:hover {
-    opacity: 0.85;
-}
+    .btn-danger:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
 
-.btn-accent2:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-}
+    /* Кнопка успеха (скачивание, экспорт) */
+    .btn-accent2 {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        font-family: var(--color-font2);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.2;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background: linear-gradient(180deg, var(--color-accent2) 0%, var(--color-accent2-dark) 100%);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 16px;
+        margin: 0;
+        cursor: pointer;
+        transition: opacity 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+        box-shadow: 0 2px 8px rgba(46, 204, 113, 0.25);
+    }
 
-/* Информационная кнопка (доп. действия) */
-.btn-outline {
-    font-family: var(--color-font2);
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, var(--color-info) 0%, var(--color-info-dark) 100%);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 10px;
-    margin: 5px;
-    cursor: pointer;
-    transition: opacity 0.15s;
-    box-shadow: 0 2px 4px rgba(0, 102, 204, 0.25);
-}
+    .btn-accent2:hover:not(:disabled) {
+        opacity: 0.9;
+    }
 
-.btn-outline:hover {
-    opacity: 0.85;
-}
+    .btn-accent2:active:not(:disabled) {
+        transform: scale(0.985);
+    }
 
-.btn-outline:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-}
+    .btn-accent2:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
 
-/* Кнопка предупреждения (осторожно, замена) */
-.btn-warning {
-    font-family: var(--color-font2);
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, var(--color-warning) 0%, var(--color-warning-dark) 100%);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 10px;
-    margin: 5px;
-    cursor: pointer;
-    transition: opacity 0.15s;
-    box-shadow: 0 2px 4px rgba(0, 102, 204, 0.25);
-}
+    /* Информационная кнопка (доп. действия) */
+    .btn-outline {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        font-family: var(--color-font2);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.2;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background: linear-gradient(180deg, var(--color-info) 0%, var(--color-info-dark) 100%);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 16px;
+        margin: 0;
+        cursor: pointer;
+        transition: opacity 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+    }
 
-.btn-warning:hover {
-    opacity: 0.85;
-}
+    .btn-outline:hover:not(:disabled) {
+        opacity: 0.9;
+    }
 
-.btn-warning:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
+    .btn-outline:active:not(:disabled) {
+        transform: scale(0.985);
+    }
+
+    .btn-outline:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    /* Кнопка предупреждения (осторожно, замена) */
+    .btn-warning {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        font-family: var(--color-font2);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.2;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background: linear-gradient(180deg, var(--color-warning) 0%, var(--color-warning-dark) 100%);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 16px;
+        margin: 0;
+        cursor: pointer;
+        transition: opacity 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+    }
+
+    .btn-warning:hover:not(:disabled) {
+        opacity: 0.9;
+    }
+
+    .btn-warning:active:not(:disabled) {
+        transform: scale(0.985);
+    }
+
+    .btn-warning:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
 }
 
 @theme inline {

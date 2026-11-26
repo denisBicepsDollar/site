@@ -4,10 +4,18 @@ import {NavLink} from 'react-router-dom'
 const BASE_CLASSES = [
     'w-full h-11 rounded-xl flex items-center justify-start select-none cursor-pointer',
     'px-[18px] gap-3 overflow-hidden transition-all duration-300 ease-in-out',
-    'active:scale-[0.96] shrink-0',
+    'active:scale-[0.96] shrink-0 disabled:opacity-50 disabled:cursor-not-allowed',
 ].join(' ');
 
-export function AsideNavButton({icon: Icon, text, to = undefined, className = '', isExpanded, onClick = undefined}) {
+export function AsideNavButton({
+    icon: Icon,
+    text,
+    to = undefined,
+    className = '',
+    isExpanded,
+    onClick = undefined,
+    disabled = false,
+}) {
     const labelSpan = (
         <span
             className={`
@@ -27,6 +35,7 @@ export function AsideNavButton({icon: Icon, text, to = undefined, className = ''
         return (
             <button
                 type="button"
+                disabled={disabled}
                 onClick={onClick}
                 className={twMerge(BASE_CLASSES, 'text-[#8E8E93] hover:bg-white/5 hover:text-white', className)}
             >

@@ -19,7 +19,15 @@ export default function App() {
                     <Route
                         path="/"
                         element={
-                            <AccessControl type="public">
+                            <AccessControl key="public" type="public">
+                                <LoginForm/>
+                            </AccessControl>
+                        }
+                    />
+                    <Route
+                        path="/login"
+                        element={
+                            <AccessControl key="login" type="public">
                                 <LoginForm/>
                             </AccessControl>
                         }
@@ -27,7 +35,7 @@ export default function App() {
                     <Route
                         path="/dashboard"
                         element={
-                            <AccessControl type="private">
+                            <AccessControl key="private" type="private">
                                 <Dashboard/>
                             </AccessControl>
                         }

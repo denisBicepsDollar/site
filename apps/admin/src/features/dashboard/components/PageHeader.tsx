@@ -1,5 +1,5 @@
 import {Separator} from "@site/ui/separator";
-import {Notification} from "@/features/layout/notification/notification.tsx";
+// import {Notification} from "@/features/layout/notification/notification.tsx";
 
 export function PageHeader({title, description}) {
     return (
@@ -16,9 +16,9 @@ export function PageHeader({title, description}) {
                 </p>
             </div>
 
-            <div className="shrink-0 print:hidden">
+            {/* <div className="shrink-0 print:hidden">
                 <Notification />
-            </div>
+            </div> */}
         </header>
     )
 }

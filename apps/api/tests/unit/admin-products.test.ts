@@ -1,6 +1,6 @@
 import {after, before, describe, it} from "node:test";
 import assert from "node:assert/strict";
-import {existsSync} from "node:fs";
+import {existsSync, readFileSync} from "node:fs";
 import http from "node:http";
 import {dirname, join, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
@@ -11,9 +11,12 @@ process.env.SECRET_KEY ??= "unit-test-secret";
 const testDir = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(testDir, "../../../..");
 
+const {drizzle} = await import("drizzle-orm/node-postgres");
+const {relations} = await import("@drizzle/relations");
 const {default: db} = await import("@/db/index");
 const {default: pool} = await import("@/db/defaultClient");
 const {createApp} = await import("@/app");
+const productsController = await import("@/controllers/admin/productsController");
 const schema = await import("@drizzle/schema");
 
 const UUID_1 = "11111111-1111-4111-8111-111111111111";
@@ -354,7 +357,9 @@ describe("Admin Auth & Products API & Admin Mocks", () => {
     const setCookie = okRes.headers.get("set-cookie") ?? "";
     assert.match(setCookie, /token=/);
     assert.match(setCookie, /HttpOnly/i);
+    assert.match(setCookie, /Path=\//i);
     assert.doesNotMatch(setCookie, /;\s*Secure/i);
+    assert.match(okRes.headers.get("cache-control") ?? "", /no-store/i);
     authCookie = setCookie.split(";")[0] ?? "";
 
     const validNoCookie = await fetch(`${baseUrl}/auth/v1/validation`);
@@ -364,10 +369,13 @@ describe("Admin Auth & Products API & Admin Mocks", () => {
       headers: { Cookie: authCookie },
     });
     assert.equal(validWithCookie.status, 200);
+    assert.match(validWithCookie.headers.get("cache-control") ?? "", /no-store/i);
 
     const logoutRes = await fetch(`${baseUrl}/auth/v1/logout`, { method: "POST" });
     assert.equal(logoutRes.status, 200);
     assert.match(logoutRes.headers.get("set-cookie") ?? "", /token=;/);
+    assert.match(logoutRes.headers.get("set-cookie") ?? "", /Path=\//i);
+    assert.match(logoutRes.headers.get("cache-control") ?? "", /no-store/i);
   });
 
   it("supports admin product CRUD, validation, slug generation, and bulk actions", async () => {
@@ -504,5 +512,105 @@ describe("Admin Auth & Products API & Admin Mocks", () => {
     };
     const paths = dashboardNavigation.map((item) => item.to);
     assert.deepEqual(paths, ["/dashboard/products", "/dashboard/orders"]);
+  });
+
+  it("comments out notifications, restores UI button CSS layers, and isolates AccessControl state across routes", () => {
+    const pageHeader = readFileSync(join(rootDir, "apps/admin/src/features/dashboard/components/PageHeader.tsx"), "utf8");
+    const pageHeaderWithoutComments = pageHeader.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "");
+    assert.doesNotMatch(pageHeaderWithoutComments, /\bNotification\b/);
+
+    const indexCss = readFileSync(join(rootDir, "apps/admin/src/index.css"), "utf8");
+    assert.ok(indexCss.includes('@source "../../../packages/ui/src";'));
+    assert.ok(indexCss.includes("--color-cream:"));
+    assert.ok(indexCss.includes("--color-forest:"));
+    assert.ok(indexCss.includes("--color-clay:"));
+    assert.ok(indexCss.includes("@layer components"));
+    assert.ok(indexCss.indexOf("@layer components") < indexCss.indexOf(".btn-accent"));
+
+    const appTsx = readFileSync(join(rootDir, "apps/admin/src/app/app.tsx"), "utf8");
+    assert.ok(appTsx.includes('<AccessControl key="public" type="public">'));
+    assert.ok(appTsx.includes('<AccessControl key="login" type="public">'));
+    assert.ok(appTsx.includes('<AccessControl key="private" type="private">'));
+
+    const accessControl = readFileSync(join(rootDir, "apps/admin/src/shared/components/AccessControl.tsx"), "utf8");
+    assert.ok(accessControl.includes("authState.type === type ? authState.status : \"loading\""));
+  });
+});
+
+describe("Admin Products Drizzle SQL Compilation", () => {
+  it("uses aliased d0 column references in all Drizzle RQB list/getOne queries", async () => {
+    const origSelect = db.select.bind(db);
+    const origFindMany = db.query.productsInProducts.findMany.bind(db.query.productsInProducts);
+    const origFindFirst = db.query.productsInProducts.findFirst.bind(db.query.productsInProducts);
+
+    const executed: Array<{ label: string; sql: string }> = [];
+    let currentLabel = "";
+    const fakeClient = {
+      async query(q: any) {
+        const sqlText = typeof q === "string" ? q : q.text;
+        executed.push({ label: currentLabel, sql: sqlText });
+        return { rows: [], rowCount: 0, fields: [] };
+      },
+    };
+    const spyDrizzle = drizzle({ client: fakeClient as any, relations });
+    (db.query.productsInProducts as any).findMany =
+      spyDrizzle.query.productsInProducts.findMany.bind(spyDrizzle.query.productsInProducts);
+    (db.query.productsInProducts as any).findFirst =
+      spyDrizzle.query.productsInProducts.findFirst.bind(spyDrizzle.query.productsInProducts);
+    (db as any).select = spyDrizzle.select.bind(spyDrizzle);
+
+    try {
+      const queries = [
+        { label: "default", query: {} },
+        { label: "q+status+lowStock+name_asc", query: { q: "Монстера", status: "active", lowStock: "true", sortBy: "name", sortDirection: "asc" } },
+        { label: "sort_category_asc", query: { sortBy: "category", sortDirection: "asc" } },
+        { label: "sort_status_desc", query: { sortBy: "status", sortDirection: "desc" } },
+        { label: "sort_price_asc", query: { sortBy: "price", sortDirection: "asc" } },
+        { label: "sort_price_desc", query: { sortBy: "price", sortDirection: "desc" } },
+        { label: "sort_stock_asc", query: { sortBy: "stock", sortDirection: "asc" } },
+        { label: "sort_stock_desc", query: { sortBy: "stock", sortDirection: "desc" } },
+      ];
+
+      for (const item of queries) {
+        currentLabel = item.label;
+        const res = {
+          statusCode: 200,
+          status(code: number) { this.statusCode = code; return this; },
+          json() { return this; },
+        };
+        await productsController.list({ query: item.query, params: {} } as any, res as any);
+        assert.equal(res.statusCode, 200);
+      }
+
+      currentLabel = "getOne";
+      await productsController.getOne(
+        { params: { id: UUID_1 }, query: {} } as any,
+        { status() { return this; }, json() { return this; } } as any,
+      );
+
+      let rqbCount = 0;
+      for (const entry of executed) {
+        if (entry.sql.includes('as "d0"')) {
+          rqbCount++;
+          assert.equal(
+            entry.sql.includes('"products"."products".'),
+            false,
+            `Unaliased products.products reference in RQB query (${entry.label}): ${entry.sql}`,
+          );
+          assert.ok(entry.sql.includes('"d0".'), `Expected d0 alias in RQB query (${entry.label})`);
+        } else {
+          assert.equal(
+            entry.sql.includes('"d0".'),
+            false,
+            `Unexpected d0 alias in non-RQB query (${entry.label}): ${entry.sql}`,
+          );
+        }
+      }
+      assert.equal(rqbCount, queries.length + 1);
+    } finally {
+      (db as any).select = origSelect;
+      (db.query.productsInProducts as any).findMany = origFindMany;
+      (db.query.productsInProducts as any).findFirst = origFindFirst;
+    }
   });
 });
