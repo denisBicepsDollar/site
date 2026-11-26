@@ -1,9 +1,9 @@
 import { Suspense, type ReactNode } from "react";
 import { ProductsLayoutShell } from "@/pages-flat/products";
-import { getCatalogLabels } from "@/shared/api";
+import { getCachedCatalogLabels } from "@/shared/api/catalog-cache";
 
 async function ProductsLayoutLoader({ children }: { children: ReactNode }) {
-  const initialLabels = await getCatalogLabels({ noStore: true });
+  const initialLabels = await getCachedCatalogLabels();
 
   return (
     <ProductsLayoutShell initialLabels={initialLabels}>

@@ -1,8 +1,10 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { getPublicSiteUrl } from "@/shared/config/site";
 import {
   decodeRouteSegment,
+  getCategoryLabel,
   getCategoryPageTitle,
   getSubcategoryLabel,
   getTypeLabel,
@@ -21,6 +23,12 @@ export function ProductsHeader() {
   const type =
     segments[0] === "products" ? decodeRouteSegment(segments[3]) : undefined;
 
+  const categoryTitle = category
+    ? getCategoryPageTitle(category, labels)
+    : undefined;
+  const categoryShortLabel = category
+    ? getCategoryLabel(category, labels)
+    : undefined;
   const subcategoryTitle = subcategory
     ? getSubcategoryLabel(subcategory, labels)
     : undefined;
@@ -31,11 +39,53 @@ export function ProductsHeader() {
       ? `${subcategoryTitle} — ${typeTitle}`
       : typeTitle) ||
     subcategoryTitle ||
-    (category && getCategoryPageTitle(category, labels)) ||
+    categoryTitle ||
     "Все товары";
+
+  const siteUrl = getPublicSiteUrl();
+  const breadcrumbItems: Array<{ name: string; item: string }> = [
+    { name: "Главная", item: `${siteUrl}/` },
+    { name: "Каталог", item: `${siteUrl}/products` },
+  ];
+
+  if (category && categoryShortLabel) {
+    breadcrumbItems.push({
+      name: categoryShortLabel,
+      item: `${siteUrl}/products/${encodeURIComponent(category)}`,
+    });
+  }
+  if (category && subcategory && subcategoryTitle) {
+    breadcrumbItems.push({
+      name: subcategoryTitle,
+      item: `${siteUrl}/products/${encodeURIComponent(category)}/${encodeURIComponent(subcategory)}`,
+    });
+  }
+  if (category && subcategory && type && typeTitle) {
+    breadcrumbItems.push({
+      name: typeTitle,
+      item: `${siteUrl}/products/${encodeURIComponent(category)}/${encodeURIComponent(subcategory)}/${encodeURIComponent(type)}`,
+    });
+  }
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbItems.map((entry, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: entry.name,
+      item: entry.item,
+    })),
+  };
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <h1 className="text-3xl sm:text-4xl font-medium tracking-tight">
         {title}
       </h1>
