@@ -205,7 +205,7 @@ describe("Order API & Service & Repo integration", () => {
           method: "pickup",
           price: 999,
         },
-        payment: { method: "sbp" },
+        payment: { method: "email_confirmation" },
         items: [
           { variantId: VALID_UUID_1, quantity: 3 },
           { variantId: MISSING_UUID, quantity: 1 },
@@ -289,7 +289,7 @@ describe("Order API & Service & Repo integration", () => {
           address: "Москва, ул. Тверская, д. 1",
           price: 350,
         },
-        payment: { method: "sbp" },
+        payment: { method: "email_confirmation" },
         items: [
           { variantId: VALID_UUID_1, quantity: 1 },
           { variantId: VALID_UUID_1, quantity: 2 },
@@ -324,13 +324,31 @@ describe("Order API & Service & Repo integration", () => {
         method: "pickup",
         price: 500,
       },
-      payment: { method: "sbp" },
+      payment: { method: "email_confirmation" },
       items: [{ variantId: VALID_UUID_2, quantity: 1 }],
     });
     assert.equal(pickupResult.status, 201);
     if (pickupResult.status === 201) {
       assert.equal(pickupResult.data.deliveryPrice, 0);
       assert.equal(pickupResult.data.totalPrice, 2000);
+      assert.equal(pickupResult.data.paymentMethod, "email_confirmation");
+    }
+
+    // Verify disabled payment method (sbp) is rejected
+    const disabledPaymentResult = await orderService.createOrder({
+      customer: {
+        firstName: "Ольга",
+        lastName: "Смирнова",
+        phone: "89991112233",
+        email: "olga@example.com",
+      },
+      delivery: { method: "pickup" },
+      payment: { method: "sbp" },
+      items: [{ variantId: VALID_UUID_2, quantity: 1 }],
+    });
+    assert.equal(disabledPaymentResult.status, 400);
+    if (disabledPaymentResult.status === 400) {
+      assert.ok(disabledPaymentResult.error.fields?.paymentMethod);
     }
   });
 });

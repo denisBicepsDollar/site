@@ -49,6 +49,7 @@ export interface CreatedOrderRecord {
   pochtaTariffName: string | null;
   cdekTariffId: string | null;
   cdekTariffName: string | null;
+  paymentMethod?: string;
   comment: string | null;
   productsTotal: number;
   totalPrice: number;
@@ -152,7 +153,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   submitError: null,
   currentStep: 1,
   agreeToTerms: false,
-  selectedPaymentType: "sbp",
+  selectedPaymentType: "email_confirmation",
   selectedShippingPath: [],
   shippingAddress: initialAddress,
   deliveryMeta: initialDeliveryMeta,
@@ -160,8 +161,10 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
 
   setAgreeToTerms: (agree) => set({ agreeToTerms: agree, submitError: null }),
 
-  setSelectedPaymentType: (paymentType) =>
-    set({ selectedPaymentType: paymentType, submitError: null }),
+  setSelectedPaymentType: (paymentType) => {
+    if (paymentType !== "email_confirmation") return;
+    set({ selectedPaymentType: paymentType, submitError: null });
+  },
 
   setSelectedShippingPath: (path) => {
     const resolved = resolveShippingLeaf(path);
@@ -224,6 +227,12 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
 
     const shippingResolution = resolveShippingLeaf(selectedShippingPath);
     if (!shippingResolution.isComplete) {
+      if (selectedShippingPath[0] === "delivery") {
+        if (!selectedShippingPath[1]) {
+          return "Выберите службу доставки (Почта России или СДЭК)";
+        }
+        return "Выберите вариант доставки";
+      }
       return "Выберите способ получения заказа";
     }
 
@@ -244,7 +253,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
       case 1:
         return get().getStep1ValidationMessage() === null;
       case 2:
-        return Boolean(selectedPaymentType);
+        return selectedPaymentType === "email_confirmation";
       case 3:
         return (
           !isSubmitting &&
@@ -386,7 +395,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
       isSubmitting: false,
       submitError: null,
       createdOrder: null,
-      selectedPaymentType: "sbp",
+      selectedPaymentType: "email_confirmation",
       selectedShippingPath: [],
       shippingAddress: initialAddress,
       deliveryMeta: initialDeliveryMeta,

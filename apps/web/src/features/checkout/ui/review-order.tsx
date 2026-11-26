@@ -49,7 +49,11 @@ export function ReviewOrder() {
     .join(" ");
 
   const paymentLabel =
-    selectedPaymentType === "sbp" ? "Перевод по СБП" : selectedPaymentType;
+    selectedPaymentType === "email_confirmation"
+      ? "Оплата после подтверждения"
+      : selectedPaymentType === "sbp"
+        ? "Перевод по СБП"
+        : selectedPaymentType;
 
   return (
     <Card className="flex flex-col gap-6">
@@ -82,8 +86,12 @@ export function ReviewOrder() {
         {/* Payment Method */}
         <div className="flex flex-col gap-2">
           <h3 className="font-medium">Способ оплаты</h3>
-          <div className="text-sm text-muted-foreground p-3 bg-accent rounded-ele">
-            <p>{paymentLabel}</p>
+          <div className="text-sm text-muted-foreground p-3 bg-accent rounded-ele space-y-1">
+            <p className="font-medium text-foreground">{paymentLabel}</p>
+            <p>
+              На указанную почту ({shippingAddress.email}) придёт письмо с
+              подтверждением оформления заказа и дальнейшими деталями.
+            </p>
           </div>
         </div>
 

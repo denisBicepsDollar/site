@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, CreditCard } from "lucide-react";
+import { ChevronLeft, CreditCard, Mail } from "lucide-react";
 import { useOrderStore } from "@/entities/order";
 import {
   Card,
@@ -23,6 +23,7 @@ export function PaymentInformation() {
   const setSelectedPaymentType = useOrderStore(
     (state) => state.setSelectedPaymentType,
   );
+  const shippingAddress = useOrderStore((state) => state.shippingAddress);
 
   return (
     <Card>
@@ -39,12 +40,29 @@ export function PaymentInformation() {
         <RadioGroup
           value={selectedPaymentType}
           onValueChange={(value) => setSelectedPaymentType(String(value))}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+          className="grid grid-cols-1 gap-3"
         >
-          <Label variant="card">
-            <Radio id="payment-sbp" value="sbp" />
+          <Label variant="card" className="items-start gap-3">
+            <Radio id="payment-email" value="email_confirmation" className="mt-1" />
+            <Mail className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
+            <div className="flex flex-col gap-1">
+              <span className="font-medium">Оплата после подтверждения</span>
+              <span className="text-xs text-muted-foreground font-normal">
+                На указанную почту
+                {shippingAddress.email ? ` (${shippingAddress.email})` : ""}{" "}
+                придёт письмо с подтверждением оформления заказа и деталями
+                оплаты.
+              </span>
+            </div>
+          </Label>
+
+          <Label
+            variant="card"
+            className="items-center gap-3 opacity-55 cursor-not-allowed"
+          >
+            <Radio id="payment-sbp" value="sbp" disabled />
             <svg
-              className="w-5 h-5"
+              className="w-5 h-5 shrink-0"
               viewBox="0 0 97 120"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +101,12 @@ export function PaymentInformation() {
                 fill="#984995"
               />
             </svg>
-            Перевод по СБП
+            <div className="flex flex-col gap-0.5">
+              <span>Перевод по СБП</span>
+              <span className="text-xs text-muted-foreground font-normal">
+                Скоро будет доступно
+              </span>
+            </div>
           </Label>
         </RadioGroup>
       </CardContent>
