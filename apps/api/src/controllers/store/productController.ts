@@ -100,7 +100,10 @@ export async function getOneProduct(req: Request, res: Response) {
   getLogger(moduleName).child({
     function: "getOne",
   });
-  const slug = String(req.params.slug ?? "");
+  const slug = String(req.params.slug ?? "").trim();
+  if (!slug) {
+    return res.status(404).json({ error: "Product not found" });
+  }
   const product = await productService.getOneProduct(slug);
   if (!product) {
     return res.status(404).json({ error: "Product not found" });

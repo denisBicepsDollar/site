@@ -78,16 +78,27 @@ export async function getProductsByVariant(variantIds: Array<string | number>) {
   }
 
   try {
-    const varIds = variantIds.map(
-      (variantId) => `variantId=${encodeURIComponent(String(variantId))}`,
+    const varIds = variantIds
+      .map((id) => String(id).trim())
+      .filter(Boolean)
+      .map((variantId) => `variantId=${encodeURIComponent(variantId)}`);
+
+    if (varIds.length === 0) {
+      return { data: [] };
+    }
+
+    const isBrowser = typeof window !== "undefined";
+    const baseUrl = isBrowser
+      ? "/api/products/variants/by-ids"
+      : `${getBackendUrl()}/api/v1/products/variants/by-ids`;
+    const url = `${baseUrl}?${varIds.join("&")}`;
+
+    const res = await fetch(
+      url,
+      isBrowser
+        ? { cache: "no-store", signal: AbortSignal.timeout(8000) }
+        : { next: { revalidate: 60 }, signal: AbortSignal.timeout(8000) },
     );
-    const url =
-      `${getBackendUrl()}/api/v1/products/variants/by-ids?` +
-      varIds.join("&");
-    const res = await fetch(url, {
-      next: { revalidate: 60 },
-      signal: AbortSignal.timeout(8000),
-    });
     if (!res.ok) return { data: [] };
     const products = { data: await res.json() };
     return products;

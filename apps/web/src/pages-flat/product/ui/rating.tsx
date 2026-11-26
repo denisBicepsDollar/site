@@ -1,21 +1,24 @@
-'use client';;
-import { Star, StarHalf } from 'lucide-react';
-import { cn } from "cn";
+"use client";
+
+import { Star, StarHalf } from "lucide-react";
+import { cn } from "@/siteplane/system/utils/cn";
 
 const MAX_STARS = 5;
 
-const Rating = ({
-  rate,
-  className,
-  showScore,
-  description
-}) => {
-  if (!rate) return;
+export interface RatingProps {
+  rate: number;
+  className?: string;
+  showScore?: boolean;
+  description?: string;
+}
+
+const Rating = ({ rate, className, showScore, description }: RatingProps) => {
+  if (!rate) return null;
 
   const renderStars = () => {
     const fullStars = Math.floor(rate);
     const hasHalfStar = rate % 1 >= 0.5;
-    const emptyStars = MAX_STARS - fullStars - (hasHalfStar ? 1 : 0);
+    const emptyStars = Math.max(0, MAX_STARS - fullStars - (hasHalfStar ? 1 : 0));
 
     const stars = [];
 
@@ -49,12 +52,11 @@ const Rating = ({
     return stars;
   };
 
-  // If only score is shown (no description), use horizontal layout
   if (showScore && !description) {
     return (
       <div
         className={cn(
-          'flex items-center gap-2 [&_svg]:size-5 [&>div]:size-5',
+          "flex items-center gap-2 [&_svg]:size-5 [&>div]:size-5",
           className,
         )}
       >
@@ -64,10 +66,9 @@ const Rating = ({
     );
   }
 
-  // If description is provided, use vertical layout
   if (description) {
     return (
-      <div className={cn('flex flex-col gap-1', className)}>
+      <div className={cn("flex flex-col gap-1", className)}>
         <div className="flex items-center gap-2 [&_svg]:size-5 [&>div]:size-5">
           {renderStars()}
           {showScore && (
@@ -79,11 +80,10 @@ const Rating = ({
     );
   }
 
-  // Default: just stars
   return (
     <div
       className={cn(
-        'flex items-center gap-1 [&_svg]:size-5 [&>div]:size-5',
+        "flex items-center gap-1 [&_svg]:size-5 [&>div]:size-5",
         className,
       )}
     >

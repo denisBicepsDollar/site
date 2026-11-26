@@ -17,9 +17,17 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
+function decodeSlugParam(raw: string): string {
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const decodedSlug = decodeURIComponent(slug);
+  const decodedSlug = decodeSlugParam(slug);
   const { data: product, isError } = await getCachedProductBySlug(decodedSlug);
 
   if (isError) {
@@ -65,27 +73,36 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 async function ProductLoader({ params }: PageProps) {
   const { slug } = await params;
-  const decodedSlug = decodeURIComponent(slug);
+  const decodedSlug = decodeSlugParam(slug);
 
-  const [
-    { data: product, isError },
-    { data: products, meta },
-    fallbackLabels,
-  ] = await Promise.all([
-    getCachedProductBySlug(decodedSlug),
-    getCachedCatalogProducts({ page: "1" }),
-    getCachedCatalogLabels(),
-  ]);
+  const { data: product, isError } = await getCachedProductBySlug(decodedSlug);
 
   if (!isError && !product) {
     notFound();
   }
 
-  const labels = meta?.labels ?? fallbackLabels;
-
   if (!product) {
-    return <ProductScreen product={null} products={[]} labels={labels} />;
+    return (
+      <ProductScreen
+        key={decodedSlug}
+        product={null}
+        products={[]}
+        labels={{}}
+        isError={isError}
+      />
+    );
   }
+
+  const [{ data: categoryProducts, meta }, fallbackLabels] = await Promise.all([
+    getCachedCatalogProducts(
+      product.category
+        ? { category: product.category, page: "1" }
+        : { page: "1" },
+    ),
+    getCachedCatalogLabels(),
+  ]);
+
+  const labels = meta?.labels ?? fallbackLabels;
 
   const siteUrl = getSiteUrl();
   const productUrl = `${siteUrl}/product/${encodeURIComponent(product.slug || decodedSlug)}`;
@@ -94,8 +111,15 @@ async function ProductLoader({ params }: PageProps) {
     ? rawImage
     : `${siteUrl}${rawImage.startsWith("/") ? rawImage : `/${rawImage}`}`;
   const variants = Array.isArray(product.variants) ? product.variants : [];
-  const hasStock = variants.some((v: any) => Number(v?.stock ?? 0) > 0);
-  const effectivePrice = Number(variants[0]?.price ?? product.price ?? 0);
+  const inStockVariants = variants.filter((v: any) => Number(v?.stock ?? 0) > 0);
+  const hasStock = inStockVariants.length > 0;
+  const priceCandidates = (inStockVariants.length > 0 ? inStockVariants : variants)
+    .map((v: any) => Number(v?.price))
+    .filter((p: number) => Number.isFinite(p) && p > 0);
+  const effectivePrice =
+    priceCandidates.length > 0
+      ? Math.min(...priceCandidates)
+      : Number(product.price ?? 0);
 
   const breadcrumbItems: Array<{ name: string; item: string }> = [
     { name: "Главная", item: `${siteUrl}/` },
@@ -161,8 +185,9 @@ async function ProductLoader({ params }: PageProps) {
         }}
       />
       <ProductScreen
+        key={product.id ?? decodedSlug}
         product={product}
-        products={products ?? []}
+        products={categoryProducts ?? []}
         labels={labels}
       />
     </>
