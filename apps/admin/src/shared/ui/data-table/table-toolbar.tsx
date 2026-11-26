@@ -102,7 +102,7 @@ export function ProductSummary({table, meta = undefined}) {
     );
 }
 
-export function TableToolbar({table, statusesInfo, action, meta = undefined, onExport = undefined}) {
+export function TableToolbar({table, statusesInfo, action, meta = undefined, onExport = undefined, isExporting = false}) {
     const activeTab = getOptionalColumn(table, "status")?.getFilterValue() || "all";
     const searchValue = String(table.state?.globalFilter ?? "");
 
@@ -140,13 +140,13 @@ export function TableToolbar({table, statusesInfo, action, meta = undefined, onE
                                     transition-all duration-200
                                     active:scale-[0.97]
 
-                                    data-[state=active]:bg-white
-                                    data-[state=active]:text-[#1C1C1E]
-                                    data-[state=active]:shadow-[0_2px_8px_rgba(0,0,0,0.08)]
+                                    data-active:bg-white
+                                    data-active:text-[#1C1C1E]
+                                    data-active:shadow-[0_2px_8px_rgba(0,0,0,0.08)]
 
-                                    dark:data-[state=active]:bg-[#2C2C2E]
-                                    dark:data-[state=active]:text-white
-                                    dark:data-[state=active]:shadow-none
+                                    dark:data-active:bg-[#2C2C2E]
+                                    dark:data-active:text-white
+                                    dark:data-active:shadow-none
                                 "
                             >
                                 <span className="whitespace-nowrap">{statusLabels[label] ?? label}</span>
@@ -191,6 +191,7 @@ export function TableToolbar({table, statusesInfo, action, meta = undefined, onE
                             <Button
                                 type="button"
                                 variant="outline"
+                                disabled={isExporting}
                                 onClick={() => onExport(table.getFilteredRowModel().rows.map(r => r.original))}
                                 className="
                                     h-11 rounded-xl gap-2 font-medium border-[#E5E5EA] dark:border-[#2C2C2E]
@@ -198,7 +199,7 @@ export function TableToolbar({table, statusesInfo, action, meta = undefined, onE
                                 "
                             >
                                 <Upload className="h-4 w-4 text-[#007AFF]"/>
-                                Экспорт
+                                {isExporting ? "Экспорт..." : "Экспорт"}
                             </Button>
                         )}
 

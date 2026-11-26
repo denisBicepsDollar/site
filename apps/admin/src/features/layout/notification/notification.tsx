@@ -22,13 +22,13 @@ export function Notification() {
     const navigate = useNavigate();
 
     const ordersQuery = useQuery({
-        queryKey: ["admin", "notifications", "orders"],
+        queryKey: ["admin", "orders"],
         queryFn: ordersApi.list,
         staleTime: 30_000,
     });
 
     const lowStockQuery = useQuery({
-        queryKey: ["admin", "notifications", "low-stock"],
+        queryKey: ["admin-products", "notifications-low-stock"],
         queryFn: () =>
             productsApi.list({
                 page: 0,
@@ -49,7 +49,7 @@ export function Notification() {
             .map((order) => ({
                 id: `order-${order.id}`,
                 title: `Новый заказ ${order.orderNumber}`,
-                text: `${order.customer.name} · ${order.summary.totalPrice} ₽`,
+                text: `${order.customer.name} · ${new Intl.NumberFormat("ru-RU").format(order.summary.totalPrice)} ₽`,
                 time: order.createdAt ? new Date(order.createdAt).toLocaleDateString("ru-RU") : "",
                 type: "order" as const,
                 href: `/dashboard/orders/${order.id}`,
@@ -119,6 +119,7 @@ export function Notification() {
         <div ref={containerRef} className="relative inline-flex">
             <button
                 type="button"
+                aria-expanded={isOpen}
                 onClick={() => setIsOpen(!isOpen)}
                 title="Уведомления"
                 className={`
@@ -147,6 +148,7 @@ export function Notification() {
             </button>
 
             <div
+                aria-hidden={!isOpen}
                 className={`
                     fixed md:absolute z-50 flex flex-col overflow-hidden
                     bg-white/90 dark:bg-[#1C1C1E]/95 backdrop-blur-xl
@@ -154,9 +156,9 @@ export function Notification() {
                     shadow-[0_10px_40px_rgba(0,0,0,0.15)]
                     transition-all duration-300 ease-in-out
                     inset-x-4 bottom-4 rounded-[24px] max-h-[80vh]
-                    ${isOpen ? "translate-y-0 opacity-100" : "translate-y-[110%] opacity-0 md:translate-y-2"}
+                    ${isOpen ? "translate-y-0 opacity-100 pointer-events-auto" : "pointer-events-none translate-y-[110%] opacity-0 md:translate-y-2"}
                     md:inset-auto md:right-0 md:top-14 md:bottom-auto md:w-[360px] md:rounded-[20px]
-                    ${isOpen ? "md:scale-100 md:opacity-100" : "md:scale-95 md:opacity-0 md:pointer-events-none"}
+                    ${isOpen ? "md:scale-100 md:opacity-100" : "md:scale-95 md:opacity-0"}
                 `}
             >
                 <div

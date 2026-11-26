@@ -42,5 +42,5 @@ export function downloadProductsCsv(products: Array<Record<string, any>>) {
     link.href = url;
     link.download = "catalog.csv";
     link.click();
-    URL.revokeObjectURL(url);
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

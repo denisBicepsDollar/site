@@ -4,10 +4,11 @@ import {PageHeader} from "../dashboard/components/PageHeader.tsx";
 import {DataTable} from "@/shared/ui/data-table/data-table.tsx";
 import {createProductColumns} from "./list/model/columns.tsx";
 import {Button} from "@site/ui/button";
+import {ConfirmDialog} from "@site/ui/confirm-dialog";
 import {Plus} from 'lucide-react';
 import {useNavigate} from "react-router-dom";
 import {useProductsList} from "@/features/products/list/model/useProductsList.ts";
-import {productsApi, type ProductsQuery} from "@/shared/api/products/productsApi.ts";
+import {productsApi, type AdminProduct, type ProductsQuery} from "@/shared/api/products/productsApi.ts";
 import {downloadProductsCsv} from "@/features/products/list/model/exportProducts.ts";
 
 const initialQuery: ProductsQuery = {page: 0, pageSize: 8, q: "", status: "all", sortBy: "createdAt", sortDirection: "desc"};
@@ -15,6 +16,8 @@ const initialQuery: ProductsQuery = {page: 0, pageSize: 8, q: "", status: "all",
 export function ProductListPage() {
     const [query, setQuery] = useState(initialQuery);
     const [actionError, setActionError] = useState<string | null>(null);
+    const [pendingDeleteProduct, setPendingDeleteProduct] = useState<{id: string; name?: string} | null>(null);
+    const [isExporting, setIsExporting] = useState(false);
     const queryClient = useQueryClient();
     const {data, isLoading, isFetching, isError, error, refetch} = useProductsList(query);
 
@@ -59,11 +62,8 @@ export function ProductListPage() {
     });
 
     const handleDeleteProduct = useCallback((product: {id: string; name?: string}) => {
-        if (!window.confirm(`Удалить товар «${product.name || "Без названия"}»? Действие нельзя отменить.`)) {
-            return;
-        }
-        deleteMutation.mutate(product.id);
-    }, [deleteMutation]);
+        setPendingDeleteProduct(product);
+    }, []);
 
     const columns = useMemo(
         () => createProductColumns({onDeleteProduct: handleDeleteProduct}),
@@ -71,20 +71,39 @@ export function ProductListPage() {
     );
 
     const handleExport = useCallback(async () => {
+        if (isExporting) return;
+        setIsExporting(true);
+        setActionError(null);
         try {
-            const exportPage = await productsApi.list({...query, page: 0, pageSize: 100});
-            downloadProductsCsv(exportPage.data);
-        } catch {
-            downloadProductsCsv(data?.data ?? []);
+            const allRows: AdminProduct[] = [];
+            let currentPage = 0;
+            let pageCount = 1;
+            const maxPages = 50;
+            do {
+                const exportPage = await productsApi.list({...query, page: currentPage, pageSize: 100});
+                allRows.push(...exportPage.data);
+                pageCount = Math.max(1, exportPage.meta.pageCount || 1);
+                currentPage += 1;
+            } while (currentPage < pageCount && currentPage < maxPages);
+
+            downloadProductsCsv(allRows);
+        } catch (err) {
+            if (data?.data?.length) {
+                downloadProductsCsv(data.data);
+            } else {
+                setActionError(err instanceof Error ? err.message : "Не удалось экспортировать товары");
+            }
+        } finally {
+            setIsExporting(false);
         }
-    }, [query, data]);
+    }, [query, data, isExporting]);
 
     return (
         <div className="w-full px-4 pb-10 sm:px-6 lg:px-8">
             <PageHeader title="Товары" description="Каталог, варианты и остатки" />
 
             {actionError && (
-                <p role="alert" className="mt-4 rounded-xl bg-[#FF3B30]/10 px-4 py-2.5 text-sm font-medium text-[#D70015]">
+                <p role="alert" className="mt-4 rounded-xl bg-[#FF3B30]/10 px-4 py-2.5 text-sm font-medium text-[#D70015] dark:bg-[#FF453A]/15 dark:text-[#FF6961]">
                     {actionError}
                 </p>
             )}
@@ -94,7 +113,7 @@ export function ProductListPage() {
             )}
 
             {isError && (
-                <div role="alert" className="mt-6 flex flex-wrap items-center gap-3 rounded-xl bg-[#FF3B30]/10 p-4 text-sm text-[#D70015]">
+                <div role="alert" className="mt-6 flex flex-wrap items-center gap-3 rounded-xl bg-[#FF3B30]/10 p-4 text-sm text-[#D70015] dark:bg-[#FF453A]/15 dark:text-[#FF6961]">
                     <span>Произошла ошибка: {error.message}</span>
                     <Button type="button" variant="outline" size="sm" onClick={() => refetch()}>
                         Повторить
@@ -112,6 +131,7 @@ export function ProductListPage() {
                         onQueryChange={handleQueryChange}
                         isFetching={isFetching}
                         onExport={handleExport}
+                        isExporting={isExporting}
                         onBulkStatusChange={(ids, status) => bulkStatusMutation.mutateAsync({ids, status})}
                         onBulkDelete={(ids) => bulkDeleteMutation.mutateAsync(ids)}
                         isBulkPending={bulkStatusMutation.isPending || bulkDeleteMutation.isPending || deleteMutation.isPending}
@@ -119,6 +139,24 @@ export function ProductListPage() {
                     {isFetching && <div aria-live="polite" className="sr-only">Обновление списка товаров</div>}
                 </section>
             )}
+
+            <ConfirmDialog
+                open={Boolean(pendingDeleteProduct)}
+                onOpenChange={(open) => {
+                    if (!open) setPendingDeleteProduct(null);
+                }}
+                title="Удалить товар?"
+                description={`Товар «${pendingDeleteProduct?.name || "Без названия"}» будет удалён без возможности восстановления.`}
+                cancelLabel="Отмена"
+                confirmLabel="Удалить"
+                destructive
+                onConfirm={() => {
+                    if (pendingDeleteProduct) {
+                        deleteMutation.mutate(pendingDeleteProduct.id);
+                    }
+                    setPendingDeleteProduct(null);
+                }}
+            />
         </div>
     );
 }

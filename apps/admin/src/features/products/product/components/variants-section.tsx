@@ -9,6 +9,7 @@ import {VariantRow} from "./variant-row.tsx";
 export function VariantsSection({
                                     variants,
                                     sizePresets,
+                                    uploadError = null,
                                     onAddVariant,
                                     onUpdateVariant,
                                     onRemoveVariant,
@@ -33,11 +34,17 @@ export function VariantsSection({
                     </Badge>
                 </div>
 
+                {uploadError && (
+                    <div role="alert" className="rounded-xl bg-[#FF3B30]/10 px-3.5 py-2 text-xs font-medium text-[#D70015] dark:bg-[#FF453A]/15 dark:text-[#FF6961]">
+                        {uploadError}
+                    </div>
+                )}
+
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-                    <div className="flex w-full flex-col gap-2.5 rounded-2xl p-3.5 sm:w-auto flex-1 bg-zinc-100 border">
+                    <div className="flex w-full flex-col gap-2.5 rounded-2xl border border-black/[0.06] bg-zinc-100 p-3.5 sm:w-auto flex-1 dark:border-white/[0.08] dark:bg-[#2C2C2E]">
                         <div
-                            className="flex items-center gap-2 text-sm  text-zinc-500 ">
+                            className="flex items-center gap-2 text-sm text-zinc-500 dark:text-[#AEAEB2]">
                             <Sparkles className="h-4 w-4 shrink-0 text-blue-500"/>
                             <span>Быстро добавить варианты</span>
                         </div>
@@ -76,6 +83,7 @@ export function VariantsSection({
                             <VariantRow
                                 key={variant.clientId}
                                 variant={variant}
+                                uploadError={uploadError}
                                 onUpdate={(patch) => onUpdateVariant(index, patch)}
                                 onRemove={() => onRemoveVariant(index)}
                                 onRemovePhoto={(imageIndex) => onRemovePhoto(index, imageIndex)}

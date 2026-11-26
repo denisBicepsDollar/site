@@ -14,7 +14,9 @@ interface MessagesResponse {
 }
 
 async function list(): Promise<AdminMessage[]> {
-    const response = await productsClient.get<MessagesResponse>("/../messages");
+    const response = await productsClient.get<MessagesResponse>("", {
+        baseURL: "/api/v1/admin/messages",
+    });
     return Array.isArray(response.data?.data) ? response.data.data : [];
 }
 

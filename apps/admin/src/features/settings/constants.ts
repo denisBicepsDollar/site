@@ -1,7 +1,7 @@
 import {Bell} from "lucide-react";
 
 export const DEFAULT_SETTINGS = {
-    notificationEmail: "admin@nordgoods.com",
+    notificationEmail: "admin@zelenyeusy.ru",
     notifyNewOrders: true,
     notifyMessages: true,
     notifyLowStock: false,

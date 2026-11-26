@@ -31,6 +31,7 @@ export function CoverPanel({cover, onOpen, onUpload, onRemove}) {
                         fluid
                         onOpen={onOpen}
                         onRemove={onRemove}
+                        removeLabel="Удалить обложку"
                         openLabel="Просмотр"
                     />
                 ) : (
@@ -38,17 +39,18 @@ export function CoverPanel({cover, onOpen, onUpload, onRemove}) {
                     <label className="
                         flex aspect-square w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl
                         border border-dashed border-zinc-300 bg-zinc-100 p-4 text-center
+                        dark:border-white/[0.12] dark:bg-[#2C2C2E]
                     ">
                         <div
-                            className="rounded-full  p-3 text-zinc-500 shadow-sm">
+                            className="rounded-full p-3 text-zinc-500 shadow-sm dark:text-[#AEAEB2]">
                             <ImageIcon className="size-6" aria-hidden="true"/>
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <span className="text-sm font-medium text-[#6E6E73]">
+                            <span className="text-sm font-medium text-[#6E6E73] dark:text-[#AEAEB2]">
                                 Обложка не выбрана
                             </span>
-                            <span className="max-w-[180px] text-xs text-zinc-400 ">
+                            <span className="max-w-[180px] text-xs text-zinc-400 dark:text-[#8E8E93]">
                                 Выберите фото из списка или загрузите файл
                             </span>
                         </div>

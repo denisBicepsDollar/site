@@ -1,7 +1,5 @@
 "use client"
 
-import * as React from "react"
-
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,11 +13,17 @@ import {
 } from "@/shared/ui/layout/aside/sidebar.tsx"
 import {GalleryVerticalEndIcon, ChevronsUpDownIcon, CheckIcon} from "lucide-react"
 
+export interface VersionSwitcherProps {
+    versions: string[]
+    selectedVersion: string
+    onSelect: (version: string) => void
+}
+
 export function VersionSwitcher({
-                                    versions,
-                                    selectedVersion,
-                                    onSelect,
-                                }) {
+    versions,
+    selectedVersion,
+    onSelect,
+}: VersionSwitcherProps) {
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -48,9 +52,7 @@ export function VersionSwitcher({
                     <DropdownMenuContent align="start">
                         {versions.map((version) => (
                             <DropdownMenuItem
-                                className={""}
                                 key={version}
-                                value={version}
                                 onClick={() => onSelect(version)}
                             >
                                 {version}

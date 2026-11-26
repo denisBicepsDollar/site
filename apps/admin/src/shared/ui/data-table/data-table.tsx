@@ -19,6 +19,7 @@ import {
     rowSortingFeature,
     tableFeatures,
     rowPaginationFeature,
+    type RowSelectionState,
 } from "@tanstack/react-table"
 
 import {useAtom, useCreateAtom, useSelector} from "@tanstack/react-store"
@@ -27,7 +28,7 @@ import {TablePagination} from "./table-pagination.tsx"
 import {SelectedRowsBar} from "./selected-rows-bar.tsx"
 import {TableToolbar} from "./table-toolbar.tsx"
 import {cn} from "@site/ui/lib/utils";
-import {useEffect, useMemo} from "react";
+import {useEffect, useMemo, useRef} from "react";
 
 const features = tableFeatures({
     rowSelectionFeature,
@@ -59,6 +60,7 @@ export function DataTable({
                               onQueryChange = undefined,
                               isFetching = false,
                               onExport = undefined,
+                              isExporting = false,
                               onBulkStatusChange = undefined,
                               onBulkDelete = undefined,
                               isBulkPending = false,
@@ -86,12 +88,12 @@ export function DataTable({
         return () => window.removeEventListener("resize", handleResize);
     }, [setPagination]);
 
-    const rowSelectionAtom = useCreateAtom({})
+    const rowSelectionAtom = useCreateAtom<RowSelectionState>({})
     const sortingAtom = useCreateAtom([])
     const columnFiltersAtom = useCreateAtom([])
     const globalFilterAtom = useCreateAtom("")
 
-    const rowSelection = useSelector(rowSelectionAtom)
+    const [rowSelection, setRowSelection] = useAtom(rowSelectionAtom)
     const selectedIds = useMemo(
         () => Object.entries(rowSelection).filter(([, selected]) => Boolean(selected)).map(([id]) => id),
         [rowSelection],
@@ -105,10 +107,46 @@ export function DataTable({
     const columnFilters = useSelector(columnFiltersAtom)
 
     useEffect(() => {
-        setPagination((current) => current.pageIndex === 0 ? current : {...current, pageIndex: 0})
-    }, [globalFilter, sorting, columnFilters, setPagination])
+        const validIds = new Set(data.map((row, index) => String((row as {id?: string | number}).id ?? index)));
+        setRowSelection((prev) => {
+            const entries = Object.entries(prev);
+            if (entries.length === 0) return prev;
+            let changed = false;
+            const next: RowSelectionState = {};
+            for (const [key, selected] of entries) {
+                if (selected && validIds.has(key)) {
+                    next[key] = true;
+                } else if (selected) {
+                    changed = true;
+                }
+            }
+            return changed ? next : prev;
+        });
+    }, [data, setRowSelection]);
 
     useEffect(() => {
+        if (!isServerMode || !meta) return;
+        const pageCount = Math.max(1, Number(meta.pageCount || 1));
+        if (pagination.pageIndex >= pageCount) {
+            setPagination((prev) => ({...prev, pageIndex: pageCount - 1}));
+        }
+    }, [isServerMode, meta, pagination.pageIndex, setPagination]);
+
+    const filterSig = useMemo(
+        () => JSON.stringify({sorting, globalFilter, columnFilters}),
+        [sorting, globalFilter, columnFilters],
+    );
+    const prevFilterSigRef = useRef(filterSig);
+
+    useEffect(() => {
+        const filtersChanged = prevFilterSigRef.current !== filterSig;
+        if (filtersChanged) {
+            prevFilterSigRef.current = filterSig;
+            if (pagination.pageIndex !== 0) {
+                setPagination((current) => ({...current, pageIndex: 0}));
+                return;
+            }
+        }
         if (!onQueryChange) return;
         const timer = window.setTimeout(() => {
             const status = columnFilters.find(({id}) => id === "status")?.value ?? "all"
@@ -123,7 +161,7 @@ export function DataTable({
             })
         }, globalFilter ? 250 : 0)
         return () => window.clearTimeout(timer)
-    }, [pagination, sorting, globalFilter, columnFilters, onQueryChange])
+    }, [filterSig, pagination, sorting, globalFilter, columnFilters, onQueryChange, setPagination])
 
     const table = useTable({
         features,
@@ -145,7 +183,7 @@ export function DataTable({
 
     const statusesInfo = useMemo(() => {
         if (!meta?.statusCounts) {
-            return getUniqueStatuses(table.options.data)
+            return getUniqueStatuses(table.options.data as ReadonlyArray<{status?: string | null}>)
         }
         const counts = meta.statusCounts as Record<string, number>
         const totalAll = Object.values(counts).reduce((sum, value) => sum + Number(value || 0), 0)
@@ -174,6 +212,7 @@ export function DataTable({
                 action={action}
                 meta={meta}
                 onExport={onExport}
+                isExporting={isExporting}
             />
 
             <div className="
@@ -206,7 +245,7 @@ export function DataTable({
                                                                 ? "justify-center"
                                                                 : cn(
                                                                     "gap-1 rounded-md px-2 justify-between py-1 transition-colors duration-150",
-                                                                    header.column.getCanSort() && "cursor-pointer hover:bg-black/5 active:bg-black/10",
+                                                                    header.column.getCanSort() && "cursor-pointer hover:bg-black/5 active:bg-black/10 dark:hover:bg-white/10",
                                                                 )
                                                         )}
                                                         onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}

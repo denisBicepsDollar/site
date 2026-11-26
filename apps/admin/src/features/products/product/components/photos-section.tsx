@@ -59,10 +59,11 @@ export function PhotosSection({
                                         return priority(a.src) - priority(b.src)
                                     })
 
+                                const variantLabel = variant.name?.trim() || "Стандарт"
                                 return (
                                     <div key={variant.clientId} className="flex min-w-0 flex-col gap-3">
                                         <h3 className="text-center md:text-left text-sm font-semibold  text-[#1C1C1E] dark:text-white">
-                                            Фотографии {variant.name}
+                                            Фотографии · {variantLabel}
                                         </h3>
 
                                         <div
@@ -74,18 +75,18 @@ export function PhotosSection({
                                                 let badgeText = null
 
                                                 if (isProductCover && isVariantCover) {
-                                                    badgeText = `Обложка товара и ${variant.name}`
+                                                    badgeText = `Обложка товара и ${variantLabel}`
                                                 } else if (isProductCover) {
                                                     badgeText = "Обложка товара"
                                                 } else if (isVariantCover) {
-                                                    badgeText = `Обложка ${variant.name}`
+                                                    badgeText = `Обложка ${variantLabel}`
                                                 }
 
                                                 return (
                                                     <PhotoTile
-                                                        key={`${variant.clientId}-${imageIndex}`}
+                                                        key={`${variant.clientId}-${src}-${imageIndex}`}
                                                         src={src}
-                                                        alt={`Фото ${variant.name}`}
+                                                        alt={`Фото ${variantLabel}`}
                                                         badge={badgeText}
                                                         onOpen={() => onOpenPhoto(index, imageIndex)}
                                                         onRemove={() => onRemovePhoto(index, imageIndex)}

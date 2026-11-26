@@ -118,7 +118,7 @@ export function GeneralInfoSection({
                         required
                         value={basePrice}
                         onChange={onBasePriceChange}
-                        wrapperClassName="w-28"
+                        wrapperClassName="w-36"
                     />
                 </div>
             </CardContent>

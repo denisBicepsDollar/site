@@ -43,9 +43,12 @@ export default function SettingsPage({initialSettings = {}, onSave = undefined})
         setSaveMessage("")
 
         try {
-            if (onSave) {
-                await onSave(settings)
+            if (!onSave) {
+                setSaveState("error")
+                setSaveMessage("Серверное сохранение настроек уведомлений пока не подключено.")
+                return
             }
+            await onSave(settings)
             setSaveState("saved")
             setSaveMessage("Изменения сохранены.")
         } catch (error) {
@@ -221,7 +224,7 @@ function ToggleField({id, label, description, checked, onCheckedChange}) {
                 id={id}
                 checked={checked}
                 onCheckedChange={onCheckedChange}
-                className="shrink-0 data-[state=checked]:bg-[#34C759]"
+                className="shrink-0 data-checked:bg-[#34C759]"
             />
         </div>
     )

@@ -170,9 +170,14 @@ export function useProductForm(id?: string) {
                 }
             }
 
-            const firstExplicitVariantPrice = form.variants.find((v) => v.price !== "")?.price;
+            const firstExplicitVariantPrice = form.variants.find(
+                (v) => v.price !== "" && v.price !== null && v.price !== undefined,
+            )?.price;
+            if (form.basePrice === "" && firstExplicitVariantPrice === undefined) {
+                throw new Error('Укажите базовую цену товара или цену хотя бы для одного варианта');
+            }
             const resolvedBasePrice = form.basePrice === ""
-                ? (firstExplicitVariantPrice !== undefined ? Number(firstExplicitVariantPrice) : 0)
+                ? Number(firstExplicitVariantPrice)
                 : Number(form.basePrice);
 
             const variants = await Promise.all(form.variants.map(async (variant) => {
@@ -262,6 +267,7 @@ export function useProductForm(id?: string) {
         isSaving: saveMutation.isPending,
         isDeleting: deleteMutation.isPending,
         uploadError,
+        clearUploadError: () => setUploadError(null),
 
         /* Поля формы */
         name: form.name,

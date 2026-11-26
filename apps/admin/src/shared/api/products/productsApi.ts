@@ -194,7 +194,7 @@ async function uploadImage(file: File): Promise<string> {
     const form = new FormData();
     form.append("image", file);
     const response = await productsClient.post<{url: string}>("/images", form, {
-        headers: {"Content-Type": "multipart/form-data"},
+        headers: {"Content-Type": undefined},
     });
     return response.data.url;
 }

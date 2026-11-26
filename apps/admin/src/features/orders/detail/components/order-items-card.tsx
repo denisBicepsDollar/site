@@ -15,6 +15,15 @@ const formatPrice = (value) =>
         maximumFractionDigits: 0,
     }).format(value)
 
+function formatItemsCount(count) {
+    const abs = Math.abs(count) % 100
+    const mod10 = abs % 10
+    if (abs > 10 && abs < 20) return `${count} товаров`
+    if (mod10 === 1) return `${count} товар`
+    if (mod10 >= 2 && mod10 <= 4) return `${count} товара`
+    return `${count} товаров`
+}
+
 export function OrderItemsCard({items, itemsTotal, deliveryPrice, orderTotal}) {
     const itemCount = items.reduce(
         (sum, item) => sum + item.quantity,
@@ -28,7 +37,7 @@ export function OrderItemsCard({items, itemsTotal, deliveryPrice, orderTotal}) {
                 className="items-center justify-between gap-3 space-y-0 p-4 pb-3 sm:px-5"
             >
                 <Badge variant="secondary" className="rounded-full tabular-nums">
-                    {itemCount} товара
+                    {formatItemsCount(itemCount)}
                 </Badge>
             </SectionCardHeader>
             <CardContent className="px-4 pb-4 sm:px-5">

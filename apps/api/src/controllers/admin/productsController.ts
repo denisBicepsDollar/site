@@ -180,7 +180,10 @@ function parseProductPayload(body: unknown):
     });
   }
 
-  const previewImage = sanitizeImageUrl(raw.previewImage) ?? variants[0]?.previewImage ?? null;
+  const explicitPreviewImage = sanitizeImageUrl(raw.previewImage);
+  const previewImage = raw.previewImage === null
+    ? null
+    : (explicitPreviewImage ?? variants[0]?.previewImage ?? null);
   const sku =
     typeof raw.sku === "string" && raw.sku.trim() && raw.sku.trim() !== "Автоматически"
       ? raw.sku.trim()

@@ -546,6 +546,22 @@ describe("Admin Auth & Products API & Admin Mocks", () => {
     const patchedSubcat = await patchPreservingSubcat.json() as { data: StoredProduct };
     assert.equal(patchedSubcat.data.subcategory, "Ароидные");
 
+    const patchClearingCover = await fetch(`${baseUrl}/api/v1/admin/products/${UUID_1}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Cookie: authCookie },
+      body: JSON.stringify({
+        name: "Монстера Делициоза Мини",
+        category: "Комнатные",
+        status: "active",
+        price: 3900,
+        previewImage: null,
+        variants: [{ id: UUID_V1, name: "D12", price: 3900, stock: 2, images: ["/2.png"] }],
+      }),
+    });
+    assert.equal(patchClearingCover.status, 200);
+    const clearedCoverBody = await patchClearingCover.json() as { data: StoredProduct };
+    assert.equal(clearedCoverBody.data.previewImage, null);
+
     const formatted = productService.formatCatalogProduct({
       id: UUID_1,
       name: "Калатея",
