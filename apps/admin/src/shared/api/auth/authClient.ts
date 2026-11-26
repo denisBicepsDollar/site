@@ -10,15 +10,16 @@ export const authClient = axios.create({
     withCredentials: true,
 });
 
-authClient.interceptors.response.use((response) => {
-    console.log(response);
-    return response;
-}, async (error) => {
+authClient.interceptors.response.use(
+    (response) => response,
+    (error: unknown) => {
+        const serverMessage = axios.isAxiosError(error)
+            ? error.response?.data?.message ?? error.response?.data
+            : undefined;
+        const message = typeof serverMessage === "string"
+            ? serverMessage
+            : "Something went wrong";
 
-    console.log(error);
-    const serverMessage = error.response?.data?.message || error.response?.data;
-
-    const errorMessage = typeof serverMessage === 'string' ? serverMessage : 'Something went wrong';
-
-    return Promise.reject(new Error(errorTranslations[errorMessage]));
-})
+        return Promise.reject(new Error(errorTranslations[message] ?? message));
+    },
+);

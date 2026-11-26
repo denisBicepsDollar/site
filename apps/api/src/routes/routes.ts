@@ -4,6 +4,7 @@ import * as productController from "@/controllers/store/productController";
 import authHandler from "@/middleware/authHandler";
 import { authLimiter } from "@/middleware/rateLimiters";
 import healthRouter from "./health";
+import adminRouter from "./admin";
 
 export function registerRoutes(app) {
   // Public API
@@ -12,6 +13,9 @@ export function registerRoutes(app) {
   app.get("/api/v1/products/variants/by-ids", productController.getVariants);
   app.get("/api/v1/products/:slug", productController.getOneProduct);
   app.post("/api/v1/orders", orderController.create);
+
+  // Authenticated admin API
+  app.use("/api/v1/admin", adminRouter);
 
   // Auth
   app.post("/auth/v1/login", authLimiter, authController.login);

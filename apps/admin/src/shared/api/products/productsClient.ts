@@ -2,22 +2,24 @@ import axios from "axios";
 import {errorTranslations} from "@/shared/components/localization.ts";
 
 export const productsClient = axios.create({
-    baseURL: '/api/v1/products',
+    baseURL: "/api/v1/admin/products",
     timeout: 15000,
+    withCredentials: true,
     headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
     },
-})
+});
 
-productsClient.interceptors.response.use((response) => {
-    console.log('res', response);
-    return response.data;
-}, async (error) => {
+productsClient.interceptors.response.use(
+    (response) => response,
+    (error: unknown) => {
+        const serverMessage = axios.isAxiosError(error)
+            ? error.response?.data?.message ?? error.response?.data
+            : undefined;
+        const message = typeof serverMessage === "string"
+            ? serverMessage
+            : "Something went wrong";
 
-    console.log(error);
-    const serverMessage = error.response?.data?.message || error.response?.data;
-
-    const errorMessage = typeof serverMessage === 'string' ? serverMessage : 'Something went wrong';
-
-    return Promise.reject(new Error(errorTranslations[errorMessage]));
-})
+        return Promise.reject(new Error(errorTranslations[message] ?? message));
+    },
+);

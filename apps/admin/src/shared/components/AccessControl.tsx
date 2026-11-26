@@ -9,7 +9,7 @@ export default function AccessControl({children, type = 'private'}){
         async function getValidation(){
             try{
                 const res = await fetch (
-                    `/auth/validation`, {
+                    `/auth/v1/validation`, {
                         method: "GET",
                         credentials: "include",
                     }

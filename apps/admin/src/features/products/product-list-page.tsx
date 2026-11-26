@@ -27,7 +27,7 @@ export function ProductListPage() {
             />
 
             <section className="mt-2">
-                <DataTable data={data} columns={columns} action={<ProductsAddButton/>}/>
+                <DataTable data={data ?? []} columns={columns} action={<ProductsAddButton/>}/>
             </section>
             <div className="fixed top-4 right-4 z-50 sm:top-6 sm:right-6 lg:top-8 lg:right-8">
                 <Notification initialCount={3}/>
