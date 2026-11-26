@@ -1,14 +1,25 @@
 import { ProductsScreen } from "@/pages-flat/products";
 import { getProducts } from "@/shared/api";
 import { Suspense } from "react";
-import { cacheLife, cacheTag } from "next/cache";
 
-async function getInitialCatalog() {
-  "use cache";
-  cacheTag("products");
-  cacheLife({ revalidate: 60 }); // аналог старого export const revalidate = 60
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-  return getProducts({ page: "1" });
+function normalizeFilters(
+  search: Record<string, string | string[] | undefined>,
+): Record<string, string> {
+  const filters: Record<string, string> = {};
+
+  for (const [key, value] of Object.entries(search)) {
+    if (key === "page" || value === undefined) continue;
+    const normalized = Array.isArray(value) ? value[value.length - 1] : value;
+    if (normalized) {
+      filters[key] = normalized;
+    }
+  }
+
+  return filters;
 }
 
 export async function generateMetadata() {
@@ -18,12 +29,21 @@ export async function generateMetadata() {
   };
 }
 
-export default async function ProductsPage() {
-  const data = await getInitialCatalog();
+async function CatalogLoader({ searchParams }: PageProps) {
+  const resolvedSearch = await searchParams;
+  const initialFilters = normalizeFilters(resolvedSearch);
+  const data = await getProducts(
+    { ...initialFilters, page: "1" },
+    { noStore: true },
+  );
 
+  return <ProductsScreen initialData={data} initialFilters={initialFilters} />;
+}
+
+export default function ProductsPage(props: PageProps) {
   return (
     <Suspense fallback={<div>Загрузка каталога...</div>}>
-      <ProductsScreen initialData={data} />
+      <CatalogLoader {...props} />
     </Suspense>
   );
 }

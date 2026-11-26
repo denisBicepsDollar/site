@@ -20,9 +20,13 @@ export interface ProductsMeta {
     total?: number;
     categories?: Record<string, number>;
     subcategories?: Record<string, number>;
+    byCategory?: Record<string, Record<string, number>>;
   };
   prices?: { minPrice?: number | null; maxPrice?: number | null };
   sizes?: Array<{ size: string; stock: number }>;
+  hasMore?: boolean;
+  page?: number;
+  limit?: number;
   totalPages?: number;
   total?: number;
 }
@@ -121,6 +125,9 @@ function useProductsCatalogQuery(
       ? { pages: [initialData], pageParams: [1] }
       : undefined,
     getNextPageParam: (lastPage, allPages) => {
+      if (lastPage?.meta?.hasMore !== undefined) {
+        return lastPage.meta.hasMore ? allPages.length + 1 : undefined;
+      }
       const items = lastPage?.data ?? [];
       return items.length >= PRODUCTS_PER_PAGE
         ? allPages.length + 1
@@ -215,6 +222,7 @@ export function useProductsCatalog() {
     fetchNextPage: async () => undefined,
     refetch: async () => undefined,
     hasNextPage: false,
+    isFetching: false,
     isFetchingNextPage: false,
     isFetchNextPageError: false,
     isLoading: false,

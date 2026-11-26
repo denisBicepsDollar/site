@@ -1,20 +1,18 @@
-import type { SearchParams } from "@/controllers/store/productController";
 import db from "@/db/index";
 import { productsInProducts, productVariantsInProducts } from "@drizzle/schema";
 import {
-  gt,
-  inArray,
-  max,
-  min,
-  eq,
   and,
-  lte,
+  asc,
+  desc,
+  eq,
   gte,
+  inArray,
+  isNotNull,
+  lte,
   sql,
   sum,
-  or,
-  ilike,
 } from "drizzle-orm";
+import { buildProductSearchSql } from "./productSearch";
 
 export async function sizes(
   category?: string,
@@ -23,11 +21,13 @@ export async function sizes(
   maxPrice?: number,
   search?: string,
 ) {
-  const searchPattern = search ? `%${search}%` : undefined;
-  return await db
+  const searchSql = buildProductSearchSql(productsInProducts, search);
+  const stockExpr = sql<number>`cast(coalesce(${sum(productVariantsInProducts.stock)}, 0) as int)`;
+
+  const rows = await db
     .select({
       size: productVariantsInProducts.name,
-      stock: sql<number>`cast(coalesce(${sum(productVariantsInProducts.stock)}, 0) as int)`,
+      stock: stockExpr,
     })
     .from(productVariantsInProducts)
     .innerJoin(
@@ -36,6 +36,8 @@ export async function sizes(
     )
     .where(
       and(
+        isNotNull(productVariantsInProducts.name),
+        sql`trim(${productVariantsInProducts.name}) <> ''`,
         category ? eq(productsInProducts.category, category) : undefined,
         subcategory
           ? eq(productsInProducts.subcategory, subcategory)
@@ -46,24 +48,35 @@ export async function sizes(
         maxPrice !== undefined
           ? lte(productVariantsInProducts.price, maxPrice)
           : undefined,
-        searchPattern
-          ? or(
-              ilike(productsInProducts.name, searchPattern),
-              ilike(productsInProducts.shortDescription, searchPattern),
-              ilike(productsInProducts.sku, searchPattern),
-            )
-          : undefined,
+        searchSql,
       ),
     )
-    .groupBy(productVariantsInProducts.name);
+    .groupBy(productVariantsInProducts.name)
+    .orderBy(desc(stockExpr), asc(productVariantsInProducts.name));
+
+  return rows.filter(
+    (row): row is { size: string; stock: number } =>
+      typeof row.size === "string" && row.size.trim().length > 0,
+  );
 }
 
-export async function prices(category, subcategory, sizes, search) {
-  const searchPattern = search ? `%${search}%` : undefined;
+export async function prices(
+  category?: string,
+  subcategory?: string,
+  sizes?: string[],
+  search?: string,
+) {
+  const searchSql = buildProductSearchSql(productsInProducts, search);
   const [result] = await db
     .select({
-      minPrice: min(productVariantsInProducts.price),
-      maxPrice: max(productVariantsInProducts.price),
+      minPrice: sql<number | null>`coalesce(
+        min(case when ${productVariantsInProducts.stock} > 0 and ${productVariantsInProducts.price} > 0 then ${productVariantsInProducts.price} end),
+        min(case when ${productVariantsInProducts.price} > 0 then ${productVariantsInProducts.price} end)
+      )`,
+      maxPrice: sql<number | null>`coalesce(
+        max(case when ${productVariantsInProducts.stock} > 0 and ${productVariantsInProducts.price} > 0 then ${productVariantsInProducts.price} end),
+        max(case when ${productVariantsInProducts.price} > 0 then ${productVariantsInProducts.price} end)
+      )`,
     })
     .from(productVariantsInProducts)
     .innerJoin(
@@ -72,7 +85,6 @@ export async function prices(category, subcategory, sizes, search) {
     )
     .where(
       and(
-        gt(productVariantsInProducts.stock, 0),
         category ? eq(productsInProducts.category, category) : undefined,
         subcategory
           ? eq(productsInProducts.subcategory, subcategory)
@@ -80,15 +92,18 @@ export async function prices(category, subcategory, sizes, search) {
         sizes && sizes.length > 0
           ? inArray(productVariantsInProducts.name, sizes)
           : undefined,
-        searchPattern
-          ? or(
-              ilike(productsInProducts.name, searchPattern),
-              ilike(productsInProducts.shortDescription, searchPattern),
-              ilike(productsInProducts.sku, searchPattern),
-            )
-          : undefined,
+        searchSql,
       ),
     );
 
-  return result ?? { minPrice: null, maxPrice: null };
+  return {
+    minPrice:
+      result?.minPrice !== null && result?.minPrice !== undefined
+        ? Number(result.minPrice)
+        : null,
+    maxPrice:
+      result?.maxPrice !== null && result?.maxPrice !== undefined
+        ? Number(result.maxPrice)
+        : null,
+  };
 }

@@ -3,6 +3,7 @@ const getBackendUrl = () =>
 
 export async function getProducts(
   resolvedParams: Record<string, string> = {},
+  options?: { noStore?: boolean },
 ) {
   try {
     const cleanParams: Record<string, string> = {};
@@ -15,9 +16,9 @@ export async function getProducts(
 
     const res = await fetch(
       `${getBackendUrl()}/api/v1/products${queryString ? `?${queryString}` : ""}`,
-      {
-        next: { revalidate: 60 }, // ISR: кэш на 60 секунд
-      },
+      options?.noStore
+        ? { cache: "no-store" }
+        : { next: { revalidate: 60 } },
     );
 
     if (!res.ok) return { data: [], meta: {}, isError: true };
