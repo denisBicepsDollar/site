@@ -39,12 +39,14 @@ export async function sizes(
       and(
         isNotNull(productVariantsInProducts.name),
         sql`trim(${productVariantsInProducts.name}) <> ''`,
-        category ? eq(productsInProducts.category, category) : undefined,
+        category
+          ? sql`lower(btrim(${productsInProducts.category})) = lower(btrim(${category}))`
+          : undefined,
         subcategory
-          ? sql`coalesce(nullif(btrim(${productsInProducts.subcategory}), ''), nullif(btrim(${productsInProducts.type}), '')) = ${subcategory}`
+          ? sql`lower(coalesce(nullif(btrim(${productsInProducts.subcategory}), ''), nullif(btrim(${productsInProducts.type}), ''))) = lower(btrim(${subcategory}))`
           : undefined,
         type
-          ? sql`nullif(btrim(${productsInProducts.type}), '') = ${type}`
+          ? sql`lower(nullif(btrim(${productsInProducts.type}), '')) = lower(btrim(${type}))`
           : undefined,
         minPrice !== undefined
           ? gte(productVariantsInProducts.price, minPrice)
@@ -90,12 +92,14 @@ export async function prices(
     )
     .where(
       and(
-        category ? eq(productsInProducts.category, category) : undefined,
+        category
+          ? sql`lower(btrim(${productsInProducts.category})) = lower(btrim(${category}))`
+          : undefined,
         subcategory
-          ? sql`coalesce(nullif(btrim(${productsInProducts.subcategory}), ''), nullif(btrim(${productsInProducts.type}), '')) = ${subcategory}`
+          ? sql`lower(coalesce(nullif(btrim(${productsInProducts.subcategory}), ''), nullif(btrim(${productsInProducts.type}), ''))) = lower(btrim(${subcategory}))`
           : undefined,
         type
-          ? sql`nullif(btrim(${productsInProducts.type}), '') = ${type}`
+          ? sql`lower(nullif(btrim(${productsInProducts.type}), '')) = lower(btrim(${type}))`
           : undefined,
         sizes && sizes.length > 0
           ? inArray(productVariantsInProducts.name, sizes)

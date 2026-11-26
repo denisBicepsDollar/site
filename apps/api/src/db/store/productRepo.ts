@@ -38,21 +38,23 @@ export async function list(
 
   const hasVariantFilter = Object.keys(variantFilter).length > 0;
   const searchActive = Boolean(buildProductSearchSql(productsInProducts, search));
-  const hasRawWhere = Boolean(searchActive || subcategory || type);
+  const hasRawWhere = Boolean(category || searchActive || subcategory || type);
 
   return await db.query.productsInProducts.findMany({
     where: {
-      ...(category && { category: { eq: category } }),
       ...(hasVariantFilter && { productVariantsInProducts: variantFilter }),
       ...(hasRawWhere && {
         RAW: (p) => {
           const conditions = [
+            category
+              ? sql`lower(btrim(${p.category})) = lower(btrim(${category}))`
+              : undefined,
             searchActive ? buildProductSearchSql(p, search) : undefined,
             subcategory
-              ? sql`coalesce(nullif(btrim(${p.subcategory}), ''), nullif(btrim(${p.type}), '')) = ${subcategory}`
+              ? sql`lower(coalesce(nullif(btrim(${p.subcategory}), ''), nullif(btrim(${p.type}), ''))) = lower(btrim(${subcategory}))`
               : undefined,
             type
-              ? sql`nullif(btrim(${p.type}), '') = ${type}`
+              ? sql`lower(nullif(btrim(${p.type}), '')) = lower(btrim(${type}))`
               : undefined,
           ].filter(Boolean);
 
@@ -140,6 +142,7 @@ export async function list(
           id: true,
           name: true,
           price: true,
+          oldPrice: true,
           stock: true,
         },
         ...(hasVariantFilter && { where: variantFilter }),

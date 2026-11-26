@@ -16,9 +16,12 @@ export async function getProducts(
 
     const res = await fetch(
       `${getBackendUrl()}/api/v1/products${queryString ? `?${queryString}` : ""}`,
-      options?.noStore
-        ? { cache: "no-store" }
-        : { next: { revalidate: 60 } },
+      {
+        ...(options?.noStore
+          ? { cache: "no-store" as const }
+          : { next: { revalidate: 60 } }),
+        signal: AbortSignal.timeout(8000),
+      },
     );
 
     if (!res.ok) return { data: [], meta: {}, isError: true };
@@ -26,7 +29,8 @@ export async function getProducts(
     const allProducts = await res.json();
     return allProducts;
   } catch (error) {
-    console.error("Ошибка загрузки товаров:", error.message);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Ошибка загрузки товаров:", message);
     return { data: [], meta: {}, isError: true };
   }
 }
@@ -35,8 +39,9 @@ export async function getCatalogLabels(options?: { noStore?: boolean }) {
   try {
     const res = await fetch(`${getBackendUrl()}/api/v1/products/labels`, {
       ...(options?.noStore
-        ? { cache: "no-store" }
+        ? { cache: "no-store" as const }
         : { next: { revalidate: 60 } }),
+      signal: AbortSignal.timeout(8000),
     });
 
     if (!res.ok) return {};
@@ -46,30 +51,42 @@ export async function getCatalogLabels(options?: { noStore?: boolean }) {
   }
 }
 
-export async function getProductBySlug(slug) {
+export async function getProductBySlug(slug: string) {
   try {
-    const res = await fetch(`${getBackendUrl()}/api/v1/products/${slug}`, {
-      next: { revalidate: 60 },
-    });
+    const res = await fetch(
+      `${getBackendUrl()}/api/v1/products/${encodeURIComponent(slug)}`,
+      {
+        next: { revalidate: 60 },
+        signal: AbortSignal.timeout(8000),
+      },
+    );
 
     if (!res.ok) return { data: null };
 
     const allProducts = { data: await res.json() };
     return allProducts;
   } catch (error) {
-    console.error("Ошибка загрузки товара:", error.message);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Ошибка загрузки товара:", message);
     return { data: null };
   }
 }
 
-export async function getProductsByVariant(variantIds) {
+export async function getProductsByVariant(variantIds: Array<string | number>) {
+  if (!Array.isArray(variantIds) || variantIds.length === 0) {
+    return { data: [] };
+  }
+
   try {
-    const varIds = variantIds.map((variantId) => "variantId=" + variantId);
+    const varIds = variantIds.map(
+      (variantId) => `variantId=${encodeURIComponent(String(variantId))}`,
+    );
     const url =
       `${getBackendUrl()}/api/v1/products/variants/by-ids?` +
       varIds.join("&");
     const res = await fetch(url, {
       next: { revalidate: 60 },
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return { data: [] };
     const products = { data: await res.json() };

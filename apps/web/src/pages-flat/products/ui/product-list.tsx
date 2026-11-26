@@ -143,7 +143,8 @@ export function ProductList() {
   }
 
   if (!isLoading && products.length === 0) {
-    const isScopedPath = pathname !== "/products";
+    const normalizedPath = pathname.replace(/\/+$/, "") || "/";
+    const isScopedPath = normalizedPath !== "/products";
     const queryText = searchParams.get("q")?.trim() ?? "";
     const hasFilterParams = Boolean(
       queryText ||
@@ -162,8 +163,13 @@ export function ProductList() {
     const globalQueryOnlyParams = new URLSearchParams();
     if (queryText) globalQueryOnlyParams.set("q", queryText);
     const sortParam = searchParams.get("sort");
-    if (sortParam) globalQueryOnlyParams.set("sort", sortParam);
-    const globalQueryOnlyHref = `/products?${globalQueryOnlyParams.toString()}`;
+    if (sortParam && sortParam !== "score") {
+      globalQueryOnlyParams.set("sort", sortParam);
+    }
+    const globalQueryOnlyString = globalQueryOnlyParams.toString();
+    const globalQueryOnlyHref = globalQueryOnlyString
+      ? `/products?${globalQueryOnlyString}`
+      : "/products";
 
     const globalCount = counts?.total ?? 0;
 
@@ -175,7 +181,7 @@ export function ProductList() {
             : "Товары не найдены."}
         </p>
         <div className="flex flex-wrap items-center gap-2">
-          {isScopedPath && globalCount > 0 && (
+          {isScopedPath && hasFilterParams && globalCount > 0 && (
             <Button
               variant="default"
               size="sm"
@@ -186,7 +192,7 @@ export function ProductList() {
               Искать по всему каталогу ({globalCount})
             </Button>
           )}
-          {isScopedPath && globalCount === 0 && queryText && (
+          {isScopedPath && hasFilterParams && globalCount === 0 && queryText && (
             <Button
               variant="default"
               size="sm"
@@ -203,7 +209,7 @@ export function ProductList() {
               size="sm"
               onClick={() => router.push("/products", { scroll: false })}
             >
-              Сбросить фильтры
+              {hasFilterParams ? "Сбросить фильтры" : "Весь каталог"}
             </Button>
           )}
         </div>

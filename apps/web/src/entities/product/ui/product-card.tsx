@@ -81,10 +81,21 @@ export function ProductCard({ product }) {
         <div className="pt-2 border-t border-ink/5">
           {/* Остаток товара (Индикатор/Бейдж) */}
           <div className="mb-1.5 flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-clay animate-pulse" />
-            <span className="text-[11px] font-bold text-clay uppercase">
-              Осталось {product.stock} ед.
-            </span>
+            {Number(product.stock ?? 0) > 0 ? (
+              <>
+                <span className="size-1.5 rounded-full bg-clay animate-pulse" />
+                <span className="text-[11px] font-bold text-clay uppercase">
+                  Осталось {product.stock} ед.
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="size-1.5 rounded-full bg-ink/30" />
+                <span className="text-[11px] font-bold text-ink/45 uppercase">
+                  Нет в наличии
+                </span>
+              </>
+            )}
           </div>
 
           {/* Цены */}
@@ -92,7 +103,7 @@ export function ProductCard({ product }) {
             <span className="text-xl font-bold  text-forest">
               {formatPrice(product.price)}
             </span>
-            {product.oldPrice && (
+            {Number(product.oldPrice) > Number(product.price || 0) && (
               <span className="text-xs font-semibold text-ink/35 line-through">
                 {formatPrice(product.oldPrice)}
               </span>

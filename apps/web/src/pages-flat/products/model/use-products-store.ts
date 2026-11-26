@@ -15,6 +15,7 @@ import {
 } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
 import type { CatalogLabels } from "../config/catalog-labels";
+import { ALLOWED_CATALOG_SEARCH_KEYS } from "./catalog-route";
 
 export interface ProductsMeta {
   counts?: {
@@ -60,9 +61,9 @@ function decodeParamValue(value?: string | string[]): string | undefined {
   const raw = Array.isArray(value) ? value[0] : value;
   if (!raw) return undefined;
   try {
-    return decodeURIComponent(raw);
+    return decodeURIComponent(raw).trim() || undefined;
   } catch {
-    return raw;
+    return raw.trim() || undefined;
   }
 }
 
@@ -73,9 +74,11 @@ function buildFilters(
   const filters: Record<string, string> = {};
 
   searchParams.forEach((value, key) => {
-    if (key !== "page" && value) {
-      filters[key] = value;
-    }
+    if (!ALLOWED_CATALOG_SEARCH_KEYS.has(key)) return;
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    if (key === "sort" && trimmed === "score") return;
+    filters[key] = trimmed;
   });
 
   const category = decodeParamValue(routeParams?.category);
@@ -131,17 +134,21 @@ const CatalogLabelsContext = createContext<CatalogLabels | undefined>(
   undefined,
 );
 
+const CatalogMetaContext = createContext<ProductsMeta | undefined>(undefined);
+
 export function CatalogLabelsProvider({
   initialLabels,
+  initialMeta,
   children,
 }: {
   initialLabels?: CatalogLabels;
+  initialMeta?: ProductsMeta;
   children: ReactNode;
 }) {
   return createElement(
     CatalogLabelsContext.Provider,
     { value: initialLabels },
-    children,
+    createElement(CatalogMetaContext.Provider, { value: initialMeta }, children),
   );
 }
 
@@ -213,7 +220,8 @@ function useProductsCatalogQuery(
   });
 
   const contextLabels = useContext(CatalogLabelsContext);
-  const meta = currentMeta ?? metaFallbackQuery.data ?? {};
+  const contextMeta = useContext(CatalogMetaContext);
+  const meta = currentMeta ?? metaFallbackQuery.data ?? contextMeta ?? {};
   const labels = hasLabelsContent(meta.labels)
     ? meta.labels!
     : (contextLabels ?? meta.labels ?? {});
@@ -250,6 +258,7 @@ export function ProductsCatalogProvider({
 export function useProductsCatalog() {
   const context = useContext(ProductsCatalogContext);
   const contextLabels = useContext(CatalogLabelsContext);
+  const contextMeta = useContext(CatalogMetaContext);
 
   // Sidebar components in layout.tsx sit outside ProductsCatalogProvider and
   // passively read cached meta without initiating competing page-1 queries.
@@ -264,7 +273,7 @@ export function useProductsCatalog() {
     return context;
   }
 
-  const meta = metaQuery.data ?? {};
+  const meta = metaQuery.data ?? contextMeta ?? {};
   const labels = hasLabelsContent(meta.labels)
     ? meta.labels!
     : (contextLabels ?? meta.labels ?? {});

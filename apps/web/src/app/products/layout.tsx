@@ -1,12 +1,23 @@
 import { Suspense, type ReactNode } from "react";
 import { ProductsLayoutShell } from "@/pages-flat/products";
-import { getCachedCatalogLabels } from "@/shared/api/catalog-cache";
+import {
+  getCachedCatalogLabels,
+  getCachedCatalogProducts,
+} from "@/shared/api/catalog-cache";
 
 async function ProductsLayoutLoader({ children }: { children: ReactNode }) {
-  const initialLabels = await getCachedCatalogLabels();
+  const [initialLabels, firstPage] = await Promise.all([
+    getCachedCatalogLabels(),
+    getCachedCatalogProducts({ page: "1" }),
+  ]);
+
+  const initialMeta = firstPage?.isError ? undefined : firstPage?.meta;
 
   return (
-    <ProductsLayoutShell initialLabels={initialLabels}>
+    <ProductsLayoutShell
+      initialLabels={initialLabels}
+      initialMeta={initialMeta}
+    >
       {children}
     </ProductsLayoutShell>
   );

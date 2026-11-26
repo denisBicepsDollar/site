@@ -11,7 +11,7 @@ import { Checkbox } from "@/shared/ui/checkbox";
 import { CheckboxGroup } from "@/shared/ui/checkbox-group";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "@/shared/ui/badge";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useProductsCatalog } from "../model/use-products-store";
 
 export function SidebarGroupSize() {
@@ -20,15 +20,7 @@ export function SidebarGroupSize() {
   const searchParams = useSearchParams();
   const { sizes } = useProductsCatalog();
 
-  const sortedSizes = useMemo(
-    () =>
-      [...sizes]
-        .filter((s) => Boolean(s?.size?.trim()))
-        .sort((a, b) => b.stock - a.stock || a.size.localeCompare(b.size, "ru")),
-    [sizes],
-  );
   const sizeParam = searchParams.get("size") ?? "";
-  const searchString = searchParams.toString();
   const selectedSizes = useMemo(
     () =>
       Array.from(
@@ -42,26 +34,18 @@ export function SidebarGroupSize() {
     [sizeParam],
   );
 
-  useEffect(() => {
-    if (!sortedSizes.length || !selectedSizes.length) return;
-
-    const available = sortedSizes.map((s) => s.size);
-    const validSizes = selectedSizes.filter((s) => available.includes(s));
-
-    if (validSizes.length !== selectedSizes.length) {
-      const params = new URLSearchParams(searchString);
-      params.delete("page");
-
-      validSizes.length
-        ? params.set("size", validSizes.join(","))
-        : params.delete("size");
-
-      const query = params.toString();
-      router.replace(`${pathname}${query ? `?${query}` : ""}`, {
-        scroll: false,
-      });
+  const sortedSizes = useMemo(() => {
+    const base = [...sizes].filter((s) => Boolean(s?.size?.trim()));
+    const knownNames = new Set(base.map((s) => s.size));
+    for (const selected of selectedSizes) {
+      if (!knownNames.has(selected)) {
+        base.push({ size: selected, stock: 0 });
+      }
     }
-  }, [sortedSizes, selectedSizes, pathname, router, searchString]);
+    return base.sort(
+      (a, b) => b.stock - a.stock || a.size.localeCompare(b.size, "ru"),
+    );
+  }, [sizes, selectedSizes]);
 
   const handleSizeChange = (newValues: string[]) => {
     const params = new URLSearchParams(searchParams.toString());

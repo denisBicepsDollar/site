@@ -11,7 +11,10 @@ import {
   SidebarTrigger,
 } from "@/shared/ui/sidebar";
 import type { CatalogLabels } from "../config/catalog-labels";
-import { CatalogLabelsProvider } from "../model/use-products-store";
+import {
+  CatalogLabelsProvider,
+  type ProductsMeta,
+} from "../model/use-products-store";
 import { ProductsHeader } from "./products-header";
 import { SidebarGroupCategory } from "./sidebar-group-category";
 import { SidebarGroupPrice } from "./sidebar-group-price";
@@ -19,13 +22,18 @@ import { SidebarGroupSize } from "./sidebar-group-size";
 
 export function ProductsLayoutShell({
   initialLabels,
+  initialMeta,
   children,
 }: {
   initialLabels?: CatalogLabels;
+  initialMeta?: ProductsMeta;
   children?: ReactNode;
 }) {
   return (
-    <CatalogLabelsProvider initialLabels={initialLabels}>
+    <CatalogLabelsProvider
+      initialLabels={initialLabels}
+      initialMeta={initialMeta}
+    >
       <div>
         <Suspense
           fallback={
