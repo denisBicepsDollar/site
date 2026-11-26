@@ -67,11 +67,7 @@ export function AccordionTrigger({
         <span className="min-w-0 flex-1 wrap-anywhere">{children}</span>
         <Plus
           aria-hidden="true"
-          className={`sp-accordion-indicator p-6 sp-accordion-motion pointer-events-none shrink-0 rounded-full ${
-            open
-              ? "border-clay bg-clay text-cream"
-              : "border-forest/15 text-forest"
-          }`}
+          className="sp-accordion-indicator p-6 sp-accordion-motion pointer-events-none shrink-0 rounded-full border-forest/15 text-forest group-data-panel-open:border-clay group-data-panel-open:bg-clay group-data-panel-open:text-cream"
           data-slot="accordion-indicator"
         />
       </AccordionPrimitive.Trigger>

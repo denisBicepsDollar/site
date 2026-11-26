@@ -51,12 +51,12 @@ export function ProductCard({ product }) {
         <CardMedia
           render={
             <Link
-              href={`/product/${product.slug || product.id}`}
+              href={`/product/${encodeURIComponent(String(product.slug || product.id))}`}
               aria-label={product.name}
               className="block aspect-[4/5] w-full overflow-hidden"
             >
               <img
-                src={product.previewImage}
+                src={product.previewImage || "/default-image.png"}
                 alt={product.name}
                 loading="lazy"
                 className="h-full w-full object-cover transition-transform duration-[700ms] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-105"
@@ -69,7 +69,7 @@ export function ProductCard({ product }) {
       <CardContent className="flex flex-col flex-grow justify-between p-4">
         {/* Приглушенное название товара */}
         <Link
-          href={`/product/${product.slug || product.id}`}
+          href={`/product/${encodeURIComponent(String(product.slug || product.id))}`}
           className="group/title block mb-3"
         >
           <h3 className="line-clamp-2 text-sm font-medium leading-snug text-ink/60 transition-colors group-hover/title:text-ink">

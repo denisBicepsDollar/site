@@ -53,7 +53,7 @@ import {
 export default function ProductScreen({ product, products, labels }) {
   const [qty, setQty] = useState(1);
 
-  const { sortedVariants } = useVariants(product.variants);
+  const { sortedVariants } = useVariants(product?.variants ?? []);
 
   const [currentVariant, setCurrentVariant] = useState(sortedVariants[0]);
 
@@ -79,7 +79,7 @@ export default function ProductScreen({ product, products, labels }) {
           каталог — там много других красавцев.
         </p>
         <Link
-          href="/catalog"
+          href="/products"
           className="mt-8 rounded-full bg-forest px-8 py-4 text-[12px] font-bold uppercase tracking-[0.14em] text-cream transition-colors hover:bg-clay"
         >
           В каталог
@@ -87,7 +87,7 @@ export default function ProductScreen({ product, products, labels }) {
       </main>
     );
   }
-  const related = products
+  const related = (products ?? [])
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 
@@ -143,20 +143,30 @@ export default function ProductScreen({ product, products, labels }) {
               <BreadcrumbSeparator>
                 <ChevronRight />
               </BreadcrumbSeparator>
-              <BreadcrumbLink href={`/products/${encodeURIComponent(product.category ?? "")}`}>
-                {getCategoryLabel(product.category ?? "", labels)}
-              </BreadcrumbLink>
-              <BreadcrumbSeparator>
-                <ChevronRight />
-              </BreadcrumbSeparator>
-              <BreadcrumbLink
-                href={`/products/${encodeURIComponent(product.category ?? "")}/${encodeURIComponent(product.subcategory ?? "")}`}
-              >
-                {getSubcategoryLabel(product.subcategory ?? "", labels)}
-              </BreadcrumbLink>
-              <BreadcrumbSeparator>
-                <ChevronRight />
-              </BreadcrumbSeparator>
+              {product.category ? (
+                <>
+                  <BreadcrumbLink
+                    href={`/products/${encodeURIComponent(product.category)}`}
+                  >
+                    {getCategoryLabel(product.category, labels)}
+                  </BreadcrumbLink>
+                  <BreadcrumbSeparator>
+                    <ChevronRight />
+                  </BreadcrumbSeparator>
+                </>
+              ) : null}
+              {product.category && product.subcategory ? (
+                <>
+                  <BreadcrumbLink
+                    href={`/products/${encodeURIComponent(product.category)}/${encodeURIComponent(product.subcategory)}`}
+                  >
+                    {getSubcategoryLabel(product.subcategory, labels)}
+                  </BreadcrumbLink>
+                  <BreadcrumbSeparator>
+                    <ChevronRight />
+                  </BreadcrumbSeparator>
+                </>
+              ) : null}
               <BreadcrumbLink>{product.name}</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
@@ -168,7 +178,7 @@ export default function ProductScreen({ product, products, labels }) {
             <div className="relative overflow-hidden rounded-[28px] bg-parchment shadow-[0_60px_80px_-55px_rgba(20,38,27,0.5)]">
               <motion.img
                 key={product.id}
-                src={product.previewImage}
+                src={product.previewImage || "/default-image.png"}
                 alt={product.name}
                 initial={{ opacity: 0, scale: 1.04 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -192,8 +202,8 @@ export default function ProductScreen({ product, products, labels }) {
           >
             <Eyebrow>{getCategoryLabel(product.category ?? "", labels)} растения</Eyebrow>
             <TagGroup size="xl">
-              {product.tags.map((tag) => (
-                <Tag>{tag}</Tag>
+              {(product.tags ?? []).map((tag, index) => (
+                <Tag key={`${tag}-${index}`}>{tag}</Tag>
               ))}
             </TagGroup>
 
@@ -280,7 +290,8 @@ export default function ProductScreen({ product, products, labels }) {
                 variant="accent"
                 shape="pill"
               >
-                В корзину · {formatPrice(currentVariant.price)}
+                В корзину ·{" "}
+                {formatPrice(currentVariant?.price ?? product.price ?? 0)}
               </ButtonWithIcon>
               <Accordion
                 className="w-full "
