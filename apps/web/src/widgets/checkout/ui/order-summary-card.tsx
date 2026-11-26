@@ -3,8 +3,15 @@
 import { ShoppingBag } from "lucide-react";
 import { calculateOrderSummary, useOrderStore } from "@/entities/order";
 import { useCartStore } from "@/entities/cart";
-import { Card, CardContent, CardHeader } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardMedia,
+  CardTitle,
+} from "@/shared/ui/card";
+import { Separator } from "@/shared/ui/separator";
 
 const DEFAULT_IMAGE = "/default-image.png";
 
@@ -40,18 +47,18 @@ export function OrderSummaryCard() {
           : "0 ₽";
 
   return (
-    <Card className="flex flex-col gap-5">
+    <Card variant="header">
       <CardHeader>
-        <h3 className="font-semibold flex items-center gap-2">
-          <ShoppingBag className="h-4 w-4" aria-hidden="true" />
-          Сводка заказа
-        </h3>
+        <CardMedia>
+          <ShoppingBag aria-hidden="true" />
+        </CardMedia>
+        <CardTitle>Сводка заказа</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="flex flex-col gap-4">
           {availableItems.map((item) => (
             <div key={item.variantId || item.id} className="flex gap-3">
-              <div className="relative w-12 h-12 flex-shrink-0">
+              <div className="relative w-12 h-12 shrink-0">
                 <img
                   src={item.previewImage || DEFAULT_IMAGE}
                   alt={`${item.productName} ${item.name}`}
@@ -65,7 +72,8 @@ export function OrderSummaryCard() {
                 />
                 <Badge
                   size="sm"
-                  className="absolute -top-1 -right-1 text-xs min-w-5 h-5 flex items-center justify-center"
+                  variant="accent"
+                  className="absolute -top-1.5 -right-1.5 text-xs min-w-5 h-5 flex items-center justify-center"
                 >
                   {item.cartQuantity}
                 </Badge>
@@ -88,16 +96,25 @@ export function OrderSummaryCard() {
           ))}
         </div>
 
-        <div className="flex flex-col gap-2 border-t pt-4">
+        <Separator />
+
+        <div className="flex flex-col gap-2">
           <div className="flex justify-between text-sm">
-            <span>Промежуточный итог</span>
+            <span className="text-muted-foreground">Промежуточный итог</span>
             <span>{formatPrice(summary.subtotal)}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span>Доставка</span>
+            <span className="text-muted-foreground">Доставка</span>
             <span>{shippingLabel}</span>
           </div>
-          <div className="flex justify-between font-semibold text-lg border-t pt-2">
+          {deliveryMeta.postOfficeCode && (
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Отделение</span>
+              <span>ОПС {deliveryMeta.postOfficeCode}</span>
+            </div>
+          )}
+          <Separator className="my-1" />
+          <div className="flex justify-between font-semibold text-base">
             <span>Итого</span>
             <span>{formatPrice(summary.total)}</span>
           </div>

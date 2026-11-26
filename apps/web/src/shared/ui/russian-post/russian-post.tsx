@@ -2,7 +2,24 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, MapPin, Package, Search, Truck } from "lucide-react";
+import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardMedia,
+  CardTitle,
+  CardTitleMeta,
+} from "@/shared/ui/card";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/shared/ui/input-group";
+import { cn } from "@/siteplane/system/utils/cn";
 
 export interface RussianPostAddressData {
   indexTo?: string;
@@ -272,155 +289,165 @@ export function RussianPost({
     const hasAddress = Boolean(addressHint && addressHint.trim().length >= 3);
 
     return (
-      <div
-        data-testid="russian-post-stub"
-        className="mt-3 rounded-xl border border-forest/15 bg-parchment/40 p-4 space-y-3"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2 text-sm font-semibold text-forest">
-            <Truck className="size-4 text-clay" aria-hidden="true" />
+      <Card data-testid="russian-post-stub" variant="inset" className="mt-3">
+        <CardHeader>
+          <CardMedia>
+            <Truck aria-hidden="true" />
+          </CardMedia>
+          <CardTitle className="text-sm font-semibold">
             Курьер Почты России (предварительный расчёт)
-          </div>
-          <span className="rounded-full bg-cream px-2.5 py-0.5 text-[11px] font-medium text-forest/80 border border-forest/15">
-            Демо-режим
-          </span>
-        </div>
+          </CardTitle>
+          <CardDescription className="text-xs">
+            {hasAddress
+              ? `Доставка до двери по адресу: ${addressHint}.`
+              : "Введите адрес в поле выше или используйте расчёт по умолчанию."}
+          </CardDescription>
+          <CardAction>
+            <Badge size="sm" variant="outline">
+              Демо-режим
+            </Badge>
+          </CardAction>
+        </CardHeader>
 
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          {hasAddress
-            ? `Доставка до двери по адресу: ${addressHint}.`
-            : "Введите адрес в поле выше или используйте расчёт по умолчанию."}
-        </p>
-
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-white p-3 border border-forest/10">
-          <div className="space-y-0.5">
-            <p className="text-sm font-semibold text-foreground">
-              {formatRub(courierPrice)} · 2–5 рабочих дней
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Предварительный тариф курьерской службы Почты России
-            </p>
-          </div>
-          <Button
-            type="button"
-            size="sm"
-            variant={courierApplied ? "outline" : "accent"}
-            onClick={() => {
-              setCourierApplied(true);
-              callbackRef.current?.({
-                indexTo: postalCodeHint || (!hasAddress ? "101000" : undefined),
-                regionTo: !hasAddress ? "г Москва" : undefined,
-                cityTo: cityHint || (!hasAddress ? "Москва" : undefined),
-                addressTo: hasAddress ? undefined : "ул Тверская, д 1",
-                pvzType: "russian_post_courier",
-                cashOfDelivery: courierPrice * 100,
-                estimatedTime: "2–5 рабочих дней",
-              });
-            }}
-          >
-            {courierApplied ? "Тариф применён" : "Применить расчёт"}
-          </Button>
-        </div>
-      </div>
+        <CardContent>
+          <Card density="compact">
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold">
+                {formatRub(courierPrice)} · 2–5 рабочих дней
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Предварительный тариф курьерской службы Почты России
+              </CardDescription>
+              <CardAction>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={courierApplied ? "outline" : "accent"}
+                  onClick={() => {
+                    setCourierApplied(true);
+                    callbackRef.current?.({
+                      indexTo:
+                        postalCodeHint || (!hasAddress ? "101000" : undefined),
+                      regionTo: !hasAddress ? "г Москва" : undefined,
+                      cityTo: cityHint || (!hasAddress ? "Москва" : undefined),
+                      addressTo: hasAddress ? undefined : "ул Тверская, д 1",
+                      pvzType: "russian_post_courier",
+                      cashOfDelivery: courierPrice * 100,
+                      estimatedTime: "2–5 рабочих дней",
+                    });
+                  }}
+                >
+                  {courierApplied ? "Тариф применён" : "Применить расчёт"}
+                </Button>
+              </CardAction>
+            </CardHeader>
+          </Card>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div
-      data-testid="russian-post-stub"
-      className="mt-3 rounded-xl border border-forest/15 bg-parchment/40 p-4 space-y-3"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-sm font-semibold text-forest">
-          <Package className="size-4 text-clay" aria-hidden="true" />
+    <Card data-testid="russian-post-stub" variant="inset" className="mt-3">
+      <CardHeader>
+        <CardMedia>
+          <Package aria-hidden="true" />
+        </CardMedia>
+        <CardTitle className="text-sm font-semibold">
           Выбор отделения Почты России
-        </div>
-        <span className="rounded-full bg-cream px-2.5 py-0.5 text-[11px] font-medium text-forest/80 border border-forest/15">
-          Демо-виджет
-        </span>
-      </div>
+        </CardTitle>
+        <CardDescription className="text-xs">
+          Выберите отделение из списка ниже — индекс, адрес и предварительная
+          стоимость подставятся в заказ автоматически.
+        </CardDescription>
+        <CardAction>
+          <Badge size="sm" variant="outline">
+            Демо-виджет
+          </Badge>
+        </CardAction>
+      </CardHeader>
 
-      <p className="text-xs text-muted-foreground">
-        Выберите отделение из списка ниже — индекс, адрес и предварительная
-        стоимость подставятся в заказ автоматически.
-      </p>
+      <CardContent className="flex flex-col gap-3">
+        <InputGroup>
+          <InputGroupAddon align="inline-start">
+            <Search aria-hidden="true" />
+          </InputGroupAddon>
+          <InputGroupInput
+            type="search"
+            aria-label="Поиск отделения Почты России"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.currentTarget.value)}
+            placeholder="Поиск по городу, индексу или улице..."
+          />
+        </InputGroup>
 
-      <div className="relative">
-        <Search
-          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"
-          aria-hidden="true"
-        />
-        <input
-          type="search"
-          aria-label="Поиск отделения Почты России"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
-          placeholder="Поиск по городу, индексу или улице..."
-          className="h-10 w-full rounded-lg border border-forest/15 bg-white pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-forest focus:outline-none"
-        />
-      </div>
+        {filteredOffices.length === 0 ? (
+          <Card density="compact" variant="subtle">
+            <CardContent className="text-center text-xs text-muted-foreground">
+              Отделения по запросу «{searchQuery}» не найдены. Очистите поиск
+              или введите адрес вручную в поле выше.
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="flex flex-col gap-2 max-h-72 overflow-y-auto p-0.5">
+            {filteredOffices.map((office) => {
+              const isSelected = localSelectedIndex === office.indexTo;
+              const computedPrice = Math.max(
+                190,
+                basePriceRub + office.zoneMarkupRub,
+              );
+              const estimatedTime =
+                selectedTariffId === "first_class"
+                  ? office.firstClassDays
+                  : office.standardDays;
 
-      {filteredOffices.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-forest/20 bg-white/70 p-4 text-center text-xs text-muted-foreground">
-          Отделения по запросу «{searchQuery}» не найдены. Очистите поиск или
-          введите адрес вручную в поле выше.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto pr-1">
-          {filteredOffices.map((office) => {
-            const isSelected = localSelectedIndex === office.indexTo;
-            const computedPrice = Math.max(
-              190,
-              basePriceRub + office.zoneMarkupRub,
-            );
-            const estimatedTime =
-              selectedTariffId === "first_class"
-                ? office.firstClassDays
-                : office.standardDays;
-
-            return (
-              <button
-                key={`${office.indexTo}-${office.cityTo}`}
-                type="button"
-                onClick={() => handleSelectOffice(office)}
-                aria-pressed={isSelected}
-                className={`flex w-full items-start justify-between gap-3 rounded-lg border p-3 text-left transition-colors ${
-                  isSelected
-                    ? "border-forest bg-white shadow-sm ring-1 ring-forest"
-                    : "border-forest/12 bg-white/85 hover:border-forest/35 hover:bg-white"
-                }`}
-              >
-                <div className="min-w-0 space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-forest">
-                      <MapPin className="size-3.5 text-clay" aria-hidden="true" />
-                      ОПС {office.indexTo}
-                    </span>
-                    <span className="text-xs font-medium text-foreground">
-                      {office.cityTo}
-                    </span>
-                    {isSelected && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-forest px-2 py-0.5 text-[10px] font-semibold text-cream">
-                        <Check className="size-3" aria-hidden="true" />
-                        Выбрано
+              return (
+                <Card
+                  key={`${office.indexTo}-${office.cityTo}`}
+                  render={
+                    <button
+                      type="button"
+                      onClick={() => handleSelectOffice(office)}
+                      aria-pressed={isSelected}
+                    />
+                  }
+                  density="compact"
+                  className={cn(
+                    "w-full text-left cursor-pointer transition-[box-shadow]",
+                    isSelected
+                      ? "ring-2 ring-forest"
+                      : "hover:ring-1 hover:ring-forest/30",
+                  )}
+                >
+                  <CardHeader>
+                    <CardMedia className="min-h-5">
+                      <MapPin aria-hidden="true" />
+                    </CardMedia>
+                    <CardTitle className="text-sm font-medium leading-5">
+                      <span>ОПС {office.indexTo}</span>
+                      <CardTitleMeta>{office.cityTo}</CardTitleMeta>
+                      {isSelected && (
+                        <Badge size="sm" variant="accent" className="gap-1">
+                          <Check className="size-3" aria-hidden="true" />
+                          Выбрано
+                        </Badge>
+                      )}
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      {office.addressTo} · {office.schedule} · {estimatedTime}
+                    </CardDescription>
+                    <CardAction>
+                      <span className="text-sm font-semibold whitespace-nowrap text-forest">
+                        {formatRub(computedPrice)}
                       </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-foreground/85">{office.addressTo}</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    {office.schedule} · {estimatedTime}
-                  </p>
-                </div>
-                <div className="shrink-0 text-right">
-                  <span className="text-sm font-semibold text-forest">
-                    {formatRub(computedPrice)}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
+                    </CardAction>
+                  </CardHeader>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

@@ -81,7 +81,7 @@ export function About() {
                         className="absolute -top-8 right-8 z-0 grid size-36 animate-float place-items-center rounded-full bg-forest text-cream">
                         <div className="text-center">
                             <p className="font-display text-4xl font-semibold leading-none">12</p>
-                            <p className="mt-1 text-[9px] font-semibold uppercase [0.2em] text-cream/70">
+                            <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-cream/70">
                                 лет
                                 <br/>
                                 с вами
@@ -94,11 +94,11 @@ export function About() {
                 <div className="pt-10 lg:pt-0">
                     <Reveal>
                         <Eyebrow>О магазине</Eyebrow>
-                        <h2 className="mt-4 font-display text-5xl font-medium leading-[1.04] tight text-forest md:text-6xl">
+                        <h2 className="mt-4 font-display text-5xl font-medium leading-[1.04] tracking-tight text-forest md:text-6xl">
                             Больше, чем просто{' '}
                             <em className="font-light italic text-clay">магазин растений</em>
                         </h2>
-                        <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-ink/65">
+                        <p className="mt-6 text-[15px] leading-relaxed text-ink/65">
                             «Ботаника» началась с маленькой оранжереи на крыше дома на Лесной.
                             Сегодня у нас 500+ видов растений, собственный питомник и команда
                             ботаников, которая лечит, пересаживает и подбирает зелень под ваш
@@ -135,7 +135,7 @@ export function About() {
                                     <p className="font-display text-3xl font-semibold text-forest md:text-[40px]">
                                         <Counter to={s.to} suffix={s.suffix}/>
                                     </p>
-                                    <p className="mt-1 text-[11px] font-medium uppercase [0.14em] text-ink/45">
+                                    <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-ink/45">
                                         {s.label}
                                     </p>
                                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRightIcon, MapPin } from "lucide-react";
+import { ArrowRightIcon, MapPin, User } from "lucide-react";
 import {
   getStep1ValidationMessage,
   useOrderStore,
@@ -12,13 +12,14 @@ import { Form } from "@/shared/ui/form";
 import { Fieldset } from "@/shared/ui/fieldset";
 import { Field, FieldError, FieldLabel } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
-import { Separator } from "@/shared/ui/separator";
 import { ButtonWithIcon } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
+  CardMedia,
   CardTitle,
 } from "@/shared/ui/card";
 
@@ -55,167 +56,181 @@ export function ShippingInformation() {
   });
 
   return (
-    <Card className="flex flex-col">
-      <CardHeader>
-        <CardTitle className="flex gap-3 items-center">
-          <MapPin className="h-5 w-5" aria-hidden="true" />
-          Информация о доставке
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <Form
-          validationMode="onBlur"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (isStepValid) nextStep();
-          }}
-        >
-          <Fieldset>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <Field
-                labelPlacement="floating"
-                name="firstName"
-                requiredIndicator
-              >
-                <FieldLabel>Имя</FieldLabel>
+    <div className="flex flex-col gap-6">
+      <Card variant="header">
+        <CardHeader>
+          <CardMedia>
+            <User aria-hidden="true" />
+          </CardMedia>
+          <CardTitle>Информация о доставке</CardTitle>
+          <CardDescription>
+            Контактные данные получателя для оформления и подтверждения заказа.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form
+            validationMode="onBlur"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (isStepValid) nextStep();
+            }}
+          >
+            <Fieldset>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <Field
+                  labelPlacement="floating"
+                  name="firstName"
+                  requiredIndicator
+                >
+                  <FieldLabel>Имя</FieldLabel>
+                  <Input
+                    autoComplete="given-name"
+                    required
+                    value={shippingAddress.firstName}
+                    onChange={(e) =>
+                      handleAddressChange("firstName", e.currentTarget.value)
+                    }
+                  />
+                  <FieldError match="valueMissing">Укажите имя.</FieldError>
+                </Field>
+                <Field
+                  labelPlacement="floating"
+                  name="lastName"
+                  requiredIndicator
+                >
+                  <FieldLabel>Фамилия</FieldLabel>
+                  <Input
+                    autoComplete="family-name"
+                    required
+                    value={shippingAddress.lastName}
+                    onChange={(e) =>
+                      handleAddressChange("lastName", e.currentTarget.value)
+                    }
+                  />
+                  <FieldError match="valueMissing">Укажите фамилию.</FieldError>
+                </Field>
+                <Field labelPlacement="floating" name="middleName">
+                  <FieldLabel>Отчество</FieldLabel>
+                  <Input
+                    autoComplete="additional-name"
+                    value={shippingAddress.middleName}
+                    onChange={(e) =>
+                      handleAddressChange("middleName", e.currentTarget.value)
+                    }
+                  />
+                </Field>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Field
+                  labelPlacement="floating"
+                  name="phone"
+                  requiredIndicator
+                  validate={(value) => {
+                    const str = String(value ?? "");
+                    if (!str.trim()) return null;
+                    return str.replace(/\D/g, "").length >= 10
+                      ? null
+                      : "Укажите не менее 10 цифр номера телефона.";
+                  }}
+                >
+                  <FieldLabel>Номер телефона</FieldLabel>
+                  <Input
+                    autoComplete="tel"
+                    required
+                    type="tel"
+                    value={shippingAddress.phone}
+                    onChange={(e) =>
+                      handleAddressChange("phone", e.currentTarget.value)
+                    }
+                  />
+                  <FieldError match="valueMissing">
+                    Укажите номер телефона.
+                  </FieldError>
+                  <FieldError match="customError">
+                    Укажите не менее 10 цифр номера телефона.
+                  </FieldError>
+                </Field>
+                <Field
+                  labelPlacement="floating"
+                  name="email"
+                  requiredIndicator
+                  validate={(value) => {
+                    const str = String(value ?? "").trim();
+                    if (!str) return null;
+                    return EMAIL_RE.test(str)
+                      ? null
+                      : "Укажите корректную почту, например name@example.com.";
+                  }}
+                >
+                  <FieldLabel>Эл. Почта (для подтверждения)</FieldLabel>
+                  <Input
+                    autoComplete="email"
+                    type="email"
+                    required
+                    value={shippingAddress.email}
+                    onChange={(e) =>
+                      handleAddressChange("email", e.currentTarget.value)
+                    }
+                  />
+                  <FieldError match="valueMissing">
+                    Укажите электронную почту.
+                  </FieldError>
+                  <FieldError match="typeMismatch">
+                    Некорректный формат электронной почты.
+                  </FieldError>
+                  <FieldError match="customError">
+                    Укажите корректную почту, например name@example.com.
+                  </FieldError>
+                </Field>
+              </div>
+              <Field labelPlacement="floating" name="comment">
+                <FieldLabel>Комментарий к заказу</FieldLabel>
                 <Input
-                  autoComplete="given-name"
-                  required
-                  value={shippingAddress.firstName}
+                  value={shippingAddress.comment}
                   onChange={(e) =>
-                    handleAddressChange("firstName", e.currentTarget.value)
+                    handleAddressChange("comment", e.currentTarget.value)
                   }
                 />
-                <FieldError match="valueMissing">Укажите имя.</FieldError>
               </Field>
-              <Field
-                labelPlacement="floating"
-                name="lastName"
-                requiredIndicator
-              >
-                <FieldLabel>Фамилия</FieldLabel>
-                <Input
-                  autoComplete="family-name"
-                  required
-                  value={shippingAddress.lastName}
-                  onChange={(e) =>
-                    handleAddressChange("lastName", e.currentTarget.value)
-                  }
-                />
-                <FieldError match="valueMissing">Укажите фамилию.</FieldError>
-              </Field>
-              <Field labelPlacement="floating" name="middleName">
-                <FieldLabel>Отчество</FieldLabel>
-                <Input
-                  autoComplete="additional-name"
-                  value={shippingAddress.middleName}
-                  onChange={(e) =>
-                    handleAddressChange("middleName", e.currentTarget.value)
-                  }
-                />
-              </Field>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Field
-                labelPlacement="floating"
-                name="phone"
-                requiredIndicator
-                validate={(value) => {
-                  const str = String(value ?? "");
-                  if (!str.trim()) return null;
-                  return str.replace(/\D/g, "").length >= 10
-                    ? null
-                    : "Укажите не менее 10 цифр номера телефона.";
-                }}
-              >
-                <FieldLabel>Номер телефона</FieldLabel>
-                <Input
-                  autoComplete="tel"
-                  required
-                  type="tel"
-                  value={shippingAddress.phone}
-                  onChange={(e) =>
-                    handleAddressChange("phone", e.currentTarget.value)
-                  }
-                />
-                <FieldError match="valueMissing">
-                  Укажите номер телефона.
-                </FieldError>
-                <FieldError match="customError">
-                  Укажите не менее 10 цифр номера телефона.
-                </FieldError>
-              </Field>
-              <Field
-                labelPlacement="floating"
-                name="email"
-                requiredIndicator
-                validate={(value) => {
-                  const str = String(value ?? "").trim();
-                  if (!str) return null;
-                  return EMAIL_RE.test(str)
-                    ? null
-                    : "Укажите корректную почту, например name@example.com.";
-                }}
-              >
-                <FieldLabel>Эл. Почта (для подтверждения)</FieldLabel>
-                <Input
-                  autoComplete="email"
-                  type="email"
-                  required
-                  value={shippingAddress.email}
-                  onChange={(e) =>
-                    handleAddressChange("email", e.currentTarget.value)
-                  }
-                />
-                <FieldError match="valueMissing">
-                  Укажите электронную почту.
-                </FieldError>
-                <FieldError match="typeMismatch">
-                  Некорректный формат электронной почты.
-                </FieldError>
-                <FieldError match="customError">
-                  Укажите корректную почту, например name@example.com.
-                </FieldError>
-              </Field>
-            </div>
-            <Field labelPlacement="floating" name="comment">
-              <FieldLabel>Комментарий к заказу</FieldLabel>
-              <Input
-                value={shippingAddress.comment}
-                onChange={(e) =>
-                  handleAddressChange("comment", e.currentTarget.value)
-                }
-              />
-            </Field>
-          </Fieldset>
-        </Form>
-      </CardContent>
+            </Fieldset>
+          </Form>
+        </CardContent>
+      </Card>
 
-      <Separator />
+      <Card variant="header">
+        <CardHeader>
+          <CardMedia>
+            <MapPin aria-hidden="true" />
+          </CardMedia>
+          <CardTitle>Как хотите получить заказ</CardTitle>
+          <CardDescription>
+            Выберите самовывоз или удобную службу доставки.
+          </CardDescription>
+        </CardHeader>
 
-      <CardContent className="flex flex-col gap-4">
-        <CardTitle>Как хотите получить заказ</CardTitle>
-        <ShippingMethods />
-      </CardContent>
+        <CardContent>
+          <ShippingMethods />
+        </CardContent>
 
-      <CardFooter className="flex flex-wrap items-center justify-between gap-3">
-        {validationHint && (
-          <p className="text-xs text-muted-foreground">{validationHint}</p>
-        )}
-        <ButtonWithIcon
-          type="button"
-          onClick={nextStep}
-          disabled={!isStepValid}
-          className="ml-auto"
-          variant="accent"
-          size="lg"
-          iconPosition="end"
-          shape="pill"
-          icon={<ArrowRightIcon aria-hidden="true" />}
-        >
-          К оплате
-        </ButtonWithIcon>
-      </CardFooter>
-    </Card>
+        <CardFooter className="border-t flex-wrap items-center justify-between gap-3">
+          {validationHint && (
+            <p className="text-xs text-muted-foreground">{validationHint}</p>
+          )}
+          <ButtonWithIcon
+            type="button"
+            onClick={nextStep}
+            disabled={!isStepValid}
+            className="ml-auto"
+            variant="accent"
+            size="lg"
+            iconPosition="end"
+            shape="pill"
+            icon={<ArrowRightIcon aria-hidden="true" />}
+          >
+            К оплате
+          </ButtonWithIcon>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }
