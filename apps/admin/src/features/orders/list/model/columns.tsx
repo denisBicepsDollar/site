@@ -72,6 +72,6 @@ export const columns = [
     {
         id: "actions",
         enableHiding: false,
-        cell: ({row}) => <RowActionsMenu id={row.original.orderNumber} triggerClassName="hover:bg-muted" actions={[]} />,
+        cell: ({row}) => <RowActionsMenu id={row.original.id} triggerClassName="hover:bg-muted" actions={[]} />,
     },
 ];

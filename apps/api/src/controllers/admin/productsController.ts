@@ -69,10 +69,12 @@ interface NormalizedProductPayload {
   name: string;
   description: string | null;
   category: string;
-  subcategory: string;
+  subcategory: string | undefined;
+  type?: string | null | undefined;
+  shortDescription?: string | null | undefined;
   status: ProductStatus;
   price: number;
-  sku?: string;
+  sku?: string | undefined;
   previewImage: string | null;
   careInstructions: string | null;
   variants: NormalizedVariantInput[];
@@ -95,6 +97,8 @@ function parseProductPayload(body: unknown):
     description?: unknown;
     category?: unknown;
     subcategory?: unknown;
+    type?: unknown;
+    shortDescription?: unknown;
     status?: unknown;
     price?: unknown;
     sku?: unknown;
@@ -123,7 +127,11 @@ function parseProductPayload(body: unknown):
   }
 
   const firstVariantPrice = (variantsRaw[0] as { price?: unknown } | undefined)?.price;
-  const basePrice = Number(raw.price ?? firstVariantPrice ?? 0);
+  const rawPrice =
+    raw.price === "" || raw.price === null || raw.price === undefined
+      ? firstVariantPrice
+      : raw.price;
+  const basePrice = Number(rawPrice ?? 0);
   if (!Number.isFinite(basePrice) || basePrice < 0) {
     return { ok: false, message: "Product price must be a non-negative number" };
   }
@@ -138,7 +146,11 @@ function parseProductPayload(body: unknown):
       previewImage?: unknown;
       images?: unknown;
     };
-    const vPrice = Number(v.price ?? basePrice);
+    const vRawPrice =
+      v.price === "" || v.price === null || v.price === undefined
+        ? basePrice
+        : v.price;
+    const vPrice = Number(vRawPrice);
     const vStock = Number(v.stock ?? 0);
     if (!Number.isFinite(vPrice) || vPrice < 0 || !Number.isInteger(vStock) || vStock < 0) {
       return { ok: false, message: "Variant price and stock are invalid" };
@@ -174,16 +186,27 @@ function parseProductPayload(body: unknown):
       ? raw.sku.trim()
       : undefined;
 
+  const subcategory =
+    typeof raw.subcategory === "string" && raw.subcategory.trim()
+      ? raw.subcategory.trim()
+      : undefined;
+
+  const hasType = typeof raw.type === "string";
+  const typeValue = hasType ? (raw.type as string).trim() || null : undefined;
+  const hasShortDescription = typeof raw.shortDescription === "string";
+  const shortDescriptionValue = hasShortDescription
+    ? (raw.shortDescription as string).trim().slice(0, 255) || null
+    : undefined;
+
   return {
     ok: true,
     data: {
       name,
       description: typeof raw.description === "string" ? raw.description : null,
       category,
-      subcategory:
-        typeof raw.subcategory === "string" && raw.subcategory.trim()
-          ? raw.subcategory.trim()
-          : category,
+      subcategory,
+      ...(hasType ? { type: typeValue } : {}),
+      ...(hasShortDescription ? { shortDescription: shortDescriptionValue } : {}),
       status,
       price: basePrice,
       ...(sku ? { sku } : {}),
@@ -324,7 +347,9 @@ export async function create(req: Request, res: Response) {
         slug,
         description: data.description,
         category: data.category,
-        subcategory: data.subcategory,
+        subcategory: data.subcategory ?? data.category,
+        ...(data.type !== undefined ? { type: data.type } : {}),
+        ...(data.shortDescription !== undefined ? { shortDescription: data.shortDescription } : {}),
         status: data.status,
         price: String(data.price),
         sku: data.sku ?? `PLANT-${randomUUID().slice(0, 8).toUpperCase()}`,
@@ -348,7 +373,7 @@ export async function create(req: Request, res: Response) {
             variant.images.map((imgUrl, index) => ({
               variantId: savedVariant.id,
               imgUrl,
-              isMain: imgUrl === variant.previewImage || index === 0,
+              isMain: variant.previewImage ? imgUrl === variant.previewImage : index === 0,
             })),
           );
         }
@@ -379,7 +404,11 @@ export async function update(req: Request, res: Response) {
   try {
     const outcome = await db.transaction(async (tx) => {
       const [existing] = await tx
-        .select({ id: productsInProducts.id, slug: productsInProducts.slug })
+        .select({
+          id: productsInProducts.id,
+          slug: productsInProducts.slug,
+          subcategory: productsInProducts.subcategory,
+        })
         .from(productsInProducts)
         .where(eq(productsInProducts.id, id))
         .limit(1);
@@ -399,7 +428,9 @@ export async function update(req: Request, res: Response) {
           slug: nextSlug,
           description: data.description,
           category: data.category,
-          subcategory: data.subcategory,
+          subcategory: data.subcategory ?? existing.subcategory ?? data.category,
+          ...(data.type !== undefined ? { type: data.type } : {}),
+          ...(data.shortDescription !== undefined ? { shortDescription: data.shortDescription } : {}),
           status: data.status,
           price: String(data.price),
           ...(data.sku ? { sku: data.sku } : {}),
@@ -470,7 +501,7 @@ export async function update(req: Request, res: Response) {
             variant.images.map((imgUrl, index) => ({
               variantId,
               imgUrl,
-              isMain: imgUrl === variant.previewImage || index === 0,
+              isMain: variant.previewImage ? imgUrl === variant.previewImage : index === 0,
             })),
           );
         }

@@ -90,9 +90,11 @@ export default function ProductScreen({
   const [selectedVariantId, setSelectedVariantId] = useState<string>(
     () => sortedVariants[0]?.id ?? "",
   );
+  const [hasSelectedVariant, setHasSelectedVariant] = useState(false);
 
   useEffect(() => {
     setSelectedVariantId(sortedVariants[0]?.id ?? "");
+    setHasSelectedVariant(false);
     setQty(1);
     setCartFeedback(null);
     // Reset selection only when navigating to a different product
@@ -107,12 +109,19 @@ export default function ProductScreen({
   );
 
   const galleryImages = useMemo(() => {
-    const candidates = [
-      currentVariant?.previewImage,
-      ...(currentVariant?.images ?? []),
-      product?.previewImage,
-      ...(product?.images ?? []),
-    ];
+    const candidates = hasSelectedVariant
+      ? [
+          currentVariant?.previewImage,
+          ...(currentVariant?.images ?? []),
+          product?.previewImage,
+          ...(product?.images ?? []),
+        ]
+      : [
+          product?.previewImage,
+          currentVariant?.previewImage,
+          ...(currentVariant?.images ?? []),
+          ...(product?.images ?? []),
+        ];
     const seen = new Set<string>();
     const unique: string[] = [];
     for (const raw of candidates) {
@@ -125,24 +134,31 @@ export default function ProductScreen({
       return unique.filter((src) => src !== DEFAULT_IMAGE);
     }
     return unique.length > 0 ? unique : [DEFAULT_IMAGE];
-  }, [currentVariant, product?.images, product?.previewImage]);
+  }, [currentVariant, hasSelectedVariant, product?.images, product?.previewImage]);
 
   const [activeImage, setActiveImage] = useState<string>(
     () => galleryImages[0] ?? DEFAULT_IMAGE,
   );
 
   useEffect(() => {
-    const preferred =
-      currentVariant?.previewImage?.trim() ||
-      currentVariant?.images?.[0]?.trim() ||
-      galleryImages[0] ||
-      DEFAULT_IMAGE;
+    const preferred = hasSelectedVariant
+      ? currentVariant?.previewImage?.trim() ||
+        currentVariant?.images?.[0]?.trim() ||
+        galleryImages[0] ||
+        DEFAULT_IMAGE
+      : product?.previewImage?.trim() ||
+        currentVariant?.previewImage?.trim() ||
+        currentVariant?.images?.[0]?.trim() ||
+        galleryImages[0] ||
+        DEFAULT_IMAGE;
     setActiveImage(preferred);
   }, [
     currentVariant?.id,
     currentVariant?.previewImage,
     currentVariant?.images,
     galleryImages,
+    hasSelectedVariant,
+    product?.previewImage,
   ]);
 
   useEffect(() => {
@@ -234,6 +250,7 @@ export default function ProductScreen({
   const handleVariantChange = (selectedId: string) => {
     const selected = sortedVariants.find((v) => v.id === selectedId);
     if (!selected) return;
+    setHasSelectedVariant(true);
     setSelectedVariantId(selected.id);
     const nextMax = Math.max(1, Number(selected.stock) || 0);
     setQty((prev) => Math.min(Math.max(1, prev), nextMax));

@@ -1,8 +1,25 @@
 import type {Request, Response} from "express";
+import {desc} from "drizzle-orm";
 import db from "@/db/index";
 import {contactsInMessages} from "@drizzle/schema";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export async function listAdmin(_req: Request, res: Response) {
+  const rows = await db
+    .select({
+      id: contactsInMessages.id,
+      name: contactsInMessages.name,
+      email: contactsInMessages.email,
+      phone: contactsInMessages.phone,
+      message: contactsInMessages.message,
+      createdAt: contactsInMessages.createdAt,
+    })
+    .from(contactsInMessages)
+    .orderBy(desc(contactsInMessages.createdAt), desc(contactsInMessages.id));
+
+  return res.status(200).json({data: rows});
+}
 
 export async function create(req: Request, res: Response) {
   const body = req.body ?? {};

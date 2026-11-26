@@ -1,7 +1,11 @@
 import type { SearchParams } from "@/controllers/store/productController";
 import db from "@/db/index";
-import { productsInProducts, productVariantsInProducts } from "@drizzle/schema";
-import { and, eq, gt, gte, inArray, lte, sql } from "drizzle-orm";
+import {
+  productsInProducts,
+  productVariantsImagesInProducts,
+  productVariantsInProducts,
+} from "@drizzle/schema";
+import { and, desc, eq, gt, gte, inArray, lte, sql } from "drizzle-orm";
 import { buildProductSearchSql } from "./productSearch";
 
 const formattedDates = {
@@ -150,6 +154,7 @@ export async function list(
           price: true,
           oldPrice: true,
           stock: true,
+          previewImage: true,
         },
         ...(hasVariantFilter && { where: variantFilter }),
         orderBy: { price: "asc" },
@@ -225,6 +230,30 @@ export async function getVariants(variantIds: string[]) {
     )
     .where(inArray(productVariantsInProducts.id, validIds));
 
+  const missingImageVariantIds = rows
+    .filter((row) => !row.previewImage?.trim() && !row.productPreviewImage?.trim())
+    .map((row) => row.id);
+
+  const fallbackImagesByVariantId = new Map<string, string>();
+  if (missingImageVariantIds.length > 0) {
+    const variantImageRows = await db
+      .select({
+        variantId: productVariantsImagesInProducts.variantId,
+        imgUrl: productVariantsImagesInProducts.imgUrl,
+        isMain: productVariantsImagesInProducts.isMain,
+      })
+      .from(productVariantsImagesInProducts)
+      .where(inArray(productVariantsImagesInProducts.variantId, missingImageVariantIds))
+      .orderBy(desc(productVariantsImagesInProducts.isMain));
+
+    for (const imgRow of variantImageRows) {
+      const url = imgRow.imgUrl?.trim();
+      if (url && !fallbackImagesByVariantId.has(imgRow.variantId)) {
+        fallbackImagesByVariantId.set(imgRow.variantId, url);
+      }
+    }
+  }
+
   return rows.map((row) => ({
     id: row.id,
     variantId: row.id,
@@ -232,7 +261,10 @@ export async function getVariants(variantIds: string[]) {
     oldPrice: row.oldPrice,
     stock: Number(row.stock) || 0,
     previewImage:
-      row.previewImage?.trim() || row.productPreviewImage?.trim() || null,
+      row.previewImage?.trim() ||
+      fallbackImagesByVariantId.get(row.id) ||
+      row.productPreviewImage?.trim() ||
+      null,
     name: row.name?.trim() || "Стандарт",
     productId: row.productId,
     productName: row.productName,

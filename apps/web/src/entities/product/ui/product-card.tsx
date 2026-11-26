@@ -59,6 +59,12 @@ export function ProductCard({ product }) {
                 src={product.previewImage || "/default-image.png"}
                 alt={product.name}
                 loading="lazy"
+                onError={(e) => {
+                  const img = e.currentTarget;
+                  if (!img.src.endsWith("/default-image.png")) {
+                    img.src = "/default-image.png";
+                  }
+                }}
                 className="h-full w-full object-cover transition-transform duration-[700ms] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-105"
               />
             </Link>

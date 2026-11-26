@@ -1,5 +1,5 @@
 import {useMemo, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {Button} from "@site/ui/button";
 import {Badge} from "@site/ui/badge";
 import {EmptyState} from "@/shared/ui/EmptyState.tsx";
@@ -28,15 +28,20 @@ export function ProductPage() {
 
 function ProductForm({id}: {id?: string}) {
     const navigate = useNavigate();
+    const location = useLocation();
+    const routeFeedback = (location.state as {feedback?: {type: "success" | "error"; text: string}} | null)?.feedback ?? null;
     const form = useProductForm(id);
-    const [feedback, setFeedback] = useState<{type: "success" | "error"; text: string} | null>(null);
+    const [feedback, setFeedback] = useState<{type: "success" | "error"; text: string} | null>(routeFeedback);
 
     const saveProduct = async () => {
         setFeedback(null);
         try {
             const saved = await form.save();
             if (form.isCreateMode) {
-                navigate(`/dashboard/products/${saved.id}`, {replace: true});
+                navigate(`/dashboard/products/${saved.id}`, {
+                    replace: true,
+                    state: {feedback: {type: "success", text: "Товар создан"}},
+                });
             } else {
                 setFeedback({type: "success", text: "Изменения сохранены"});
             }
@@ -104,9 +109,9 @@ function ProductForm({id}: {id?: string}) {
     };
 
     const handleMakeVariantCover = (variantIndex: number, src: string) => {
-        const variantName = form.variants[variantIndex]?.name;
+        const variantName = form.variants[variantIndex]?.name?.trim() || "без названия";
 
-        if (!window.confirm(`Сделать фото обложкой варианта ${variantName}`)) return;
+        if (!window.confirm(`Сделать фото обложкой варианта ${variantName}?`)) return;
 
         form.setVariantCover(variantIndex, src);
         const photoIndex = photos.findIndex((photo) => photo.src === src && photo.variantIndex === variantIndex);
@@ -214,7 +219,11 @@ function ProductForm({id}: {id?: string}) {
                         updated={form.item.updated}
                         variantsCount={form.variants.length}
                         category={form.category}
+                        categoryOptions={form.categoryOptions}
                         onCategoryChange={form.setCategory}
+                        subcategory={form.subcategory}
+                        subcategoryOptions={form.subcategoryOptions}
+                        onSubcategoryChange={form.setSubcategory}
                         basePrice={form.basePrice}
                         onBasePriceChange={form.setBasePrice}
                     />
@@ -227,10 +236,12 @@ function ProductForm({id}: {id?: string}) {
                     <PhotosSection
                         variants={form.variants}
                         cover={form.cover}
+                        uploadError={form.uploadError}
                         onOpenPhoto={openVariantPhoto}
                         onRemovePhoto={handleRemovePhoto}
                         onMakeProductCover={handleMakeProductCover}
                         onCoverUpload={form.uploadCover}
+                        onRemoveCover={() => form.setProductCover("")}
                         onOpenCover={openCoverPhoto}
                     />
 

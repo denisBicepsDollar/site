@@ -1,4 +1,5 @@
 import express from "express";
+import path from "node:path";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import errorHandler from "@/middleware/errorHandler";
@@ -54,7 +55,17 @@ export function createApp() {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-  app.use("/uploads/admin-products", express.static(adminProductImageDirectory, { immutable: true, maxAge: "1y" }));
+  app.use(
+    "/uploads/admin-products",
+    express.static(adminProductImageDirectory, { immutable: true, maxAge: "1y" }),
+  );
+  const legacyUploadDirectory = path.resolve("uploads/admin-products");
+  if (legacyUploadDirectory !== adminProductImageDirectory) {
+    app.use(
+      "/uploads/admin-products",
+      express.static(legacyUploadDirectory, { immutable: true, maxAge: "1y" }),
+    );
+  }
   app.use(cookieParser());
 
   app.use("/api/", apiLimiter);

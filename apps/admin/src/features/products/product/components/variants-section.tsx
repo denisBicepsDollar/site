@@ -58,6 +58,7 @@ export function VariantsSection({
 
                     {/* Кнопка "Свой вариант" */}
                     <Button
+                        type="button"
                         variant="outline"
                         size={'lg'}
                         onClick={() => onAddVariant("")}>

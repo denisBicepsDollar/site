@@ -14,6 +14,9 @@ interface RawAdminProduct {
     name: string;
     sku?: string | null;
     category?: string | null;
+    subcategory?: string | null;
+    type?: string | null;
+    shortDescription?: string | null;
     description?: string | null;
     careInstructions?: string | null;
     status?: string | null;
@@ -54,6 +57,9 @@ export interface AdminProduct {
     name: string;
     sku: string;
     category: string;
+    subcategory: string;
+    type: string;
+    shortDescription: string;
     description: string;
     note: string;
     status: string;
@@ -80,12 +86,21 @@ export interface ProductsPage {
     meta: ProductsPageResponse["meta"];
 }
 
+export interface CatalogLabelsMap {
+    categories?: Record<string, string>;
+    subcategories?: Record<string, string>;
+    types?: Record<string, string>;
+}
+
 function mapProduct(product: RawAdminProduct): AdminProduct {
     const variants = product.productVariantsInProducts ?? [];
     const variantRows: AdminProductVariant[] = variants.map((variant) => {
+        const sortedVariantImages = [...(variant.productVariantsImagesInProducts ?? [])].sort(
+            (a, b) => Number(Boolean(b.isMain)) - Number(Boolean(a.isMain)),
+        );
         const images = Array.from(
             new Set(
-                (variant.productVariantsImagesInProducts ?? [])
+                sortedVariantImages
                     .map((image) => image.imgUrl?.trim())
                     .filter((image): image is string => Boolean(image)),
             ),
@@ -104,18 +119,30 @@ function mapProduct(product: RawAdminProduct): AdminProduct {
     const rawPreviewImage = product.previewImage?.trim() || "";
     const listPreviewImage = rawPreviewImage || variantRows[0]?.previewImage || "/default-image.png";
 
+    const hasExplicitPrice =
+        product.price !== null &&
+        product.price !== undefined &&
+        String(product.price).trim() !== "";
+    const parsedPrice = hasExplicitPrice ? Number(product.price) : Number.NaN;
+    const effectivePrice = Number.isFinite(parsedPrice) && parsedPrice > 0
+        ? parsedPrice
+        : (variantRows[0]?.price ?? (Number.isFinite(parsedPrice) ? parsedPrice : 0));
+
     return {
         id: product.id,
         name: product.name,
         sku: product.sku ?? "",
-        category: product.category ?? "Без категории",
+        category: product.category?.trim() ?? "",
+        subcategory: product.subcategory?.trim() ?? "",
+        type: product.type?.trim() ?? "",
+        shortDescription: product.shortDescription?.trim() ?? "",
         description: product.description ?? "",
         note: product.careInstructions ?? "",
         status: product.status ?? "draft",
         updated: product.updated ?? product.createdAt ?? "—",
         previewImage: listPreviewImage,
         rawPreviewImage,
-        price: Number(product.price) || variantRows[0]?.price || 0,
+        price: effectivePrice,
         stock: variantRows.reduce((sum, variant) => sum + variant.stock, 0),
         variants: variantRows,
     };
@@ -172,6 +199,16 @@ async function uploadImage(file: File): Promise<string> {
     return response.data.url;
 }
 
+async function getCatalogLabels(): Promise<CatalogLabelsMap> {
+    try {
+        const res = await fetch("/api/v1/products/labels", {credentials: "include"});
+        if (!res.ok) return {};
+        return await res.json() as CatalogLabelsMap;
+    } catch {
+        return {};
+    }
+}
+
 export const productsApi = {
     list,
     getById,
@@ -181,4 +218,5 @@ export const productsApi = {
     bulkUpdateStatus,
     bulkDelete,
     uploadImage,
+    getCatalogLabels,
 };

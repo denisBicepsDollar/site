@@ -2,7 +2,9 @@ import {File, Image as ImageIcon} from "lucide-react"
 import {PhotoTile} from "../ui/photo-tile.tsx"
 import {buttonVariants} from "@site/ui/button";
 
-export function CoverPanel({cover, onOpen, onUpload}) {
+const ACCEPTED_IMAGE_FORMATS = "image/jpeg,image/png,image/webp,image/avif,.jpg,.jpeg,.png,.webp,.avif"
+
+export function CoverPanel({cover, onOpen, onUpload, onRemove}) {
     const handleUpload = (event) => {
         const file = event.target.files?.[0]
         event.target.value = ""
@@ -28,6 +30,7 @@ export function CoverPanel({cover, onOpen, onUpload}) {
                         alt="Обложка товара"
                         fluid
                         onOpen={onOpen}
+                        onRemove={onRemove}
                         openLabel="Просмотр"
                     />
                 ) : (
@@ -51,7 +54,7 @@ export function CoverPanel({cover, onOpen, onUpload}) {
                         </div>
                         <input
                             type="file"
-                            accept="image/*"
+                            accept={ACCEPTED_IMAGE_FORMATS}
                             className="sr-only"
                             onChange={handleUpload}
                         />
@@ -63,7 +66,7 @@ export function CoverPanel({cover, onOpen, onUpload}) {
                     <span>Загрузить фото</span>
                     <input
                         type="file"
-                        accept="image/*"
+                        accept={ACCEPTED_IMAGE_FORMATS}
                         className="sr-only"
                         onChange={handleUpload}
                     />

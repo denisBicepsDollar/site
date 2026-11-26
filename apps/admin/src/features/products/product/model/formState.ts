@@ -23,11 +23,17 @@ export function createFormState(item) {
         ? cleanImage(item.rawPreviewImage)
         : cleanImage(item?.previewImage);
 
+    const category = item?.isCreate
+        ? DEFAULT_CATEGORY
+        : (item?.category ?? DEFAULT_CATEGORY);
+
     return {
         name: item?.name ?? "",
         description: item?.description ?? "",
         status: item?.status ?? DEFAULT_STATUS,
-        category: item?.category ?? DEFAULT_CATEGORY,
+        category,
+        subcategory: item?.subcategory ?? "",
+        type: item?.type ?? "",
         basePrice: item?.price ?? "",
         note: item?.note ?? item?.careInstructions ?? "",
         cover: rawCover,
@@ -57,7 +63,7 @@ export function createVariant(name, basePrice) {
         clientId: createClientId(),
         name,
         stock: 0,
-        price: basePrice === "" || basePrice === null || basePrice === undefined ? 0 : Number(basePrice),
+        price: basePrice === "" || basePrice === null || basePrice === undefined ? "" : Number(basePrice),
         images: [],
         previewImage: "",
     };
@@ -101,7 +107,22 @@ export function addVariant(state, name) {
 }
 
 export function removeVariant(state, index) {
-    return {...state, variants: state.variants.filter((_, i) => i !== index)};
+    const target = state.variants[index];
+    const variants = state.variants.filter((_, i) => i !== index);
+    if (!target) {
+        return {...state, variants};
+    }
+
+    const removedHadCover = Boolean(state.cover) && target.images.includes(state.cover);
+    const coverStillUsed = Boolean(state.cover) && variants.some(variant => variant.images.includes(state.cover));
+
+    return {
+        ...state,
+        variants,
+        cover: removedHadCover && !coverStillUsed
+            ? variants.flatMap(variant => variant.images)[0] ?? ""
+            : state.cover,
+    };
 }
 
 export function removeVariantPhoto(state, variantIndex, imageIndex) {
@@ -138,7 +159,14 @@ export function addVariantPhotos(state, variantIndex, urls) {
     const target = state.variants[variantIndex];
     if (!target || !urls.length) return state;
 
-    return updateVariantAt(state, variantIndex, {
-        images: [...target.images, ...urls],
+    const nextImages = [...target.images, ...urls];
+    const nextState = updateVariantAt(state, variantIndex, {
+        images: nextImages,
+        previewImage: target.previewImage || urls[0],
     });
+
+    return {
+        ...nextState,
+        cover: nextState.cover || urls[0],
+    };
 }

@@ -1,5 +1,4 @@
 export { shippingMethodsConfig } from "@/entities/order";
-export { sampleOrderItems } from "./config/const";
 export { useCheckoutSteps } from "./model/use-order";
 export { DeliveryAddress } from "./ui/delivery-address";
 export { OrderSummary } from "./ui/order-summary";

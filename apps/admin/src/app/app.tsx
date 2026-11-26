@@ -52,7 +52,7 @@ export default function App() {
                         </Route>
                         <Route path="messages">
                             <Route index element={<MessagesListPage/>}/>
-                            <Route path=":id" element={<div>21</div>}/>
+                            <Route path=":id" element={<MessagesListPage/>}/>
                         </Route>
                         <Route path="settings">
                             <Route index element={<SettingsPage/>}/>

@@ -16,39 +16,6 @@ export interface ProductReviewItem {
   verified: boolean;
 }
 
-const DEFAULT_REVIEWS: ProductReviewItem[] = [
-  {
-    id: "1",
-    rating: 5,
-    title: "Крепкое и здоровое растение",
-    content:
-      "Приехало бережно упакованным, грунт влажный, листья упругие и без пятен. Приложили подробную памятку по уходу, сразу пересадили и растение отлично прижилось.",
-    author: { name: "Анна Соколова" },
-    date: "10 дек 2025",
-    verified: true,
-  },
-  {
-    id: "2",
-    rating: 5,
-    title: "Точно как на фотографии",
-    content:
-      "Брали в подарок, очень переживали за доставку зимой. Утеплили в несколько слоёв, привезли вовремя, куст даже пышнее, чем ожидали.",
-    author: { name: "Михаил Волков" },
-    date: "4 дек 2025",
-    verified: true,
-  },
-  {
-    id: "3",
-    rating: 4,
-    title: "Отличное соотношение цены и качества",
-    content:
-      "Хорошее здоровое растение, корни сильные. Консультант помог подобрать грунт и кашпо в тон интерьеру.",
-    author: { name: "Елена Морозова" },
-    date: "28 ноя 2025",
-    verified: true,
-  },
-];
-
 export interface ReviewsProps {
   reviews?: ProductReviewItem[];
   title?: string;
@@ -56,7 +23,7 @@ export interface ReviewsProps {
 }
 
 export const Reviews1 = ({
-  reviews = DEFAULT_REVIEWS,
+  reviews = [],
   title = "Отзывы покупателей",
   className,
 }: ReviewsProps) => {

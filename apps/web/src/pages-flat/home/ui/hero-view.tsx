@@ -84,9 +84,9 @@ export function HeroView({
   const heroImage = activeProduct?.previewImage || HERO_IMG;
   const heroImageAlt = activeProduct?.name || "Комнатные и садовые растения";
   const productsCountLabel =
-    activeTotalCount !== null && activeTotalCount > 0
+    activeTotalCount !== null && activeTotalCount >= 0
       ? String(activeTotalCount)
-      : "500+";
+      : "—";
 
   const showFloatingSkeleton = !activeProduct && (isPending || !hasLoadedFallback);
 

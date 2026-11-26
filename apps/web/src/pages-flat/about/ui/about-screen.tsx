@@ -2,32 +2,6 @@ import { cn } from "cn";
 
 const defaultProps = {
   heading: "О магазине",
-  images: [
-    {
-      src: "https://cdn.shadcnblocks.com/shadcnblocks/image-set/modern/about/photo-1-16x9.jpg",
-      alt: "Team collaboration",
-    },
-    {
-      src: "https://cdn.shadcnblocks.com/shadcnblocks/image-set/modern/about/photo-2-16x9.jpg",
-      alt: "Studio workspace",
-    },
-    {
-      src: "https://cdn.shadcnblocks.com/shadcnblocks/image-set/modern/about/photo-3-16x9.jpg",
-      alt: "Team meeting",
-    },
-    {
-      src: "https://cdn.shadcnblocks.com/shadcnblocks/image-set/modern/about/photo-4-16x9.jpg",
-      alt: "Office interior",
-    },
-    {
-      src: "https://cdn.shadcnblocks.com/shadcnblocks/image-set/modern/about/photo-5-16x9.jpg",
-      alt: "Workshop session",
-    },
-    {
-      src: "https://cdn.shadcnblocks.com/shadcnblocks/image-set/modern/about/photo-6-16x9.jpg",
-      alt: "Founding team",
-    },
-  ],
   sections: [
     {
       title: "Качество",
@@ -50,7 +24,6 @@ const defaultProps = {
 };
 
 const MAX_COLUMNS = 3;
-const MAX_IMAGES = 2;
 const COLUMN_CHARS = 160;
 
 const truncate = (content) => {
@@ -61,14 +34,12 @@ const truncate = (content) => {
 };
 
 export const AboutScreen = (props) => {
-  const { heading, images, sections, className } = {
+  const { heading, sections, className } = {
     ...defaultProps,
     ...props,
   };
 
-  const gallery = (images ?? []).slice(0, MAX_IMAGES);
   const columns = (sections ?? []).slice(0, MAX_COLUMNS);
-  const mission = sections?.[2];
   const valuesTitle = sections?.[3]?.title;
   const valuesBody = sections?.[3]?.content;
 
@@ -106,47 +77,6 @@ export const AboutScreen = (props) => {
               листочкам, Сузопова Елена Анатольевна 🌿
             </p>
           </div>
-          {/*<div className="grid gap-6 md:grid-cols-2">
-            {gallery[0] && (
-              <img
-                src={gallery[0].src}
-                alt={gallery[0].alt}
-                className="size-full max-h-96 rounded-2xl object-cover"
-              />
-            )}
-            <div
-              className="relative flex flex-col justify-between gap-10 overflow-hidden rounded-2xl bg-muted bg-cover bg-center p-10"
-              style={
-                gallery[1]
-                  ? { backgroundImage: `url(${gallery[1].src})` }
-                  : undefined
-              }
-            >
-              <div className="absolute inset-0 bg-foreground/55" />
-              <div className="relative flex h-full flex-col justify-between gap-10">
-                {mission?.label && (
-                  <p className="flex items-center gap-2.5 text-sm font-semibold text-primary-foreground uppercase">
-                    <img
-                      src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon-white.svg"
-                      alt="Shadcnblocks"
-                      className="size-4 dark:hidden"
-                    />
-                    <img
-                      src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg"
-                      alt="Shadcnblocks"
-                      className="hidden size-4 dark:block"
-                    />
-                    {mission.label}
-                  </p>
-                )}
-                {mission?.content && (
-                  <p className="text-lg font-medium text-primary-foreground">
-                    {mission.content}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>*/}
           <div className="flex flex-col gap-10">
             <div className="flex max-w-4xl flex-col gap-4">
               {valuesTitle && (
