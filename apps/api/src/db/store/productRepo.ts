@@ -9,7 +9,7 @@ const formattedDates = {
   updated_at: sql<string>`TO_CHAR(${productsInProducts.updated}, 'DD.MM.YYYY HH24:MI:SS')`,
 };
 
-export type ProductSort = "score" | "new" | "price" | "price_desc";
+export type ProductSort = "score" | "sales" | "new" | "price" | "price_desc";
 
 export async function list(
   category?: string,
@@ -124,6 +124,12 @@ export async function list(
           return [
             desc(hasStock),
             sql`${p.createdAt} desc nulls last`,
+            desc(p.id),
+          ];
+        case "sales":
+          return [
+            desc(hasStock),
+            desc(p.salesCount),
             desc(p.id),
           ];
         case "score":

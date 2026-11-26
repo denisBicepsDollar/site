@@ -12,10 +12,11 @@ function parsePrice(value?: string): number | undefined {
   return Number.isFinite(num) && num >= 0 ? num : undefined;
 }
 
-export type ProductSort = "score" | "new" | "price" | "price_desc";
+export type ProductSort = "score" | "sales" | "new" | "price" | "price_desc";
 
 const ALLOWED_SORTS = new Set<ProductSort>([
   "score",
+  "sales",
   "new",
   "price",
   "price_desc",

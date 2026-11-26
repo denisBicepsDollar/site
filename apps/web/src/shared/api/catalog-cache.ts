@@ -160,6 +160,78 @@ export async function getCachedProductBySlug(slug: string): Promise<{
   }
 }
 
+export interface HeroFeaturedProduct {
+  id: string;
+  slug: string | null;
+  name: string;
+  price: number;
+  previewImage: string;
+  salesCount: number;
+  stock: number;
+}
+
+export interface HeroData {
+  product: HeroFeaturedProduct | null;
+  totalCount: number | null;
+}
+
+async function fetchHeroDataCached(): Promise<CachedResult<HeroData>> {
+  "use cache";
+  cacheTag("catalog", "catalog-products", "catalog-hero");
+
+  try {
+    const res = await fetch(`${getBackendUrl()}/api/v1/products?sort=sales`);
+    if (!res.ok) {
+      cacheLife(NO_ERROR_CACHE_LIFE);
+      return { ok: false, data: { product: null, totalCount: null } };
+    }
+
+    const body = (await res.json()) as ProductsApiResponse;
+    const items = Array.isArray(body?.data) ? body.data : [];
+    const inStockItems = items.filter((item) => Number(item?.stock ?? 0) > 0);
+    const sortedBySales = [...inStockItems].sort(
+      (a, b) => Number(b?.salesCount ?? 0) - Number(a?.salesCount ?? 0),
+    );
+    const best = sortedBySales[0] ?? null;
+
+    const product: HeroFeaturedProduct | null = best
+      ? {
+          id: String(best.id),
+          slug: best.slug ? String(best.slug) : null,
+          name: String(best.name || "Комнатное растение"),
+          price: Number(best.price) || 0,
+          previewImage:
+            typeof best.previewImage === "string" && best.previewImage.trim()
+              ? best.previewImage.trim()
+              : "/default-image.png",
+          salesCount: Number(best.salesCount ?? 0),
+          stock: Number(best.stock ?? 0),
+        }
+      : null;
+
+    const rawTotal = body?.meta?.counts?.total;
+    const totalCount =
+      typeof rawTotal === "number" && Number.isFinite(rawTotal)
+        ? rawTotal
+        : null;
+
+    cacheLife(CATALOG_CACHE_LIFE);
+    return { ok: true, data: { product, totalCount } };
+  } catch {
+    cacheLife(NO_ERROR_CACHE_LIFE);
+    return { ok: false, data: { product: null, totalCount: null } };
+  }
+}
+
+export async function getCachedHeroData(): Promise<HeroData> {
+  try {
+    const result = await fetchHeroDataCached();
+    return result.data;
+  } catch {
+    return { product: null, totalCount: null };
+  }
+}
+
 export function isCacheableCatalogFilters(
   filters: Record<string, string>,
 ): boolean {
