@@ -1,47 +1,75 @@
 import {useState, useRef, useEffect} from "react";
-import {Bell, X, Check, ShoppingBag, AlertTriangle, Info, Trash2} from "lucide-react";
+import {Bell, X, ShoppingBag, AlertTriangle, Info} from "lucide-react";
+import {useQuery} from "@tanstack/react-query";
+import {useNavigate} from "react-router-dom";
+import {ordersApi} from "@/shared/api/orders/ordersApi.ts";
+import {productsApi} from "@/shared/api/products/productsApi.ts";
 
-// Дефолтные системные уведомления для демонстрации
-const INITIAL_NOTIFICATIONS = [
-    {
-        id: 1,
-        title: "Новый заказ #1402",
-        text: "Ожидает подтверждения и сборки",
-        time: "5 мин назад",
-        type: "order", // Зеленый маркер
-        read: false,
-    },
-    {
-        id: 2,
-        title: "Товар заканчивается!",
-        text: "«Зеленые усы Premium» осталось всего 3 шт.",
-        time: "1 час назад",
-        type: "warning", // Оранжевый маркер
-        read: false,
-    },
-    {
-        id: 3,
-        title: "Синхронизация склада",
-        text: "Успешно обновлено 148 позиций",
-        time: "Вчера",
-        type: "info", // Синий маркер
-        read: true,
-    },
-];
+interface AdminNotificationItem {
+    id: string;
+    title: string;
+    text: string;
+    time: string;
+    type: "order" | "warning" | "info";
+    href: string;
+}
 
 export function Notification() {
     const [isOpen, setIsOpen] = useState(false);
-    const [list, setList] = useState(INITIAL_NOTIFICATIONS);
-    const containerRef = useRef(null);
+    const [readIds, setReadIds] = useState<string[]>([]);
+    const [dismissedIds, setDismissedIds] = useState<string[]>([]);
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const navigate = useNavigate();
 
-    // Считаем только непрочитанные
-    const unreadCount = list.filter((n) => !n.read).length;
+    const ordersQuery = useQuery({
+        queryKey: ["admin", "notifications", "orders"],
+        queryFn: ordersApi.list,
+        staleTime: 30_000,
+    });
+
+    const lowStockQuery = useQuery({
+        queryKey: ["admin", "notifications", "low-stock"],
+        queryFn: () =>
+            productsApi.list({
+                page: 0,
+                pageSize: 5,
+                q: "",
+                status: "active",
+                lowStock: true,
+                sortBy: "stock",
+                sortDirection: "asc",
+            }),
+        staleTime: 30_000,
+    });
+
+    const items: AdminNotificationItem[] = [
+        ...(ordersQuery.data ?? [])
+            .filter((order) => order.status === "new")
+            .slice(0, 5)
+            .map((order) => ({
+                id: `order-${order.id}`,
+                title: `Новый заказ ${order.orderNumber}`,
+                text: `${order.customer.name} · ${order.summary.totalPrice} ₽`,
+                time: order.createdAt ? new Date(order.createdAt).toLocaleDateString("ru-RU") : "",
+                type: "order" as const,
+                href: `/dashboard/orders/${order.id}`,
+            })),
+        ...(lowStockQuery.data?.data ?? []).map((product) => ({
+            id: `stock-${product.id}`,
+            title: "Товар заканчивается",
+            text: `«${product.name}» — осталось ${product.stock} шт.`,
+            time: product.sku || "",
+            type: "warning" as const,
+            href: `/dashboard/products/${product.id}`,
+        })),
+    ].filter((item) => !dismissedIds.includes(item.id));
+
+    const unreadCount = items.filter((n) => !readIds.includes(n.id)).length;
     const displayCount = unreadCount > 9 ? "9+" : unreadCount;
 
-    // Закрытие по клику снаружи (для десктопа)
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (containerRef.current && !containerRef.current.contains(event.target)) {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
             }
         };
@@ -49,26 +77,22 @@ export function Notification() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Действие: Прочитать все
     const handleMarkAllAsRead = () => {
-        setList((prev) => prev.map((n) => ({...n, read: true})));
+        setReadIds((prev) => Array.from(new Set([...prev, ...items.map((n) => n.id)])));
     };
 
-    // Действие: Удалить конкретное уведомление
-    const handleDelete = (id, e) => {
-        e.stopPropagation(); // чтобы не триггерить клик по строке
-        setList((prev) => prev.filter((n) => n.id !== id));
+    const handleDelete = (id: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setDismissedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
     };
 
-    // Действие: Клик по самому уведомлению (помечает как прочитанное)
-    const handleItemClick = (id) => {
-        setList((prev) =>
-            prev.map((n) => (n.id === id ? {...n, read: true} : n))
-        );
+    const handleItemClick = (item: AdminNotificationItem) => {
+        setReadIds((prev) => (prev.includes(item.id) ? prev : [...prev, item.id]));
+        setIsOpen(false);
+        navigate(item.href);
     };
 
-    // Вспомогательный хелпер для iOS-иконок уведомлений
-    const getNotificationStyle = (type) => {
+    const getNotificationStyle = (type: AdminNotificationItem["type"]) => {
         switch (type) {
             case "order":
                 return {
@@ -93,8 +117,8 @@ export function Notification() {
 
     return (
         <div ref={containerRef} className="relative inline-flex">
-            {/* Кнопка Колокольчика */}
             <button
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 title="Уведомления"
                 className={`
@@ -122,30 +146,19 @@ export function Notification() {
                 )}
             </button>
 
-            {/*
-              МЕНЮ УВЕДОМЛЕНИЙ:
-              На мобилке: выдвижной нативный iOS Sheet снизу.
-              На десктопе: красивый парящий поповер справа снизу.
-            */}
             <div
                 className={`
-                    /* Общие стили */
                     fixed md:absolute z-50 flex flex-col overflow-hidden
                     bg-white/90 dark:bg-[#1C1C1E]/95 backdrop-blur-xl
                     border border-black/[0.08] dark:border-white/[0.08]
                     shadow-[0_10px_40px_rgba(0,0,0,0.15)]
                     transition-all duration-300 ease-in-out
-                    
-                    /* Поведение на мобилке (Выезжает снизу во весь экран шириной) */
                     inset-x-4 bottom-4 rounded-[24px] max-h-[80vh]
                     ${isOpen ? "translate-y-0 opacity-100" : "translate-y-[110%] opacity-0 md:translate-y-2"}
-                    
-                    /* Поведение на десктопе (Парящий виджет справа) */
                     md:inset-auto md:right-0 md:top-14 md:bottom-auto md:w-[360px] md:rounded-[20px]
                     ${isOpen ? "md:scale-100 md:opacity-100" : "md:scale-95 md:opacity-0 md:pointer-events-none"}
                 `}
             >
-                {/* Шапка модалки */}
                 <div
                     className="flex items-center justify-between p-4 pb-3 border-b border-black/[0.04] dark:border-white/[0.04]">
                     <div className="flex items-center gap-2">
@@ -161,14 +174,15 @@ export function Notification() {
                     <div className="flex items-center gap-2">
                         {unreadCount > 0 && (
                             <button
+                                type="button"
                                 onClick={handleMarkAllAsRead}
                                 className="text-xs font-medium text-[#007AFF] hover:underline cursor-pointer active:opacity-60"
                             >
                                 Прочитать все
                             </button>
                         )}
-                        {/* Кнопка закрытия для мобилы */}
                         <button
+                            type="button"
                             onClick={() => setIsOpen(false)}
                             className="md:hidden flex h-7 w-7 items-center justify-center rounded-full bg-black/5 dark:bg-white/10 text-[#8E8E93]"
                         >
@@ -177,38 +191,32 @@ export function Notification() {
                     </div>
                 </div>
 
-                {/* Список уведомлений */}
                 <div className="flex-1 overflow-y-auto no-scrollbar max-h-[320px] md:max-h-[380px]">
-                    {list.length > 0 ? (
+                    {items.length > 0 ? (
                         <div className="divide-y divide-black/[0.03] dark:divide-white/[0.03]">
-                            {list.map((item) => {
+                            {items.map((item) => {
                                 const styles = getNotificationStyle(item.type);
                                 const Icon = styles.icon;
+                                const isRead = readIds.includes(item.id);
 
                                 return (
                                     <div
                                         key={item.id}
-                                        onClick={() => handleItemClick(item.id)}
+                                        onClick={() => handleItemClick(item)}
                                         className={`
                                             group/item relative flex gap-3 p-4 text-left transition-colors duration-150 cursor-pointer
-                                            ${item.read ? "bg-transparent opacity-75" : "bg-black/[0.01] dark:bg-white/[0.01]"}
+                                            ${isRead ? "bg-transparent opacity-75" : "bg-black/[0.01] dark:bg-white/[0.01]"}
                                             hover:bg-black/[0.03] dark:hover:bg-white/[0.03]
-                                            active:bg-black/[0.05] dark:active:bg-white/[0.05]
                                         `}
                                     >
-                                        {/* Нативный непрочитанный синий кружочек iOS */}
-                                        {!item.read && (
+                                        {!isRead && (
                                             <span
                                                 className="absolute left-2.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#007AFF]"/>
                                         )}
-
-                                        {/* Круглая нативная иконка типа */}
                                         <div
                                             className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${styles.bg}`}>
                                             <Icon className="h-5 w-5"/>
                                         </div>
-
-                                        {/* Контент уведомления */}
                                         <div className="flex-1 min-w-0 pr-4">
                                             <div className="flex items-baseline justify-between gap-1">
                                                 <p className="truncate text-sm font-semibold text-black dark:text-white">
@@ -222,9 +230,8 @@ export function Notification() {
                                                 {item.text}
                                             </p>
                                         </div>
-
-                                        {/* Кнопка "Удалить" (Появляется при наведении или свайпе) */}
                                         <button
+                                            type="button"
                                             onClick={(e) => handleDelete(item.id, e)}
                                             className="
                                                 absolute right-3 top-1/2 -translate-y-1/2
@@ -236,21 +243,16 @@ export function Notification() {
                                             "
                                             title="Удалить"
                                         >
-                                            <Trash2 className="h-4 w-4"/>
+                                            <X className="h-4 w-4"/>
                                         </button>
                                     </div>
                                 );
                             })}
                         </div>
                     ) : (
-                        /* Пустое состояние в стиле iOS */
                         <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                            <div
-                                className="flex h-12 w-12 items-center justify-center rounded-full bg-[#8E8E93]/10 text-[#8E8E93] mb-3">
-                                <Check className="h-6 w-6"/>
-                            </div>
                             <p className="text-sm font-semibold text-black dark:text-white">Новых уведомлений нет</p>
-                            <p className="text-xs text-[#8E8E93] mt-1">Мы сообщим, когда что-то произойдет</p>
+                            <p className="text-xs text-[#8E8E93] mt-1">Здесь появятся новые заказы и низкие остатки</p>
                         </div>
                     )}
                 </div>

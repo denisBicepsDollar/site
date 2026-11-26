@@ -17,9 +17,9 @@ export async function getProducts(
     const res = await fetch(
       `${getBackendUrl()}/api/v1/products${queryString ? `?${queryString}` : ""}`,
       {
-        ...(options?.noStore
-          ? { cache: "no-store" as const }
-          : { next: { revalidate: 60 } }),
+        ...(options?.noStore === false
+          ? { next: { revalidate: 10 } }
+          : { cache: "no-store" as const }),
         signal: AbortSignal.timeout(8000),
       },
     );
@@ -38,9 +38,9 @@ export async function getProducts(
 export async function getCatalogLabels(options?: { noStore?: boolean }) {
   try {
     const res = await fetch(`${getBackendUrl()}/api/v1/products/labels`, {
-      ...(options?.noStore
-        ? { cache: "no-store" as const }
-        : { next: { revalidate: 60 } }),
+      ...(options?.noStore === false
+        ? { next: { revalidate: 10 } }
+        : { cache: "no-store" as const }),
       signal: AbortSignal.timeout(8000),
     });
 
@@ -51,12 +51,17 @@ export async function getCatalogLabels(options?: { noStore?: boolean }) {
   }
 }
 
-export async function getProductBySlug(slug: string) {
+export async function getProductBySlug(
+  slug: string,
+  options?: { noStore?: boolean },
+) {
   try {
     const res = await fetch(
       `${getBackendUrl()}/api/v1/products/${encodeURIComponent(slug)}`,
       {
-        next: { revalidate: 60 },
+        ...(options?.noStore === false
+          ? { next: { revalidate: 10 } }
+          : { cache: "no-store" as const }),
         signal: AbortSignal.timeout(8000),
       },
     );
@@ -95,9 +100,7 @@ export async function getProductsByVariant(variantIds: Array<string | number>) {
 
     const res = await fetch(
       url,
-      isBrowser
-        ? { cache: "no-store", signal: AbortSignal.timeout(8000) }
-        : { next: { revalidate: 60 }, signal: AbortSignal.timeout(8000) },
+      { cache: "no-store", signal: AbortSignal.timeout(8000) },
     );
     if (!res.ok) return { data: [], isError: true };
     const raw = await res.json();

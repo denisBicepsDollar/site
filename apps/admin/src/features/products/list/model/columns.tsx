@@ -74,7 +74,7 @@ export function createProductColumns({onDeleteProduct}: {onDeleteProduct?: (prod
             header: "Категория",
             cell: ({row}) => (
                 <span className="text-base text-zinc-500">
-                    {row.getValue("category")}
+                    {row.getValue("category") || "Без категории"}
                 </span>
             )
         },

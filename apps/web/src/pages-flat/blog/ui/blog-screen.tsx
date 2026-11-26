@@ -1,5 +1,6 @@
 "use client";
 ;
+import Link from "next/link";
 import {ArrowLeft, ArrowRight, ArrowUpRight} from "lucide-react";
 import {useEffect, useState} from "react";
 import {cn} from "cn";
@@ -11,61 +12,31 @@ import {
     CarouselItem,
 } from "@site/ui/carousel";
 
+export interface BlogArticleItem {
+    id: string;
+    title: string;
+    summary: string;
+    url: string;
+    image: string;
+}
+
 export const BlogScreen = ({
-                               heading = "Gallery",
-                               demoUrl = "https://www.shadcnblocks.com",
-
-                               items = [
-                                   {
-                                       id: "item-1",
-                                       title: "Build Modern UIs",
-                                       summary:
-                                           "Create stunning user interfaces with our comprehensive design system.",
-                                       url: "#",
-                                       image:
-                                           "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/landscape1.jpeg",
-                                   },
-                                   {
-                                       id: "item-2",
-                                       title: "Computer Vision Technology",
-                                       summary:
-                                           "Powerful image recognition and processing capabilities that allow AI systems to analyze, understand, and interpret visual information from the world.",
-                                       url: "#",
-                                       image:
-                                           "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/landscape2.jpeg",
-                                   },
-                                   {
-                                       id: "item-3",
-                                       title: "Machine Learning Automation",
-                                       summary:
-                                           "Self-improving algorithms that learn from data patterns to automate complex tasks and make intelligent decisions with minimal human intervention.",
-                                       url: "#",
-                                       image:
-                                           "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/landscape3.jpeg",
-                                   },
-                                   {
-                                       id: "item-4",
-                                       title: "Predictive Analytics",
-                                       summary:
-                                           "Advanced forecasting capabilities that analyze historical data to predict future trends and outcomes, helping businesses make data-driven decisions.",
-                                       url: "#",
-                                       image:
-                                           "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/landscape4.jpeg",
-                                   },
-                                   {
-                                       id: "item-5",
-                                       title: "Neural Network Architecture",
-                                       summary:
-                                           "Sophisticated AI models inspired by human brain structure, capable of solving complex problems through deep learning and pattern recognition.",
-                                       url: "#",
-                                       image:
-                                           "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/lummi/landscape5.jpeg",
-                                   },
-                               ],
-
-                               className
+                               heading = "Блог",
+                               items = [] as BlogArticleItem[],
+                               className,
+                           }: {
+                               heading?: string;
+                               items?: BlogArticleItem[];
+                               className?: string;
                            }) => {
-    const [carouselApi, setCarouselApi] = useState();
+    const [carouselApi, setCarouselApi] = useState<{
+        canScrollPrev: () => boolean;
+        canScrollNext: () => boolean;
+        scrollPrev: () => void;
+        scrollNext: () => void;
+        on: (event: string, cb: () => void) => void;
+        off: (event: string, cb: () => void) => void;
+    } | undefined>();
     const [canScrollPrev, setCanScrollPrev] = useState(false);
     const [canScrollNext, setCanScrollNext] = useState(false);
     useEffect(() => {
@@ -82,6 +53,27 @@ export const BlogScreen = ({
             carouselApi.off("select", updateSelection);
         };
     }, [carouselApi]);
+
+    if (!items.length) {
+        return (
+            <section className={cn("py-24", className)}>
+                <div className="container">
+                    <h2 className="mb-3 text-3xl font-semibold md:text-4xl">{heading}</h2>
+                    <p className="mb-6 text-muted-foreground">
+                        Статьи об уходе за растениями появятся здесь скоро.
+                    </p>
+                    <Link
+                        href="/products"
+                        className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                    >
+                        Перейти в каталог
+                        <ArrowUpRight className="size-4"/>
+                    </Link>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className={cn("py-32", className)}>
             <div className="container">
@@ -90,13 +82,6 @@ export const BlogScreen = ({
                         <h2 className="mb-3 text-3xl font-semibold md:mb-4 md:text-4xl lg:mb-6">
                             {heading}
                         </h2>
-                        <a
-                            href={demoUrl}
-                            className="group flex items-center gap-1 text-sm font-medium md:text-base lg:text-lg"
-                        >
-                            Book a demo
-                            <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-1"/>
-                        </a>
                     </div>
                     <div className="mt-8 flex shrink-0 items-center justify-start gap-2">
                         <Button
@@ -127,6 +112,7 @@ export const BlogScreen = ({
             <div className="w-full max-w-full">
                 <Carousel
                     setApi={setCarouselApi}
+                    plugins={[]}
                     opts={{
                         breakpoints: {
                             "(max-width: 768px)": {
@@ -167,7 +153,7 @@ export const BlogScreen = ({
                                         {item.summary}
                                     </div>
                                     <div className="flex items-center text-sm">
-                                        Read more{" "}
+                                        Читать далее{" "}
                                         <ArrowRight
                                             className="ml-2 size-5 transition-transform group-hover:translate-x-1"/>
                                     </div>

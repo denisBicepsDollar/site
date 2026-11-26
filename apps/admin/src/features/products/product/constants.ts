@@ -2,8 +2,6 @@
    CONSTANTS — справочники и лимиты страницы товара.
    ============================================================================ */
 
-import {data} from "@/shared/mock/data.ts";
-
 export const MAX_NAME_LENGTH = 100;
 export const MAX_DESCRIPTION_LENGTH = 5000;
 export const MAX_NOTE_LENGTH = 500;
@@ -48,5 +46,3 @@ export const BREAKPOINTS = {
     md: 1200,
     sm: 800,
 };
-
-export const findGoodById = id => data.find(item => item.id === Number(id)) ?? null;

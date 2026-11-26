@@ -56,9 +56,26 @@ type ProductVariantSummary = {
   price?: number | string | null;
   oldPrice?: number | string | null;
   stock?: number | null;
+  previewImage?: string | null;
+  productVariantsImagesInProducts?: ProductVariantImageRow[];
 };
 
-function formatCatalogProduct(product: any) {
+function resolveVariantImage(variant: ProductVariantSummary): string | null {
+  const direct = variant.previewImage?.trim();
+  if (direct) return direct;
+  const images = Array.isArray(variant.productVariantsImagesInProducts)
+    ? [...variant.productVariantsImagesInProducts].sort(
+        (a, b) => Number(Boolean(b.isMain)) - Number(Boolean(a.isMain)),
+      )
+    : [];
+  for (const img of images) {
+    const url = img.imgUrl?.trim();
+    if (url) return url;
+  }
+  return null;
+}
+
+export function formatCatalogProduct(product: any) {
   const variants: ProductVariantSummary[] = Array.isArray(
     product.productVariantsInProducts,
   )
@@ -96,9 +113,20 @@ function formatCatalogProduct(product: any) {
     0,
   );
 
+  const inStockImage = variants
+    .filter((v: ProductVariantSummary) => (v.stock || 0) > 0)
+    .map(resolveVariantImage)
+    .find(Boolean);
+  const anyVariantImage = variants.map(resolveVariantImage).find(Boolean);
+  const effectivePreviewImage =
+    product.previewImage?.trim() ||
+    inStockImage ||
+    anyVariantImage ||
+    defaultImage;
+
   return {
     ...product,
-    previewImage: product.previewImage?.trim() || defaultImage,
+    previewImage: effectivePreviewImage,
     price: minProductPrice,
     ...(oldPrice !== undefined ? { oldPrice } : {}),
     stock: allStock,

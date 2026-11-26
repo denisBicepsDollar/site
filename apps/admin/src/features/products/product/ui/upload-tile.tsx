@@ -32,7 +32,7 @@ export function UploadTile({onFiles, className = ""}) {
 
             <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/avif,.jpg,.jpeg,.png,.webp,.avif"
                 multiple
                 aria-label="Загрузить фото"
                 className="sr-only"

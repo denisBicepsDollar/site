@@ -3,6 +3,7 @@ import authHandler from "../middleware/authHandler.js";
 import * as productController from "../controllers/admin/productsController.js";
 import { receiveProductImage, uploadProductImage } from "../controllers/admin/productImagesController.js";
 import * as orderController from "../controllers/store/orderController.js";
+import * as contactController from "../controllers/contactController.js";
 
 const adminRouter = express.Router();
 
@@ -21,5 +22,6 @@ adminRouter.delete("/products/:id", productController.remove);
 adminRouter.get("/orders", orderController.listAdmin);
 adminRouter.get("/orders/:id", orderController.getAdmin);
 adminRouter.patch("/orders/:id/status", orderController.updateAdminStatus);
+adminRouter.get("/messages", contactController.listAdmin);
 
 export default adminRouter;

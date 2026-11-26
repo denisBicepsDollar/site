@@ -32,7 +32,11 @@ export function GeneralInfoSection({
                                        updated,
                                        variantsCount,
                                        category,
+                                       categoryOptions = CATEGORIES,
                                        onCategoryChange,
+                                       subcategory = "",
+                                       subcategoryOptions = [],
+                                       onSubcategoryChange,
                                        basePrice,
                                        onBasePriceChange,
                                    }) {
@@ -82,9 +86,32 @@ export function GeneralInfoSection({
 
                     <CategorySelect
                         value={category}
-                        options={CATEGORIES}
+                        options={categoryOptions}
                         onChange={onCategoryChange}
                     />
+
+                    {onSubcategoryChange && (
+                        <div className="flex items-center gap-2">
+                            <Label htmlFor="product-subcategory" className="text-sm font-medium text-zinc-500">
+                                Подкатегория
+                            </Label>
+                            <Input
+                                id="product-subcategory"
+                                list="admin-subcategory-options"
+                                value={subcategory}
+                                placeholder={category || "Подкатегория"}
+                                onChange={(event) => onSubcategoryChange(event.target.value)}
+                                className="h-9 w-40 rounded-lg"
+                            />
+                            {subcategoryOptions.length > 0 && (
+                                <datalist id="admin-subcategory-options">
+                                    {subcategoryOptions.map((option) => (
+                                        <option key={option} value={option}/>
+                                    ))}
+                                </datalist>
+                            )}
+                        </div>
+                    )}
 
                     <PriceInput
                         label="Базовая цена"

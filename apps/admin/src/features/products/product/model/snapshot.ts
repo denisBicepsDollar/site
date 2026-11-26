@@ -13,6 +13,8 @@ export function buildSnapshot(state) {
         description: state.description,
         status: state.status,
         category: state.category,
+        subcategory: state.subcategory ?? "",
+        type: state.type ?? "",
         basePrice: toNumberOrEmpty(state.basePrice),
         note: state.note,
         cover: state.cover,

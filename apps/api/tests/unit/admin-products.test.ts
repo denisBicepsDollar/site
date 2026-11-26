@@ -17,6 +17,8 @@ const {default: db} = await import("@/db/index");
 const {default: pool} = await import("@/db/defaultClient");
 const {createApp} = await import("@/app");
 const productsController = await import("@/controllers/admin/productsController");
+const {adminProductImageDirectory} = await import("@/controllers/admin/productImagesController");
+const productService = await import("@/services/store/productService");
 const schema = await import("@drizzle/schema");
 
 const UUID_1 = "11111111-1111-4111-8111-111111111111";
@@ -135,7 +137,15 @@ describe("Admin Auth & Products API & Admin Mocks", () => {
                       if (isSlugLookup) {
                         return Promise.resolve([]);
                       }
-                      return Promise.resolve(store.slice(0, 1).map((p) => ({ id: p.id, slug: p.slug })));
+                      return Promise.resolve(
+                        store.slice(0, 1).map((p) => ({
+                          id: p.id,
+                          slug: p.slug,
+                          subcategory: p.subcategory,
+                          type: null,
+                          shortDescription: null,
+                        })),
+                      );
                     },
                   };
                 },
@@ -467,42 +477,120 @@ describe("Admin Auth & Products API & Admin Mocks", () => {
     assert.equal(bulkDeleteRes.status, 200);
   });
 
-  it("provides a 20-product admin mock with valid images, statuses, and stock totals", async () => {
-    const mockModulePath = join(rootDir, "apps/admin/src/shared/mock/data.ts");
-    const {data} = await import(mockModulePath) as {
-      data: Array<{
-        id: number;
-        name: string;
-        sku: string;
-        category: string;
-        price: number;
-        stock: number;
-        status: string;
-        previewImage: string;
-        variants: Array<{name: string; stock: number; price: number; previewImage: string; images: string[]}>;
-      }>;
-    };
+  it("ensures admin and web apps contain no mock datasets and rely on DB endpoints", () => {
+    assert.equal(existsSync(join(rootDir, "apps/admin/src/shared/mock")), false);
+    assert.equal(existsSync(join(rootDir, "apps/web/src/features/checkout/config/const.ts")), false);
+    assert.equal(existsSync(join(rootDir, "apps/web/src/widgets/shop")), false);
+    assert.equal(existsSync(join(rootDir, "apps/web/src/widgets/collections")), false);
+    assert.equal(existsSync(join(rootDir, "apps/web/src/widgets/reviews")), false);
 
-    assert.equal(data.length, 20);
-    assert.equal(new Set(data.map((item) => item.id)).size, 20);
-    assert.equal(new Set(data.map((item) => item.sku)).size, 20);
+    const messagesPage = readFileSync(join(rootDir, "apps/admin/src/features/messages/message-content.tsx"), "utf8");
+    assert.doesNotMatch(messagesPage, /INITIAL_MESSAGES/);
+    assert.match(messagesPage, /messagesApi\.list/);
 
-    const publicDir = join(rootDir, "apps/admin/public");
-    for (const product of data) {
-      assert.ok(["active", "draft", "archived"].includes(product.status), `Invalid status on ${product.sku}`);
-      assert.ok(product.variants.length > 0, `Missing variants on ${product.sku}`);
-      const variantStockSum = product.variants.reduce((sum, v) => sum + v.stock, 0);
-      assert.equal(product.stock, variantStockSum, `Stock mismatch on ${product.sku}`);
+    const notification = readFileSync(join(rootDir, "apps/admin/src/features/layout/notification/notification.tsx"), "utf8");
+    assert.doesNotMatch(notification, /INITIAL_NOTIFICATIONS/);
+    assert.match(notification, /ordersApi\.list/);
 
-      const imagePaths = [
-        product.previewImage,
-        ...product.variants.flatMap((v) => [v.previewImage, ...v.images]),
-      ];
-      for (const relPath of imagePaths) {
-        const diskPath = join(publicDir, relPath.replace(/^\//, ""));
-        assert.ok(existsSync(diskPath), `Missing mock image ${relPath} for ${product.sku}`);
-      }
-    }
+    const uploadsProxy = join(rootDir, "apps/web/src/app/uploads/[...path]/route.ts");
+    assert.equal(existsSync(uploadsProxy), true);
+  });
+
+  it("handles empty prices, preserves subcategory on update, anchors uploads dir, and resolves fallback storefront images", async () => {
+    resetStore();
+    assert.ok(adminProductImageDirectory.endsWith(join("apps", "api", "uploads", "admin-products")));
+
+    (db.query.productsInProducts as any).findFirst = async () => store[store.length - 1] ?? null;
+    const createEmptyPriceRes = await fetch(`${baseUrl}/api/v1/admin/products`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Cookie: authCookie },
+      body: JSON.stringify({
+        name: "Спатифиллум",
+        category: "Комнатные",
+        subcategory: "Цветущие",
+        status: "active",
+        price: "",
+        variants: [
+          {
+            name: "D12",
+            price: 1850,
+            stock: 4,
+            previewImage: "/uploads/admin-products/spati.jpg",
+            images: ["/uploads/admin-products/spati.jpg", "/uploads/admin-products/spati-2.jpg"],
+          },
+        ],
+      }),
+    });
+    assert.equal(createEmptyPriceRes.status, 201);
+    const createdEmptyPrice = await createEmptyPriceRes.json() as { data: StoredProduct };
+    assert.equal(createdEmptyPrice.data.price, "1850");
+    assert.equal(createdEmptyPrice.data.subcategory, "Цветущие");
+    assert.equal(createdEmptyPrice.data.previewImage, "/uploads/admin-products/spati.jpg");
+
+    const variantImgs = createdEmptyPrice.data.productVariantsInProducts[0]?.productVariantsImagesInProducts ?? [];
+    assert.equal(variantImgs.filter((img) => img.isMain).length, 1);
+
+    if (store[0]) store[0].subcategory = "Ароидные";
+    (db.query.productsInProducts as any).findFirst = async () => store[0] ?? null;
+    const patchPreservingSubcat = await fetch(`${baseUrl}/api/v1/admin/products/${UUID_1}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Cookie: authCookie },
+      body: JSON.stringify({
+        name: "Монстера Делициоза Мини",
+        category: "Комнатные",
+        status: "active",
+        price: 3900,
+      }),
+    });
+    assert.equal(patchPreservingSubcat.status, 200);
+    const patchedSubcat = await patchPreservingSubcat.json() as { data: StoredProduct };
+    assert.equal(patchedSubcat.data.subcategory, "Ароидные");
+
+    const formatted = productService.formatCatalogProduct({
+      id: UUID_1,
+      name: "Калатея",
+      slug: "kalateya",
+      category: "Комнатные",
+      subcategory: "Комнатные",
+      previewImage: null,
+      productVariantsInProducts: [
+        {
+          id: UUID_V1,
+          name: "D12",
+          price: 2200,
+          stock: 3,
+          previewImage: null,
+          productVariantsImagesInProducts: [
+            { imgUrl: "/uploads/admin-products/kalateya.png", isMain: true },
+          ],
+        },
+      ],
+    });
+    assert.equal(formatted.previewImage, "/uploads/admin-products/kalateya.png");
+  });
+
+  it("exposes DB-backed contact messages on /api/v1/admin/messages with auth", async () => {
+    const unauthMsg = await fetch(`${baseUrl}/api/v1/admin/messages`);
+    assert.equal(unauthMsg.status, 401);
+
+    (db as any).select = () => ({
+      from() {
+        return {
+          orderBy() {
+            return Promise.resolve([
+              { id: 7, name: "Елена", email: "elena@example.com", phone: null, message: "Добрый день", createdAt: new Date("2026-11-25T10:00:00.000Z") },
+            ]);
+          },
+        };
+      },
+    });
+    const authMsg = await fetch(`${baseUrl}/api/v1/admin/messages`, {
+      headers: { Cookie: authCookie },
+    });
+    assert.equal(authMsg.status, 200);
+    const msgBody = await authMsg.json() as { data: Array<{ id: number; name: string }> };
+    assert.equal(msgBody.data.length, 1);
+    assert.equal(msgBody.data[0]?.name, "Елена");
   });
 
   it("hides Messages and Settings from the admin sidebar navigation config", async () => {

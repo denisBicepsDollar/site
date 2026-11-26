@@ -9,10 +9,12 @@ import {SectionTitle} from "@/shared/ui/sections/section-title.tsx"
 export function PhotosSection({
                                   variants,
                                   cover,
+                                  uploadError = null,
                                   onOpenPhoto,
                                   onRemovePhoto,
                                   onMakeProductCover,
                                   onCoverUpload,
+                                  onRemoveCover,
                                   onOpenCover,
                               }) {
     const variantsWithPhotos = variants
@@ -26,6 +28,12 @@ export function PhotosSection({
                 <SectionTitle as="h2" className="text-base font-semibold ">
                     Фотографии
                 </SectionTitle>
+
+                {uploadError && (
+                    <div role="alert" className="rounded-xl bg-[#FF3B30]/10 px-3.5 py-2 text-xs font-medium text-[#D70015] dark:bg-[#FF453A]/15 dark:text-[#FF6961]">
+                        {uploadError}
+                    </div>
+                )}
 
                 <div className="
                     grid min-w-0 grid-cols-1 items-center gap-6
@@ -78,7 +86,6 @@ export function PhotosSection({
                                                         key={`${variant.clientId}-${imageIndex}`}
                                                         src={src}
                                                         alt={`Фото ${variant.name}`}
-                                                        size="md"
                                                         badge={badgeText}
                                                         onOpen={() => onOpenPhoto(index, imageIndex)}
                                                         onRemove={() => onRemovePhoto(index, imageIndex)}
@@ -114,6 +121,7 @@ export function PhotosSection({
                         cover={cover}
                         onOpen={onOpenCover}
                         onUpload={onCoverUpload}
+                        onRemove={onRemoveCover}
                     />
                 </div>
             </CardContent>
