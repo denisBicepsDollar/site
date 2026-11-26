@@ -1,15 +1,13 @@
--- Current sql file was generated after introspecting the database
--- If you want to run this migration please uncomment this code before executing migrations
-/*
-CREATE SCHEMA "messages";
+-- Initial baseline schema migration (idempotent for both fresh DBs and DBs initialized via infra/db-init)
+CREATE SCHEMA IF NOT EXISTS "messages";
 --> statement-breakpoint
-CREATE SCHEMA "orders";
+CREATE SCHEMA IF NOT EXISTS "orders";
 --> statement-breakpoint
-CREATE SCHEMA "products";
+CREATE SCHEMA IF NOT EXISTS "products";
 --> statement-breakpoint
-CREATE SCHEMA "users";
+CREATE SCHEMA IF NOT EXISTS "users";
 --> statement-breakpoint
-CREATE TABLE "messages"."contacts" (
+CREATE TABLE IF NOT EXISTS "messages"."contacts" (
 	"id" serial PRIMARY KEY,
 	"name" text,
 	"email" text,
@@ -18,7 +16,7 @@ CREATE TABLE "messages"."contacts" (
 	"created_at" timestamp with time zone DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE "orders"."order_items" (
+CREATE TABLE IF NOT EXISTS "orders"."order_items" (
 	"id" serial PRIMARY KEY,
 	"order_id" integer,
 	"product_id" text,
@@ -29,7 +27,7 @@ CREATE TABLE "orders"."order_items" (
 	"volume" text
 );
 --> statement-breakpoint
-CREATE TABLE "orders"."orders" (
+CREATE TABLE IF NOT EXISTS "orders"."orders" (
 	"id" serial PRIMARY KEY,
 	"customer_name" text NOT NULL,
 	"email" text NOT NULL,
@@ -49,7 +47,7 @@ CREATE TABLE "orders"."orders" (
 	"comment" text
 );
 --> statement-breakpoint
-CREATE TABLE "products"."product_variants" (
+CREATE TABLE IF NOT EXISTS "products"."product_variants" (
 	"price" numeric(10,2) DEFAULT '0' NOT NULL,
 	"old_price" integer,
 	"stock" integer DEFAULT 0 NOT NULL,
@@ -60,7 +58,7 @@ CREATE TABLE "products"."product_variants" (
 	"product_id" uuid NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "products"."product_variants_images" (
+CREATE TABLE IF NOT EXISTS "products"."product_variants_images" (
 	"img_url" text,
 	"alt_text" text,
 	"title_text" text,
@@ -69,7 +67,7 @@ CREATE TABLE "products"."product_variants_images" (
 	"variant_id" uuid NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "products"."products" (
+CREATE TABLE IF NOT EXISTS "products"."products" (
 	"name" text NOT NULL,
 	"description" text,
 	"subcategory" text NOT NULL,
@@ -88,12 +86,20 @@ CREATE TABLE "products"."products" (
 	"care_instructions" text
 );
 --> statement-breakpoint
-CREATE TABLE "users"."users" (
+CREATE TABLE IF NOT EXISTS "users"."users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 	"username" text,
 	"password_hash" varchar(255)
 );
 --> statement-breakpoint
-ALTER TABLE "products"."product_variants" ADD CONSTRAINT "fk_product_variants__products" FOREIGN KEY ("product_id") REFERENCES "products"."products"("id");--> statement-breakpoint
-ALTER TABLE "products"."product_variants_images" ADD CONSTRAINT "fk_product_variants_images__product_variants" FOREIGN KEY ("variant_id") REFERENCES "products"."product_variants"("id");
-*/
+DO $$ BEGIN
+	ALTER TABLE "products"."product_variants" ADD CONSTRAINT "fk_product_variants__products" FOREIGN KEY ("product_id") REFERENCES "products"."products"("id");
+EXCEPTION
+	WHEN duplicate_object THEN NULL;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+	ALTER TABLE "products"."product_variants_images" ADD CONSTRAINT "fk_product_variants_images__product_variants" FOREIGN KEY ("variant_id") REFERENCES "products"."product_variants"("id");
+EXCEPTION
+	WHEN duplicate_object THEN NULL;
+END $$;
