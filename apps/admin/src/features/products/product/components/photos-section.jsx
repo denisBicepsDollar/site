@@ -23,7 +23,7 @@ export function PhotosSection({
         <SectionCard className="min-w-0">
             <CardContent className="flex min-w-0 flex-col gap-5 p-4 sm:p-5">
                 {/* Главный заголовок секции */}
-                <SectionTitle as="h2" className="text-base font-semibold tracking-tight">
+                <SectionTitle as="h2" className="text-base font-semibold ">
                     Фотографии
                 </SectionTitle>
 
@@ -53,7 +53,7 @@ export function PhotosSection({
 
                                 return (
                                     <div key={variant.clientId} className="flex min-w-0 flex-col gap-3">
-                                        <h3 className="text-center md:text-left text-sm font-semibold tracking-tight text-[#1C1C1E] dark:text-white">
+                                        <h3 className="text-center md:text-left text-sm font-semibold  text-[#1C1C1E] dark:text-white">
                                             Фотографии {variant.name}
                                         </h3>
 

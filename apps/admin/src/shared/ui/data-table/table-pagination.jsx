@@ -18,7 +18,7 @@ export function TablePagination({table, dataLength}) {
 
     return (
         <div
-            className="flex flex-wrap items-center justify-between gap-3 border-t border-[#E5E5EA] bg-[#F8F8FA] px-4 py-3 text-sm tracking-[0.01em] text-[#6E6E73] dark:border-[#38383A] dark:bg-[#242426] dark:text-[#98989D]">
+            className="flex flex-wrap items-center justify-between gap-3 border-t border-[#E5E5EA] bg-[#F8F8FA] px-4 py-3 text-sm [0.01em] text-[#6E6E73] dark:border-[#38383A] dark:bg-[#242426] dark:text-[#98989D]">
             <span className="tabular-nums">
                 Показано{" "}
                 <span className="font-semibold text-[#1C1C1E] dark:text-[#F2F2F7]">

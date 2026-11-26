@@ -204,7 +204,7 @@ function OrderForm({id}) {
                     className="rounded-[22px] border-black/[0.06] bg-white/95 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.18)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#2C2C2E]/95">
                     <AlertDialogHeader>
                         <AlertDialogTitle
-                            className="text-[17px] font-semibold tracking-tight text-[#1C1C1E] dark:text-white">
+                            className="text-[17px] font-semibold  text-[#1C1C1E] dark:text-white">
                             Отменить заказ?
                         </AlertDialogTitle>
                         <AlertDialogDescription className="text-sm leading-relaxed text-[#6E6E73] dark:text-[#AEAEB2]">

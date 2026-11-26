@@ -13,7 +13,7 @@ export function CoverPanel({cover, onOpen, onUpload}) {
         <div className="flex flex-col gap-4 sm:col-start-3 min-w-0">
             {/* Текстовая шапка панели */}
             <div className="flex flex-col gap-1">
-                <span className="text-center text-sm font-semibold tracking-tight">
+                <span className="text-center text-sm font-semibold ">
                     Обложка товара
                 </span>
                 <span className="text-center text-sm leading-normal text-zinc-500">

@@ -5,10 +5,10 @@ import { Suspense, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Leaf, Menu, Phone, ShoppingBag, X } from "lucide-react";
 import { MobileMenu } from "./mobile-menu";
-import { buttonVariants } from "@site/ui/button";
 import { CardDropdown } from "@/features/cart-dropdown";
 import { useCartStore } from "@/entities/cart";
 import { NavLinks } from "./nav-links";
+import { Button } from "@/shared/ui/button";
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -45,11 +45,11 @@ export function Header() {
             <Link href="/" className="group flex items-center gap-2.5">
               <span
                 className="grid size-10 place-items-center rounded-full bg-forest text-cream
-                                           transition-transform duration-500 group-hover:rotate-[20deg]"
+                                           transition-transform duration-500"
               >
                 <Leaf className="size-5" strokeWidth={1.8} />
               </span>
-              <span className="font-display text-[26px] font-semibold leading-none tracking-tight">
+              <span className="font-display text-[26px] font-semibold leading-none tight">
                 Зеленые усы
               </span>
             </Link>
@@ -68,36 +68,34 @@ export function Header() {
               </Link>
 
               <div className="relative group">
-                <Link
-                  href="/cart"
-                  className={`${buttonVariants({
-                    scope: "client",
-                    variant: "default",
-                  })} relative overflow-visible`}
-                >
-                  <ShoppingBag className="size-[18px]" strokeWidth={1.8} />
-                  <span className="hidden text-[13px] font-semibold uppercase tracking-[0.12em] sm:block">
-                    Корзина
-                  </span>
-
-                  <AnimatePresence mode="popLayout">
-                    {isMounted && totalBadgeCount > 0 && (
-                      <motion.span
-                        initial={{ scale: 0.4, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.4, opacity: 0 }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 500,
-                          damping: 22,
-                        }}
-                        className="grid size-[22px] place-items-center rounded-full bg-clay text-[11px] font-bold transition-colors group-hover:bg-cream group-hover:text-forest"
-                      >
-                        {totalBadgeCount}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </Link>
+                <Button
+                  variant="accent"
+                  shape="pill"
+                  size="xl"
+                  render={
+                    <Link href="/cart">
+                      <ShoppingBag />
+                      Корзина
+                      <AnimatePresence mode="popLayout">
+                        {isMounted && totalBadgeCount > 0 && (
+                          <motion.span
+                            initial={{ scale: 0.4, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.4, opacity: 0 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 500,
+                              damping: 22,
+                            }}
+                            className="grid size-[22px] place-items-center rounded-full bg-clay text-[11px] font-bold transition-colors group-hover:bg-cream group-hover:text-forest"
+                          >
+                            {totalBadgeCount}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </Link>
+                  }
+                />
 
                 <div
                   className="absolute right-0 top-full z-50 pt-3

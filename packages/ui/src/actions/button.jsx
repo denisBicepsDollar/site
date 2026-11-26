@@ -36,7 +36,7 @@ const buttonVariants = cva(
         /* ── каркас ───────────────────────────────────────────────── */
         "group/button relative inline-flex shrink-0 cursor-pointer items-center justify-center",
         "whitespace-nowrap border border-transparent bg-clip-padding",
-        "font-sans text-sm font-medium tracking-[-0.01em]",
+        "font-sans text-sm font-medium [-0.01em]",
 
         /* ── движение ─────────────────────────────────────────────────
               ВАЖНО (Tailwind v4): translate и scale — это ОТДЕЛЬНЫЕ css-свойства
@@ -101,7 +101,7 @@ const buttonVariants = cva(
                     /* крупная CTA-пилюля: своя геометрия (h-auto вместо h-11 + py-4),
                        правый паддинг тесный (pr-3) — под хвостовой бейдж/иконку */
                     "group h-auto gap-3 rounded-full p-4",
-                    "border-transparent bg-forest text-sm font-semibold uppercase tracking-[0.12em] text-cream",
+                    "border-transparent bg-forest text-sm font-semibold uppercase [0.12em] text-cream",
                     /* объём: внутренний блик сверху + мягкая глубокая тень */
                     "shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_1px_2px_rgba(0,0,0,0.10),0_14px_30px_-16px_rgba(0,0,0,0.55)]",
                     /* пробегающий блик: ::after — узкая световая полоса, уезжает от края к краю.

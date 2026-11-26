@@ -61,7 +61,7 @@ function Newsletter() {
                   />
                   <button
                     type="submit"
-                    className="group flex shrink-0 items-center gap-2 rounded-full bg-clay px-6 py-4 text-[12px] font-bold uppercase tracking-[0.14em] text-cream transition-colors hover:bg-cream hover:text-forest"
+                    className="group flex shrink-0 items-center gap-2 rounded-full bg-clay px-6 py-4 text-[12px] font-bold uppercase [0.14em] text-cream transition-colors hover:bg-cream hover:text-forest"
                   >
                     Далее
                     <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
@@ -95,7 +95,7 @@ export function Footer() {
         id="contacts"
         className="absolute left-0 w-full scroll-mt-24 bg-cream pb-0 pt-24 md:pt-32"
       >
-        <Newsletter />
+        {/*<Newsletter />*/}
 
         <div className="mt-16 bg-forest text-cream">
           <div className="mx-auto grid max-w-[1400px] gap-12 px-5 pb-16 pt-20 md:grid-cols-12 md:px-10">
@@ -131,7 +131,7 @@ export function Footer() {
             </div>
 
             <div className="md:col-span-2">
-              <h4 className="text-[11px] font-bold uppercase tracking-[0.24em] text-sage">
+              <h4 className="text-[11px] font-bold uppercase [0.24em] text-sage">
                 Каталог
               </h4>
               <ul className="mt-5 space-y-3 text-sm text-cream/60">
@@ -155,7 +155,7 @@ export function Footer() {
             </div>
 
             <div className="md:col-span-2">
-              <h4 className="text-[11px] font-bold uppercase tracking-[0.24em] text-sage">
+              <h4 className="text-[11px] font-bold uppercase [0.24em] text-sage">
                 Покупателям
               </h4>
               <ul className="mt-5 space-y-3 text-sm text-cream/60">
@@ -179,7 +179,7 @@ export function Footer() {
             </div>
 
             <div className="md:col-span-4">
-              <h4 className="text-[11px] font-bold uppercase tracking-[0.24em] text-sage">
+              <h4 className="text-[11px] font-bold uppercase [0.24em] text-sage">
                 Контакты
               </h4>
               <ul className="mt-5 space-y-4 text-sm text-cream/60">

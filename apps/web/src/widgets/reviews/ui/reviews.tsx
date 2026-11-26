@@ -70,10 +70,10 @@ export function Reviews() {
                 «{reviewsContent[index].text}»
               </p>
               <footer className="mt-8">
-                <p className="text-sm font-bold uppercase tracking-[0.18em] text-sage">
+                <p className="text-sm font-bold uppercase [0.18em] text-sage">
                   {reviewsContent[index].name}
                 </p>
-                <p className="mt-1 text-[12px] font-medium uppercase tracking-[0.14em] text-cream/40">
+                <p className="mt-1 text-[12px] font-medium uppercase [0.14em] text-cream/40">
                   {reviewsContent[index].role}
                 </p>
               </footer>

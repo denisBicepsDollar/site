@@ -21,7 +21,7 @@ export default function Shop({
                 <div className="flex flex-wrap items-end justify-between gap-8">
                     <Reveal>
                         <Eyebrow>Каталог</Eyebrow>
-                        <h2 className="mt-4 font-display text-5xl font-medium leading-[1.02] tracking-tight text-forest md:text-6xl">
+                        <h2 className="mt-4 font-display text-5xl font-medium leading-[1.02] tight text-forest md:text-6xl">
                             Живая <em className="font-light italic text-clay">витрина</em>
                         </h2>
                     </Reveal>
@@ -38,7 +38,7 @@ export default function Shop({
                                     <button
                                         key={f.key}
                                         onClick={() => onFilter(f.key)}
-                                        className={`relative rounded-full px-5 py-2.5 text-[12px] font-bold uppercase tracking-[0.12em] transition-colors duration-300 ${
+                                        className={`relative rounded-full px-5 py-2.5 text-[12px] font-bold uppercase [0.12em] transition-colors duration-300 ${
                                             active ? 'text-cream' : 'text-ink/55 hover:text-forest'
                                         }`}
                                     >
@@ -92,7 +92,7 @@ export default function Shop({
                         </p>
                         <a
                             href="tel:+74951204567"
-                            className="mt-2 rounded-full border border-forest/20 px-7 py-3.5 text-[12px] font-bold uppercase tracking-[0.14em] text-forest transition-colors hover:border-forest hover:bg-forest hover:text-cream"
+                            className="mt-2 rounded-full border border-forest/20 px-7 py-3.5 text-[12px] font-bold uppercase [0.14em] text-forest transition-colors hover:border-forest hover:bg-forest hover:text-cream"
                         >
                             Заказать растение
                         </a>

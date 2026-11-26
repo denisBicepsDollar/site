@@ -85,7 +85,7 @@ export const AboutScreen = (props) => {
       <div className="container mx-auto">
         <div className="flex flex-col gap-16 lg:gap-28">
           <div className="flex flex-col gap-4 lg:gap-8">
-            <h2 className="max-w-3xl text-4xl font-semibold tracking-tighter lg:text-7xl">
+            <h2 className="max-w-3xl text-4xl font-semibold tighter lg:text-7xl">
               {heading}
             </h2>
 
@@ -158,7 +158,7 @@ export const AboutScreen = (props) => {
           <div className="flex flex-col gap-10">
             <div className="flex max-w-xl flex-col gap-4">
               {valuesTitle && (
-                <h3 className="text-3xl font-semibold tracking-tight md:text-5xl">
+                <h3 className="text-3xl font-semibold tight md:text-5xl">
                   {valuesTitle}
                 </h3>
               )}

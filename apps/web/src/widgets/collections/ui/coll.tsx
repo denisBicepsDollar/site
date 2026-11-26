@@ -30,7 +30,7 @@ export default function Categories({onPick}) {
                 <div className="flex flex-wrap items-end justify-between gap-6">
                     <Reveal>
                         <Eyebrow>Коллекции</Eyebrow>
-                        <h2 className="mt-4 max-w-xl font-display text-5xl font-medium leading-[1.02] tracking-tight text-forest md:text-6xl">
+                        <h2 className="mt-4 max-w-xl font-display text-5xl font-medium leading-[1.02] tight text-forest md:text-6xl">
                             Два мира — <em className="font-light italic text-clay">один магазин</em>
                         </h2>
                     </Reveal>
@@ -64,7 +64,7 @@ export default function Categories({onPick}) {
                                     className="absolute inset-0 bg-gradient-to-t from-forest/85 via-forest/20 to-forest/5 transition-opacity duration-500"/>
 
                                 <span
-                                    className="absolute left-5 top-5 rounded-full border border-cream/40 bg-forest/30 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-cream backdrop-blur">
+                                    className="absolute left-5 top-5 rounded-full border border-cream/40 bg-forest/30 px-4 py-1.5 text-[11px] font-semibold uppercase [0.18em] text-cream backdrop-blur">
                   {c.count}
                 </span>
 
@@ -73,7 +73,7 @@ export default function Categories({onPick}) {
                                         {c.tags.map((t) => (
                                             <span
                                                 key={t}
-                                                className="rounded-full bg-cream/15 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-cream/90 backdrop-blur-sm"
+                                                className="rounded-full bg-cream/15 px-3.5 py-1.5 text-[11px] font-semibold uppercase [0.14em] text-cream/90 backdrop-blur-sm"
                                             >
                         {t}
                       </span>

@@ -69,7 +69,7 @@ export const Reviews1 = ({
     <section className={cn("py-16 md:py-24", className)}>
       <div className="container max-w-3xl">
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+          <h2 className="text-2xl font-semibold tight md:text-3xl">
             {title}
           </h2>
           <div className="mt-2 flex items-center gap-3">

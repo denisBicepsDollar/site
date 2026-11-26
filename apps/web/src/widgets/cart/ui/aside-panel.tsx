@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCartStore } from "@/entities/cart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { ArrowRight } from "lucide-react";
-import { Button, buttonVariants } from "@/shared/ui/button";
+import { Button } from "@/shared/ui/button";
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("ru-RU", {
@@ -39,7 +39,7 @@ export function AsidePanel() {
       <CardHeader>
         <CardTitle>Ваша корзина</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 ">
         <dl className="space-y-2">
           {cartItems.map((item) => {
             const isOos = item.stock <= 0 || item.isOutOfStock;
@@ -80,30 +80,36 @@ export function AsidePanel() {
           </p>
         )}
 
-        {canCheckout ? (
-          <Link
-            className={buttonVariants({ variant: "accent", width: "full" })}
-            href="/cart/checkout"
-          >
-            Оформить заказ
-          </Link>
-        ) : (
-          <Button type="button" variant="accent" width="full" disabled>
-            Оформить заказ
-          </Button>
-        )}
+        <div className="flex flex-col justify-center">
+          {canCheckout ? (
+            <Button
+              variant="accent"
+              shape="pill"
+              size="xl"
+              render={<Link href="/cart/checkout">Оформить заказ</Link>}
+            />
+          ) : (
+            <Button
+              variant="accent"
+              shape="pill"
+              size="xl"
+              disabled
+              render={<Link href="/cart/checkout">Оформить заказ</Link>}
+            />
+          )}
 
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-            или
-          </span>
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500"
-          >
-            Продолжить покупки
-            <ArrowRight className="size-4" aria-hidden="true" />
-          </Link>
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+              или
+            </span>
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500"
+            >
+              Продолжить покупки
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </CardContent>
     </Card>

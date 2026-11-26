@@ -97,7 +97,7 @@ function SettingsContentHeader({saveState, isSaving, onReset, onSave}) {
     return (
         <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 className="text-lg font-semibold tracking-tight sm:text-xl">
+                <h2 className="text-lg font-semibold  sm:text-xl">
                     Уведомления
                 </h2>
                 <p className="mt-1 text-sm text-[#8E8E93] dark:text-[#98989D]">

@@ -60,7 +60,7 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
           <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-emerald-500/10">
             <CheckCircle className="size-8 text-emerald-600" />
           </div>
-          <h1 className="mb-2 text-2xl font-bold tracking-tight md:text-3xl">
+          <h1 className="mb-2 text-2xl font-bold tight md:text-3xl">
             Спасибо за заказ!
           </h1>
           <p className="text-muted-foreground">

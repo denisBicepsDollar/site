@@ -101,7 +101,7 @@ function VariantsTableHeader() {
                 hidden sm:grid
                 grid-cols-[minmax(3rem,1fr)_minmax(4.5rem,1.1fr)_5.5rem_2rem]
                 items-center gap-x-2 border-b border-black/[0.04] dark:border-white/[0.04] px-3 pb-2
-                text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] dark:text-[#8E8E93]
+                text-[10px] font-bold uppercase text-[#8E8E93] dark:text-[#8E8E93]
 
                 sm:grid-cols-[5rem_6.5rem_6.5rem_minmax(0,1fr)_2.5rem]
                 sm:gap-x-3 sm:text-xs

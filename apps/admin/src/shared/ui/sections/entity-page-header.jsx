@@ -70,7 +70,7 @@ export function EntityHeader({
 
                     <div className="hidden min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                            <h1 className="truncate text-base font-semibold tracking-tight text-[#1C1C1E] dark:text-white sm:text-lg">
+                            <h1 className="truncate text-base font-semibold tight text-[#1C1C1E] dark:text-white sm:text-lg">
                                 {title}
                             </h1>
                         </div>

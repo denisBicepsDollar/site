@@ -5,7 +5,7 @@ export function PageHeader({title, description, summary}) {
     return (
         <header className="w-max min-w-max pt-8">
             <div className="flex lg:items-baseline flex-col gap-2 sm:flex-row sm:items-end sm:gap-4">
-                <h1 className="text-[32px] leading-[1.05] font-semibold tracking-[-0.045em] text-[#1C1C1E] dark:text-white sm:text-[25px]">
+                <h1 className="text-[32px] leading-[1.05] font-semibold  text-[#1C1C1E] dark:text-white sm:text-[25px]">
                     {title}
                 </h1>
 

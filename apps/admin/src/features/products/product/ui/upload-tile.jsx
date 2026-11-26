@@ -26,7 +26,7 @@ export function UploadTile({onFiles, className = ""}) {
                 aria-hidden="true"
                 className="h-5 w-5 text-[#007AFF] transition-transform group-hover:scale-110 dark:text-[#0A84FF]"
             />
-            <span className="text-[9px] font-bold uppercase tracking-wider">
+            <span className="text-[9px] font-bold uppercase ">
                 Фото
             </span>
 
