@@ -194,18 +194,160 @@ export async function labels() {
   return await productsRepo.labels();
 }
 
+type ProductVariantImageRow = {
+  id?: string;
+  imgUrl?: string | null;
+  altText?: string | null;
+  titleText?: string | null;
+  isMain?: boolean | null;
+};
+
+type ProductVariantRow = ProductVariantSummary & {
+  id?: string;
+  name?: string | null;
+  previewImage?: string | null;
+  productVariantsImagesInProducts?: ProductVariantImageRow[];
+};
+
+const SIZE_RANK: Record<string, number> = {
+  xs: 1,
+  s: 2,
+  m: 3,
+  l: 4,
+  xl: 5,
+  xxl: 6,
+  xxxl: 7,
+};
+
+function compareVariantNames(aName: string, bName: string): number {
+  const aLower = aName.trim().toLowerCase();
+  const bLower = bName.trim().toLowerCase();
+  const aRank = SIZE_RANK[aLower];
+  const bRank = SIZE_RANK[bLower];
+
+  if (aRank !== undefined && bRank !== undefined) {
+    return aRank - bRank;
+  }
+
+  const aNum = Number.parseFloat(aLower.replace(",", "."));
+  const bNum = Number.parseFloat(bLower.replace(",", "."));
+  if (Number.isFinite(aNum) && Number.isFinite(bNum) && aNum !== bNum) {
+    return aNum - bNum;
+  }
+
+  return aName.localeCompare(bName, "ru");
+}
+
+function collectUniqueStrings(values: Array<string | null | undefined>): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const raw of values) {
+    const trimmed = raw?.trim();
+    if (!trimmed || seen.has(trimmed)) continue;
+    seen.add(trimmed);
+    result.push(trimmed);
+  }
+  return result;
+}
+
 export async function getOneProduct(slug: string) {
   const product = await productRepo.getOneProduct(slug);
   if (!product) return null;
 
-  product.previewImage = product.previewImage?.trim() || defaultImage;
-  return product;
+  const rawVariants: ProductVariantRow[] = Array.isArray(
+    product.productVariantsInProducts,
+  )
+    ? product.productVariantsInProducts
+    : [];
+
+  const formattedVariants = rawVariants
+    .map((v) => {
+      const price = Number(v.price) || 0;
+      const rawOld = Number(v.oldPrice);
+      const oldPrice =
+        Number.isFinite(rawOld) && rawOld > price ? rawOld : null;
+      const stock = Number(v.stock) || 0;
+      const previewImage = v.previewImage?.trim() || null;
+
+      const sortedVariantImgs = [...(v.productVariantsImagesInProducts ?? [])].sort(
+        (a, b) => Number(Boolean(b.isMain)) - Number(Boolean(a.isMain)),
+      );
+      const images = collectUniqueStrings([
+        previewImage,
+        ...sortedVariantImgs.map((img) => img.imgUrl),
+      ]);
+
+      return {
+        id: v.id,
+        name: v.name?.trim() || "Стандарт",
+        price,
+        oldPrice,
+        stock,
+        previewImage: previewImage || images[0] || null,
+        images,
+      };
+    })
+    .sort((a, b) => {
+      const aAvailable = a.stock > 0 ? 1 : 0;
+      const bAvailable = b.stock > 0 ? 1 : 0;
+      if (aAvailable !== bAvailable) return bAvailable - aAvailable;
+      return (
+        compareVariantNames(a.name, b.name) ||
+        a.price - b.price
+      );
+    });
+
+  const inStockVariants = formattedVariants.filter(
+    (v) => v.stock > 0 && v.price > 0,
+  );
+  const pricedVariants = formattedVariants.filter((v) => v.price > 0);
+  const priceSource =
+    inStockVariants.length > 0 ? inStockVariants : pricedVariants;
+
+  const minProductPrice =
+    priceSource.length > 0
+      ? Math.min(...priceSource.map((v) => v.price))
+      : Number(product.price) || 0;
+
+  const cheapestVariant = priceSource.find((v) => v.price === minProductPrice);
+  const oldPrice =
+    cheapestVariant?.oldPrice && cheapestVariant.oldPrice > minProductPrice
+      ? cheapestVariant.oldPrice
+      : undefined;
+
+  const totalStock = formattedVariants.reduce((sum, v) => sum + v.stock, 0);
+
+  const productPreview = product.previewImage?.trim() || null;
+  const galleryImages = collectUniqueStrings([
+    productPreview,
+    ...formattedVariants.flatMap((v) => [v.previewImage, ...v.images]),
+  ]);
+
+  const effectivePreview =
+    productPreview || galleryImages[0] || defaultImage;
+
+  const { productVariantsInProducts: _rawVariants, ...rest } = product;
+
+  return {
+    ...rest,
+    previewImage: effectivePreview,
+    images: galleryImages.length > 0 ? galleryImages : [effectivePreview],
+    price: minProductPrice,
+    ...(oldPrice !== undefined ? { oldPrice } : {}),
+    stock: totalStock,
+    tags: Array.isArray(product.tags)
+      ? product.tags.filter((t: unknown): t is string =>
+          Boolean(typeof t === "string" && t.trim()),
+        )
+      : [],
+    variants: formattedVariants,
+  };
 }
 
 export async function getVariants(variantIds: string[]) {
   const variants = await productRepo.getVariants(variantIds);
-  variants.forEach((product: { previewImage?: string | null }) => {
-    product.previewImage = product.previewImage?.trim() || defaultImage;
-  });
-  return variants;
+  return variants.map((product) => ({
+    ...product,
+    previewImage: product.previewImage?.trim() || defaultImage,
+  }));
 }

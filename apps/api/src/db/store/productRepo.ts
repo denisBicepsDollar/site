@@ -155,31 +155,81 @@ export async function list(
   });
 }
 
-export async function getOneProduct(slug) {
-  console.log(slug);
-  const sql = baseSql + ` WHERE p.slug = $1;`;
-  const result = await pool.query(sql, [slug]);
-  console.log(result.rows[0]);
-  return result.rows[0] || null;
-}
-export async function getVariants(variantIds) {
-  const sql = `
-        SELECT
-            pv.price,
-            pv.old_price,
-            pv.stock,
-            pv.preview_image AS "previewImage",
-            pv.name,
-            pv.id,
-            pv.product_id AS "productId",
-            p.name AS "productName",
-            p.slug
+export async function getOneProduct(slugOrId: string) {
+  const normalized = slugOrId.trim();
+  if (!normalized) return null;
 
-        FROM ${schema}.product_variants pv
-        JOIN ${schema}.products p
-        ON pv.product_id = p.id
-        WHERE pv.id = ANY($1);
-        `;
-  const result = await pool.query(sql, [variantIds]);
-  return result.rows;
+  const isUuid =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      normalized,
+    );
+
+  const product = await db.query.productsInProducts.findFirst({
+    where: {
+      RAW: (p) =>
+        isUuid
+          ? sql`(lower(btrim(${p.slug})) = lower(btrim(${normalized})) OR ${p.id} = ${normalized})`
+          : sql`lower(btrim(${p.slug})) = lower(btrim(${normalized}))`,
+    },
+    with: {
+      productVariantsInProducts: {
+        orderBy: { price: "asc" },
+        with: {
+          productVariantsImagesInProducts: true,
+        },
+      },
+    },
+  });
+
+  return product ?? null;
+}
+
+export async function getVariants(variantIds: string[]) {
+  const validIds = Array.from(
+    new Set(
+      (variantIds ?? [])
+        .map((id) => String(id).trim())
+        .filter((id) =>
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            id,
+          ),
+        ),
+    ),
+  );
+
+  if (validIds.length === 0) return [];
+
+  const rows = await db
+    .select({
+      price: productVariantsInProducts.price,
+      oldPrice: productVariantsInProducts.oldPrice,
+      stock: productVariantsInProducts.stock,
+      previewImage: productVariantsInProducts.previewImage,
+      name: productVariantsInProducts.name,
+      id: productVariantsInProducts.id,
+      productId: productVariantsInProducts.productId,
+      productName: productsInProducts.name,
+      slug: productsInProducts.slug,
+      productPreviewImage: productsInProducts.previewImage,
+    })
+    .from(productVariantsInProducts)
+    .innerJoin(
+      productsInProducts,
+      eq(productVariantsInProducts.productId, productsInProducts.id),
+    )
+    .where(inArray(productVariantsInProducts.id, validIds));
+
+  return rows.map((row) => ({
+    id: row.id,
+    variantId: row.id,
+    price: Number(row.price) || 0,
+    oldPrice: row.oldPrice,
+    stock: Number(row.stock) || 0,
+    previewImage:
+      row.previewImage?.trim() || row.productPreviewImage?.trim() || null,
+    name: row.name?.trim() || "Стандарт",
+    productId: row.productId,
+    productName: row.productName,
+    slug: row.slug || row.productId,
+  }));
 }

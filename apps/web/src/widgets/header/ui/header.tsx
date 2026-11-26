@@ -15,9 +15,18 @@ export function Header() {
   const [isMounted, setIsMounted] = useState(false);
 
   const cartItems = useCartStore((state) => state.cartItems);
+  const cartStorage = useCartStore((state) => state.cartStorage);
+  const initCart = useCartStore((state) => state.initCart);
+
   useEffect(() => {
     setIsMounted(true); // Компонент успешно загрузился в браузере
-  }, []);
+    initCart();
+  }, [initCart]);
+
+  const totalBadgeCount =
+    cartItems.length > 0
+      ? cartItems.reduce((acc, item) => acc + item.cartQuantity, 0)
+      : cartStorage.reduce((acc, item) => acc + item.cartQuantity, 0);
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
@@ -72,7 +81,7 @@ export function Header() {
                   </span>
 
                   <AnimatePresence mode="popLayout">
-                    {isMounted && cartItems.length && (
+                    {isMounted && totalBadgeCount > 0 && (
                       <motion.span
                         initial={{ scale: 0.4, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -84,9 +93,7 @@ export function Header() {
                         }}
                         className="grid size-[22px] place-items-center rounded-full bg-clay text-[11px] font-bold transition-colors group-hover:bg-cream group-hover:text-forest"
                       >
-                        {cartItems
-                          .map((item) => item.cartQuantity)
-                          .reduce((acc, currentVal) => acc + currentVal)}
+                        {totalBadgeCount}
                       </motion.span>
                     )}
                   </AnimatePresence>
