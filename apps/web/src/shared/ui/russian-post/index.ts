@@ -1,1 +1,1 @@
-export { RussianPost } from "./russian-post";
+export { RussianPost, type RussianPostAddressData } from "./russian-post";

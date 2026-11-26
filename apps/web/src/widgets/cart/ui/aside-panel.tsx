@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCartStore } from "@/entities/cart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { ArrowRight } from "lucide-react";
-import { Button, buttonVariants } from "@/shared/ui/button";
+import { Button } from "@/shared/ui/button";
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("ru-RU", {
@@ -35,7 +35,7 @@ export function AsidePanel() {
     !isLoadingProducts;
 
   return (
-    <Card variant="header">
+    <Card variant="header" className="w-full lg:w-80 xl:w-96 shrink-0">
       <CardHeader>
         <CardTitle>Ваша корзина</CardTitle>
       </CardHeader>
@@ -81,12 +81,13 @@ export function AsidePanel() {
         )}
 
         {canCheckout ? (
-          <Link
-            className={buttonVariants({ variant: "accent", width: "full" })}
-            href="/cart/checkout"
+          <Button
+            variant="accent"
+            width="full"
+            render={<Link href="/cart/checkout" />}
           >
             Оформить заказ
-          </Link>
+          </Button>
         ) : (
           <Button type="button" variant="accent" width="full" disabled>
             Оформить заказ

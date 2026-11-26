@@ -4,9 +4,20 @@ import Link from "next/link";
 import { AlertCircle, Check, ChevronLeft, Lock } from "lucide-react";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Label } from "@/shared/ui/label";
-import { Button, buttonVariants } from "@/shared/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@site/ui/card";
-import { resolveShippingLeaf, useOrderStore } from "@/entities/order";
+import { Button } from "@/shared/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shared/ui/card";
+import {
+  calculateOrderSummary,
+  resolveShippingLeaf,
+  useOrderStore,
+  validateOrderStep,
+} from "@/entities/order";
 import { useCartStore } from "@/entities/cart";
 
 const formatPrice = (price: number) =>
@@ -18,7 +29,6 @@ const formatPrice = (price: number) =>
 
 export function ReviewOrder() {
   const prevStep = useOrderStore((state) => state.prevStep);
-  const validateStep = useOrderStore((state) => state.validateStep);
   const submitOrder = useOrderStore((state) => state.submitOrder);
   const isSubmitting = useOrderStore((state) => state.isSubmitting);
   const submitError = useOrderStore((state) => state.submitError);
@@ -28,13 +38,26 @@ export function ReviewOrder() {
   const selectedShippingPath = useOrderStore(
     (state) => state.selectedShippingPath,
   );
+  const deliveryMeta = useOrderStore((state) => state.deliveryMeta);
   const shippingAddress = useOrderStore((state) => state.shippingAddress);
   const agreeToTerms = useOrderStore((state) => state.agreeToTerms);
   const setAgreeToTerms = useOrderStore((state) => state.setAgreeToTerms);
-  const calculateSummary = useOrderStore((state) => state.calculateSummary);
-  useCartStore((state) => state.cartItems);
+  const cartItems = useCartStore((state) => state.cartItems);
 
-  const summary = calculateSummary();
+  const summary = calculateOrderSummary({
+    cartItems,
+    selectedShippingPath,
+    deliveryMeta,
+  });
+  const canSubmit = validateOrderStep(3, {
+    shippingAddress,
+    selectedShippingPath,
+    selectedPaymentType,
+    agreeToTerms,
+    isSubmitting,
+    cartItems,
+  });
+
   const shippingResolution = resolveShippingLeaf(selectedShippingPath);
   const shippingTitle =
     shippingResolution.trail.map((node) => node.name).join(" · ") ||
@@ -58,10 +81,10 @@ export function ReviewOrder() {
   return (
     <Card className="flex flex-col gap-6">
       <CardHeader>
-        <h2 className="text-xl font-semibold flex items-center gap-2">
+        <CardTitle className="text-xl font-semibold flex items-center gap-2">
           <Check className="h-5 w-5" aria-hidden="true" />
           Подтверждение заказа
-        </h2>
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
         {/* Recipient & Delivery */}
@@ -101,16 +124,20 @@ export function ReviewOrder() {
             className="flex flex-col gap-2 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800"
           >
             <div className="flex items-start gap-2">
-              <AlertCircle className="size-4 shrink-0 mt-0.5" aria-hidden="true" />
+              <AlertCircle
+                className="size-4 shrink-0 mt-0.5"
+                aria-hidden="true"
+              />
               <span>{submitError}</span>
             </div>
             <div>
-              <Link
-                href="/cart"
-                className={buttonVariants({ variant: "outline", size: "xs" })}
+              <Button
+                variant="outline"
+                size="xs"
+                render={<Link href="/cart" />}
               >
                 Вернуться в корзину
-              </Link>
+              </Button>
             </div>
           </div>
         )}
@@ -142,7 +169,7 @@ export function ReviewOrder() {
         </Button>
         <Button
           type="button"
-          disabled={!validateStep(3) || isSubmitting}
+          disabled={!canSubmit || isSubmitting}
           onClick={() => void submitOrder()}
           size="lg"
           variant="accent"

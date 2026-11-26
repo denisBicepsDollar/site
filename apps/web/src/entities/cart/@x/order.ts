@@ -1,1 +1,1 @@
-export { useCartStore } from "../model/cart-store";
+export { useCartStore, type CartProductItem } from "../model/cart-store";

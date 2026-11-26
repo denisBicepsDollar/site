@@ -6,7 +6,7 @@ import { ShoppingBag, Trash2 } from "lucide-react";
 import { useCartStore } from "@/entities/cart";
 import { CartList } from "@/features/manage-cart";
 import { AsidePanel } from "@/widgets/cart";
-import { Button, buttonVariants } from "@/shared/ui/button";
+import { Button } from "@/shared/ui/button";
 
 export function CartScreen() {
   const initCart = useCartStore((state) => state.initCart);
@@ -74,9 +74,9 @@ export function CartScreen() {
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Вы ещё не добавили ни одного растения в корзину.
           </p>
-          <Link href="/products" className={buttonVariants({ variant: "accent" })}>
+          <Button variant="accent" render={<Link href="/products" />}>
             Перейти в каталог
-          </Link>
+          </Button>
         </div>
       </section>
     );
@@ -133,8 +133,8 @@ export function CartScreen() {
           </div>
         )}
 
-        <div className="flex mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8 gap-6">
-          <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
+        <div className="flex flex-col lg:flex-row lg:items-start mt-6 sm:mt-8 gap-6 xl:gap-8">
+          <div className="w-full min-w-0 flex-1">
             <div className="space-y-6">
               <CartList variantsIds={variantsIds} />
             </div>
