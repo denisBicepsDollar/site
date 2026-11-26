@@ -1,7 +1,6 @@
 import {motion} from 'framer-motion';
 import {ArrowUpRight} from 'lucide-react';
-import {Filter} from '../data/products';
-import {Eyebrow, Reveal} from './Reveal';
+import {Eyebrow, Reveal} from '@/shared/ui/reveal';
 
 const cards = [
     {

@@ -1,9 +1,9 @@
 import { Suspense, type ReactNode } from "react";
-import { ProductsLayoutShell } from "@/pages-flat/products";
+import { ProductsLayoutShell } from "@/widgets/catalog-sidebar";
 import {
   getCachedCatalogLabels,
   getCachedCatalogProducts,
-} from "@/shared/api/catalog-cache";
+} from "@/shared/api/server";
 
 async function ProductsLayoutLoader({ children }: { children: ReactNode }) {
   const [initialLabels, firstPage] = await Promise.all([
