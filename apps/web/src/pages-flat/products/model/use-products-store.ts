@@ -14,6 +14,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
+import type { CatalogLabels } from "../config/catalog-labels";
 
 export interface ProductsMeta {
   counts?: {
@@ -23,6 +24,7 @@ export interface ProductsMeta {
     byCategory?: Record<string, Record<string, number>>;
     typesByCategory?: Record<string, Record<string, Record<string, number>>>;
   };
+  labels?: CatalogLabels;
   prices?: { minPrice?: number | null; maxPrice?: number | null };
   sizes?: Array<{ size: string; stock: number }>;
   hasMore?: boolean;
@@ -110,8 +112,36 @@ function hasMetaContent(meta: any): meta is ProductsMeta {
     meta &&
       typeof meta === "object" &&
       (meta.counts !== undefined ||
+        meta.labels !== undefined ||
         meta.prices !== undefined ||
         meta.sizes !== undefined),
+  );
+}
+
+function hasLabelsContent(labels?: CatalogLabels): boolean {
+  return Boolean(
+    labels &&
+      (Object.keys(labels.categories ?? {}).length > 0 ||
+        Object.keys(labels.subcategories ?? {}).length > 0 ||
+        Object.keys(labels.types ?? {}).length > 0),
+  );
+}
+
+const CatalogLabelsContext = createContext<CatalogLabels | undefined>(
+  undefined,
+);
+
+export function CatalogLabelsProvider({
+  initialLabels,
+  children,
+}: {
+  initialLabels?: CatalogLabels;
+  children: ReactNode;
+}) {
+  return createElement(
+    CatalogLabelsContext.Provider,
+    { value: initialLabels },
+    children,
   );
 }
 
@@ -182,12 +212,17 @@ function useProductsCatalogQuery(
     staleTime: Infinity,
   });
 
+  const contextLabels = useContext(CatalogLabelsContext);
   const meta = currentMeta ?? metaFallbackQuery.data ?? {};
+  const labels = hasLabelsContent(meta.labels)
+    ? meta.labels!
+    : (contextLabels ?? meta.labels ?? {});
 
   return {
     ...productsQuery,
     products,
     counts: meta.counts ?? {},
+    labels,
     prices: meta.prices ?? {},
     sizes: meta.sizes ?? [],
   };
@@ -214,6 +249,7 @@ export function ProductsCatalogProvider({
 
 export function useProductsCatalog() {
   const context = useContext(ProductsCatalogContext);
+  const contextLabels = useContext(CatalogLabelsContext);
 
   // Sidebar components in layout.tsx sit outside ProductsCatalogProvider and
   // passively read cached meta without initiating competing page-1 queries.
@@ -229,9 +265,14 @@ export function useProductsCatalog() {
   }
 
   const meta = metaQuery.data ?? {};
+  const labels = hasLabelsContent(meta.labels)
+    ? meta.labels!
+    : (contextLabels ?? meta.labels ?? {});
+
   return {
     products: [] as any[],
     counts: meta.counts ?? {},
+    labels,
     prices: meta.prices ?? {},
     sizes: meta.sizes ?? [],
     fetchNextPage: async () => undefined,

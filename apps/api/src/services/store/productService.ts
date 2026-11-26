@@ -179,6 +179,10 @@ export async function counts(searchParams: SearchParams = {}) {
   return await productsRepo.counts(minPrice, maxPrice, sizes, search);
 }
 
+export async function labels() {
+  return await productsRepo.labels();
+}
+
 export async function getOneProduct(slug) {
   console.log("dasdasd");
   let product = await productRepo.getOneProduct(slug);

@@ -18,11 +18,11 @@ import {
 import { Eyebrow, Reveal } from "@/shared/ui/reveal";
 import { ProductCard } from "@/entities/product";
 import { Reviews1 } from "./reviews";
+import { formatPrice } from "../config/const";
 import {
-  categoryLabel,
-  formatPrice,
-  subcategoryLabel,
-} from "../config/const";
+  getCategoryLabel,
+  getSubcategoryLabel,
+} from "@/pages-flat/products/config/catalog-labels";
 import { AddToCartButton } from "@/features/add-to-cart";
 import { useVariants } from "../model/use-variants";
 import {
@@ -50,7 +50,7 @@ import {
   AccordionTrigger,
 } from "@/shared/ui/accordion";
 
-export default function ProductScreen({ product, products }) {
+export default function ProductScreen({ product, products, labels }) {
   const [qty, setQty] = useState(1);
 
   const { sortedVariants } = useVariants(product.variants);
@@ -143,16 +143,16 @@ export default function ProductScreen({ product, products }) {
               <BreadcrumbSeparator>
                 <ChevronRight />
               </BreadcrumbSeparator>
-              <BreadcrumbLink href={`/products?cat=${product.category}`}>
-                {categoryLabel[product.category]}
+              <BreadcrumbLink href={`/products/${encodeURIComponent(product.category ?? "")}`}>
+                {getCategoryLabel(product.category ?? "", labels)}
               </BreadcrumbLink>
               <BreadcrumbSeparator>
                 <ChevronRight />
               </BreadcrumbSeparator>
               <BreadcrumbLink
-                href={`/products?cat=${product.category}&subcategory=${product.subcategory}`}
+                href={`/products/${encodeURIComponent(product.category ?? "")}/${encodeURIComponent(product.subcategory ?? "")}`}
               >
-                {subcategoryLabel[product.subcategory]}
+                {getSubcategoryLabel(product.subcategory ?? "", labels)}
               </BreadcrumbLink>
               <BreadcrumbSeparator>
                 <ChevronRight />
@@ -190,7 +190,7 @@ export default function ProductScreen({ product, products }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           >
-            <Eyebrow>{categoryLabel[product.category]} растения</Eyebrow>
+            <Eyebrow>{getCategoryLabel(product.category ?? "", labels)} растения</Eyebrow>
             <TagGroup size="xl">
               {product.tags.map((tag) => (
                 <Tag>{tag}</Tag>
@@ -336,10 +336,10 @@ export default function ProductScreen({ product, products }) {
                 <em className="font-light italic text-clay">растения</em>
               </h2>
               <Link
-                href={`/catalog?cat=${product.category}`}
+                href={`/products/${encodeURIComponent(product.category ?? "")}`}
                 className="text-[12px] font-bold uppercase tracking-[0.14em] text-leaf underline-offset-4 transition-colors hover:text-clay hover:underline"
               >
-                Все {categoryLabel[product.category]?.toLowerCase()}
+                Все {getCategoryLabel(product.category ?? "", labels).toLowerCase()}
               </Link>
             </div>
           </Reveal>

@@ -7,9 +7,12 @@ import {
   getSubcategoryLabel,
   getTypeLabel,
 } from "../config/catalog-labels";
+import { useProductsCatalog } from "../model/use-products-store";
 
 export function ProductsHeader() {
   const pathname = usePathname();
+  const { labels } = useProductsCatalog();
+
   const segments = pathname.split("/").filter(Boolean);
   const category =
     segments[0] === "products" ? decodeRouteSegment(segments[1]) : undefined;
@@ -19,16 +22,16 @@ export function ProductsHeader() {
     segments[0] === "products" ? decodeRouteSegment(segments[3]) : undefined;
 
   const subcategoryTitle = subcategory
-    ? getSubcategoryLabel(subcategory)
+    ? getSubcategoryLabel(subcategory, labels)
     : undefined;
-  const typeTitle = type ? getTypeLabel(type) : undefined;
+  const typeTitle = type ? getTypeLabel(type, labels) : undefined;
 
   const title =
     (typeTitle && subcategoryTitle && typeTitle !== subcategoryTitle
       ? `${subcategoryTitle} — ${typeTitle}`
       : typeTitle) ||
     subcategoryTitle ||
-    (category && getCategoryPageTitle(category)) ||
+    (category && getCategoryPageTitle(category, labels)) ||
     "Все товары";
 
   return (

@@ -1,0 +1,333 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "4fd31e0f-f616-4e10-a9f1-b9a6fed50496",
+  "prevIds": [
+    "10eb54b0-4e99-4498-b4c6-d86e37e18d0d"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "products",
+        "catalog_labels"
+      ],
+      "writes": [
+        "s|tbl|products.catalog_labels",
+        "n|tbl|products.catalog_labels",
+        "e|tbl|products.catalog_labels",
+        "n|rel|products.catalog_labels",
+        "n|type|products.catalog_labels",
+        "n|rel|products.catalog_labels_pkey",
+        "n|rel|products.catalog_labels_kind_slug_key"
+      ],
+      "reads": [
+        "n|sch|products"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "products",
+        "products",
+        "type"
+      ],
+      "writes": [
+        "s|col|products.products.type",
+        "n|col|products.products.type",
+        "e|col|products.products.type"
+      ],
+      "reads": [
+        "n|tbl|products.products",
+        "n|sch|products"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "products",
+        "products",
+        "salesCount"
+      ],
+      "writes": [
+        "s|col|products.products.salesCount",
+        "n|col|products.products.salesCount",
+        "e|col|products.products.salesCount"
+      ],
+      "reads": [
+        "n|tbl|products.products",
+        "n|sch|products"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "products",
+        "products",
+        "priority"
+      ],
+      "writes": [
+        "s|col|products.products.priority",
+        "n|col|products.products.priority",
+        "e|col|products.products.priority"
+      ],
+      "reads": [
+        "n|tbl|products.products",
+        "n|sch|products"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "name": "catalog_labels",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "table": "catalog_labels",
+        "name": "id",
+        "type": "serial",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "table": "catalog_labels",
+        "name": "kind",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "table": "catalog_labels",
+        "name": "slug",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "table": "catalog_labels",
+        "name": "label_ru",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "table": "catalog_labels",
+        "name": "page_title_ru",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "table": "catalog_labels",
+        "name": "sort_order",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "table": "catalog_labels",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "table": "products",
+        "name": "type",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "table": "products",
+        "name": "salesCount",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "table": "products",
+        "name": "priority",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "table": "catalog_labels",
+        "name": "catalog_labels_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "products",
+        "table": "catalog_labels",
+        "name": "catalog_labels_kind_slug_key",
+        "nameExplicit": true,
+        "columns": [
+          "kind",
+          "slug"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "pks\u0000[\"messages\",\"contacts\",\"contacts_pkey\"]",
+      "set": {
+        "nameExplicit": false
+      }
+    },
+    {
+      "op": "alter",
+      "key": "pks\u0000[\"orders\",\"order_items\",\"order_items_pkey\"]",
+      "set": {
+        "nameExplicit": false
+      }
+    },
+    {
+      "op": "alter",
+      "key": "pks\u0000[\"orders\",\"orders\",\"orders_pkey\"]",
+      "set": {
+        "nameExplicit": false
+      }
+    },
+    {
+      "op": "alter",
+      "key": "pks\u0000[\"products\",\"product_variants\",\"product_variants_pkey\"]",
+      "set": {
+        "nameExplicit": false
+      }
+    },
+    {
+      "op": "alter",
+      "key": "pks\u0000[\"products\",\"product_variants_images\",\"product_variants_images_pkey\"]",
+      "set": {
+        "nameExplicit": false
+      }
+    },
+    {
+      "op": "alter",
+      "key": "pks\u0000[\"products\",\"products\",\"products_pkey\"]",
+      "set": {
+        "nameExplicit": false
+      }
+    },
+    {
+      "op": "alter",
+      "key": "pks\u0000[\"users\",\"users\",\"users_pkey\"]",
+      "set": {
+        "nameExplicit": false
+      }
+    }
+  ]
+}

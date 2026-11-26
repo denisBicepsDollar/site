@@ -34,19 +34,26 @@ export async function list(req, res) {
   }
 
   // Только для первой страницы (или при смене фильтров) считаем всю мету
-  const [{ items, hasMore, limit }, sizes, prices, counts] = await Promise.all([
-    productService.listPage(searchParams),
-    productService.sizes(searchParams),
-    productService.prices(searchParams),
-    productService.counts(searchParams),
-  ]);
+  const [{ items, hasMore, limit }, sizes, prices, counts, labels] =
+    await Promise.all([
+      productService.listPage(searchParams),
+      productService.sizes(searchParams),
+      productService.prices(searchParams),
+      productService.counts(searchParams),
+      productService.labels(),
+    ]);
 
-  const meta = { sizes, prices, counts, hasMore, page, limit };
+  const meta = { sizes, prices, counts, labels, hasMore, page, limit };
 
   return res.status(200).json({
     data: items,
     meta,
   });
+}
+
+export async function getLabels(_req, res) {
+  const labels = await productService.labels();
+  return res.status(200).json(labels);
 }
 
 export async function getOneProduct(req, res) {

@@ -1,7 +1,93 @@
 import db from "@/db/index";
-import { productsInProducts, productVariantsInProducts } from "@drizzle/schema";
-import { and, count, eq, exists, gte, inArray, lte } from "drizzle-orm";
+import {
+  catalogLabelsInProducts,
+  productsInProducts,
+  productVariantsInProducts,
+} from "@drizzle/schema";
+import { and, asc, count, eq, exists, gte, inArray, lte } from "drizzle-orm";
 import { buildProductSearchSql } from "./productSearch";
+
+export type CatalogLabels = {
+  categories: Record<string, string>;
+  pageTitles: Record<string, string>;
+  subcategories: Record<string, string>;
+  types: Record<string, string>;
+  order: {
+    category: Record<string, number>;
+    subcategory: Record<string, number>;
+    type: Record<string, number>;
+  };
+};
+
+export async function labels(): Promise<CatalogLabels> {
+  const result: CatalogLabels = {
+    categories: {},
+    pageTitles: {},
+    subcategories: {},
+    types: {},
+    order: {
+      category: {},
+      subcategory: {},
+      type: {},
+    },
+  };
+
+  let rows: Array<{
+    kind: string;
+    slug: string;
+    labelRu: string;
+    pageTitleRu: string | null;
+    sortOrder: number;
+  }>;
+
+  try {
+    rows = await db
+      .select({
+        kind: catalogLabelsInProducts.kind,
+        slug: catalogLabelsInProducts.slug,
+        labelRu: catalogLabelsInProducts.labelRu,
+        pageTitleRu: catalogLabelsInProducts.pageTitleRu,
+        sortOrder: catalogLabelsInProducts.sortOrder,
+      })
+      .from(catalogLabelsInProducts)
+      .orderBy(
+        asc(catalogLabelsInProducts.sortOrder),
+        asc(catalogLabelsInProducts.id),
+      );
+  } catch (err: unknown) {
+    const pgErr = err as { code?: string; cause?: { code?: string } };
+    const code = pgErr?.code || pgErr?.cause?.code;
+    if (code === "42P01") {
+      return result;
+    }
+    throw err;
+  }
+
+  for (const row of rows) {
+    const kind = row.kind?.trim().toLowerCase();
+    const slug = row.slug?.trim();
+    const labelRu = row.labelRu?.trim();
+    const pageTitleRu = row.pageTitleRu?.trim();
+
+    if (!kind || !slug || !labelRu) continue;
+
+    if (kind === "category") {
+      result.categories[slug] = labelRu;
+      if (pageTitleRu) {
+        result.pageTitles[slug] = pageTitleRu;
+      }
+      result.order.category[slug] = row.sortOrder;
+    } else if (kind === "subcategory") {
+      result.subcategories[slug] = labelRu;
+      result.order.subcategory[slug] = row.sortOrder;
+    } else if (kind === "type") {
+      result.types[slug] = labelRu;
+      result.order.type[slug] = row.sortOrder;
+    }
+  }
+
+  return result;
+}
 
 export async function counts(
   minPrice?: number,
