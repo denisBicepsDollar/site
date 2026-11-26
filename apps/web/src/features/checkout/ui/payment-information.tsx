@@ -1,7 +1,8 @@
 "use client";
 
-import { ChevronLeft, CreditCard, Mail } from "lucide-react";
-import { useOrderStore } from "@/entities/order";
+import { ChevronLeft, ChevronRight, CreditCard, Mail } from "lucide-react";
+import { useOrderStore, validateOrderStep } from "@/entities/order";
+import { useCartStore } from "@/entities/cart";
 import {
   Card,
   CardContent,
@@ -16,7 +17,6 @@ import { Radio, RadioGroup } from "@/shared/ui/radio-group";
 export function PaymentInformation() {
   const nextStep = useOrderStore((state) => state.nextStep);
   const prevStep = useOrderStore((state) => state.prevStep);
-  const validateStep = useOrderStore((state) => state.validateStep);
   const selectedPaymentType = useOrderStore(
     (state) => state.selectedPaymentType,
   );
@@ -24,6 +24,21 @@ export function PaymentInformation() {
     (state) => state.setSelectedPaymentType,
   );
   const shippingAddress = useOrderStore((state) => state.shippingAddress);
+  const selectedShippingPath = useOrderStore(
+    (state) => state.selectedShippingPath,
+  );
+  const agreeToTerms = useOrderStore((state) => state.agreeToTerms);
+  const isSubmitting = useOrderStore((state) => state.isSubmitting);
+  const cartItems = useCartStore((state) => state.cartItems);
+
+  const isStepValid = validateOrderStep(2, {
+    shippingAddress,
+    selectedShippingPath,
+    selectedPaymentType,
+    agreeToTerms,
+    isSubmitting,
+    cartItems,
+  });
 
   return (
     <Card>
@@ -43,7 +58,11 @@ export function PaymentInformation() {
           className="grid grid-cols-1 gap-3"
         >
           <Label variant="card" className="items-start gap-3">
-            <Radio id="payment-email" value="email_confirmation" className="mt-1" />
+            <Radio
+              id="payment-email"
+              value="email_confirmation"
+              className="mt-1"
+            />
             <Mail className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
             <div className="flex flex-col gap-1">
               <span className="font-medium">Оплата после подтверждения</span>
@@ -126,9 +145,11 @@ export function PaymentInformation() {
           type="button"
           shape="pill"
           onClick={nextStep}
-          disabled={!validateStep(2)}
+          disabled={!isStepValid}
           size="lg"
           variant="accent"
+          icon={<ChevronRight className="h-4 w-4" aria-hidden="true" />}
+          iconPosition="end"
         >
           Далее
         </ButtonWithIcon>

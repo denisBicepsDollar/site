@@ -25,6 +25,8 @@ function ShippingNode({
   level?: number;
 }) {
   const selectedPath = useOrderStore((state) => state.selectedShippingPath);
+  const shippingAddress = useOrderStore((state) => state.shippingAddress);
+  const deliveryMeta = useOrderStore((state) => state.deliveryMeta);
   const handleAddressChange = useOrderStore(
     (state) => state.handleAddressChange,
   );
@@ -32,6 +34,9 @@ function ShippingNode({
 
   const isSelected = selectedPath[level] === item.id;
   const hasChildren = Boolean(item.variants && item.variants.length > 0);
+  const activeRussianPostType =
+    selectedPath[2] === "courier" ? "courier" : "pickup_post_office";
+  const activeTariffId = selectedPath[3] ?? selectedPath[2];
 
   return (
     <div>
@@ -55,8 +60,14 @@ function ShippingNode({
 
       {item.id === "delivery" && isSelected && <DeliveryAddress />}
       {item.id === "russian_post" && isSelected && (
-        <div className="ml-6">
+        <div className="ml-0 sm:ml-6">
           <RussianPost
+            selectedType={activeRussianPostType}
+            selectedTariffId={activeTariffId}
+            cityHint={shippingAddress.city}
+            postalCodeHint={shippingAddress.postalCode}
+            addressHint={shippingAddress.fullAddress}
+            selectedOfficeCode={deliveryMeta.postOfficeCode}
             onSelectAddress={(data) => {
               const parts = [
                 data.indexTo,
@@ -64,8 +75,10 @@ function ShippingNode({
                 data.areaTo,
                 data.cityTo,
                 data.addressTo,
-              ].filter((part): part is string => Boolean(part && String(part).trim()));
-              if (parts.length > 0) {
+              ].filter((part): part is string =>
+                Boolean(part && String(part).trim()),
+              );
+              if (parts.length > 0 && data.addressTo) {
                 handleAddressChange("fullAddress", parts.join(", "));
               }
               if (data.cityTo) {
@@ -74,17 +87,24 @@ function ShippingNode({
               if (data.indexTo) {
                 handleAddressChange("postalCode", String(data.indexTo));
               }
-              if (typeof data.cashOfDelivery === "number") {
-                setDeliveryMeta({
-                  price: Math.max(0, Math.round(data.cashOfDelivery / 100)),
-                });
-              }
+              setDeliveryMeta({
+                price:
+                  typeof data.cashOfDelivery === "number"
+                    ? Math.max(0, Math.round(data.cashOfDelivery / 100))
+                    : deliveryMeta.price,
+                postOfficeCode: data.indexTo ? String(data.indexTo) : null,
+                postOfficeAddress: parts.length > 0 ? parts.join(", ") : null,
+                estimatedTime:
+                  typeof data.estimatedTime === "string"
+                    ? data.estimatedTime
+                    : deliveryMeta.estimatedTime,
+              });
             }}
           />
         </div>
       )}
       {item.id === "cdek" && isSelected && (
-        <p className="ml-6 mt-2 text-xs text-muted-foreground">
+        <p className="ml-0 sm:ml-6 mt-2 text-xs text-muted-foreground">
           Доставка СДЭК по указанному выше адресу или до ближайшего пункта выдачи.
         </p>
       )}
@@ -119,7 +139,7 @@ function ChildRadioGroup({
     <RadioGroup
       value={selectedPath[level] ?? ""}
       onValueChange={handleSelect}
-      className="ml-6 flex flex-col gap-3"
+      className="ml-4 sm:ml-6 mt-2 flex flex-col gap-3"
     >
       {items.map((child) => (
         <ShippingNode key={child.id} item={child} level={level} />

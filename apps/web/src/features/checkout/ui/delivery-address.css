@@ -1,0 +1,110 @@
+.sp-dadata-field {
+  width: 100%;
+}
+
+.sp-dadata-field .react-dadata__container {
+  position: relative;
+  width: 100%;
+}
+
+.sp-dadata-field .react-dadata__input {
+  display: block;
+  width: 100%;
+  height: var(--sp-rw-control-xl, 3rem);
+  padding: 0 var(--sp-rw-space-3-5, 0.875rem);
+  font-family: inherit;
+  font-size: var(--sp-rw-font-14, 0.875rem);
+  line-height: var(--sp-rw-line-20, 1.25rem);
+  font-weight: 400;
+  color: var(--sp-rw-fg-primary, #232b25);
+  background-color: #ffffff;
+  border: 0;
+  border-radius: var(--sp-rw-radius-control, 0.5rem);
+  box-shadow: var(--sp-rw-field-shadow, 0 0 0 1px rgba(20, 38, 27, 0.14));
+  outline: none;
+  box-sizing: border-box;
+  transition:
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+.sp-dadata-field .react-dadata__input::placeholder {
+  color: var(--sp-rw-fg-tertiary, #636363);
+  opacity: 1;
+}
+
+.sp-dadata-field .react-dadata__input:hover {
+  box-shadow: var(--sp-rw-field-hover-shadow, var(--sp-rw-field-shadow));
+}
+
+.sp-dadata-field .react-dadata__input:focus,
+.sp-dadata-field .react-dadata__input:focus-visible {
+  box-shadow: var(
+    --sp-rw-field-focus-shadow,
+    0 0 0 2px var(--sp-rw-border-focus, #14261b)
+  );
+  outline: none;
+}
+
+.sp-dadata-field[data-invalid="true"] .react-dadata__input {
+  box-shadow: var(--sp-rw-field-invalid-shadow, 0 0 0 1px #dc2626);
+}
+
+.sp-dadata-field[data-invalid="true"] .react-dadata__input:focus,
+.sp-dadata-field[data-invalid="true"] .react-dadata__input:focus-visible {
+  box-shadow: var(--sp-rw-field-invalid-focus-shadow, 0 0 0 2px #dc2626);
+}
+
+.sp-dadata-field .react-dadata__suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 45;
+  margin: 0;
+  padding: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+  text-align: left;
+  background-color: #ffffff;
+  color: var(--sp-rw-fg-primary, #232b25);
+  border: 1px solid rgba(20, 38, 27, 0.12);
+  border-radius: var(--sp-rw-radius-control, 0.5rem);
+  box-shadow: 0 12px 32px -8px rgba(20, 38, 27, 0.18);
+}
+
+.sp-dadata-field .react-dadata__suggestion-note {
+  padding: 6px 12px 4px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--sp-rw-fg-tertiary, #636363);
+}
+
+.sp-dadata-field .react-dadata__suggestion {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: var(--sp-rw-font-14, 0.875rem);
+  line-height: 1.35;
+  color: var(--sp-rw-fg-primary, #232b25);
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--sp-rw-radius-control, 0.5rem) - 2px);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 120ms ease;
+}
+
+.sp-dadata-field .react-dadata__suggestion:hover,
+.sp-dadata-field .react-dadata__suggestion--current {
+  background-color: var(--color-parchment, #efead9);
+  color: var(--color-forest, #14261b);
+}
+
+.sp-dadata-field .react-dadata__suggestion mark,
+.sp-dadata-field .react-dadata-suggestion-mark {
+  background-color: rgba(188, 108, 68, 0.18);
+  color: inherit;
+  border-radius: 2px;
+  padding-inline: 1px;
+}

@@ -1,9 +1,7 @@
 import { Hero } from "@/pages-flat/home";
 import { Marquee } from "@/widgets/marquee";
-import { FeaturedProd, FeaturedProducts } from "@/widgets/featured-products";
-import { Header } from "@/widgets/header";
+import { FeaturedProd } from "@/widgets/featured-products";
 import { About } from "@/widgets/about";
-import { Footer } from "@/widgets/footer";
 import { Blog } from "@/widgets/blog";
 import { Reviews } from "@/widgets/reviews";
 import { Faq } from "@/widgets/faq";

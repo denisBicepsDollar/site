@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createOrder } from "@/shared/api";
-import { useCartStore } from "@/entities/cart/@x/order";
+import { useCartStore, type CartProductItem } from "@/entities/cart/@x/order";
 import { shippingMethodsConfig } from "../config/shipping-methods";
 
 export interface ShippingAddressState {
@@ -19,6 +19,9 @@ export interface DeliveryMetaState {
   tariffId: string | null;
   tariffName: string | null;
   price: number;
+  postOfficeCode?: string | null;
+  postOfficeAddress?: string | null;
+  estimatedTime?: string | null;
 }
 
 export interface CreatedOrderItem {
@@ -70,7 +73,11 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function resolveShippingLeaf(
   path: string[],
   nodes: ShippingConfigNode[] = shippingMethodsConfig,
-): { leaf: ShippingConfigNode | null; trail: ShippingConfigNode[]; isComplete: boolean } {
+): {
+  leaf: ShippingConfigNode | null;
+  trail: ShippingConfigNode[];
+  isComplete: boolean;
+} {
   if (!Array.isArray(path) || path.length === 0) {
     return { leaf: null, trail: [], isComplete: false };
   }
@@ -93,6 +100,116 @@ export function resolveShippingLeaf(
     leaf: last,
     trail,
     isComplete: Boolean(last) && !hasChildren,
+  };
+}
+
+export function getStep1ValidationMessage(params: {
+  shippingAddress: ShippingAddressState;
+  selectedShippingPath: string[];
+  cartItems: CartProductItem[];
+}): string | null {
+  const { shippingAddress, selectedShippingPath, cartItems } = params;
+  const availableItems = cartItems.filter(
+    (item) => item.stock > 0 && !item.isOutOfStock,
+  );
+  const hasOutOfStock = cartItems.some(
+    (item) => item.stock <= 0 || item.isOutOfStock,
+  );
+
+  if (availableItems.length === 0 || hasOutOfStock) {
+    return "В корзине есть недоступные товары или она пуста";
+  }
+  if (!shippingAddress.firstName.trim()) {
+    return "Укажите имя получателя";
+  }
+  if (!shippingAddress.lastName.trim()) {
+    return "Укажите фамилию получателя";
+  }
+  if (shippingAddress.phone.replace(/\D/g, "").length < 10) {
+    return "Укажите корректный номер телефона";
+  }
+  if (!EMAIL_RE.test(shippingAddress.email.trim())) {
+    return "Укажите корректный e-mail";
+  }
+
+  const shippingResolution = resolveShippingLeaf(selectedShippingPath);
+  if (!shippingResolution.isComplete) {
+    if (selectedShippingPath[0] === "delivery") {
+      if (!selectedShippingPath[1]) {
+        return "Выберите службу доставки (Почта России или СДЭК)";
+      }
+      return "Выберите вариант доставки";
+    }
+    return "Выберите способ получения заказа";
+  }
+
+  if (
+    selectedShippingPath[0] === "delivery" &&
+    shippingAddress.fullAddress.trim().length < 3
+  ) {
+    return "Укажите адрес или населённый пункт доставки";
+  }
+
+  return null;
+}
+
+export function validateOrderStep(
+  step: number,
+  params: {
+    shippingAddress: ShippingAddressState;
+    selectedShippingPath: string[];
+    selectedPaymentType: string;
+    agreeToTerms: boolean;
+    isSubmitting: boolean;
+    cartItems: CartProductItem[];
+  },
+): boolean {
+  switch (step) {
+    case 1:
+      return (
+        getStep1ValidationMessage({
+          shippingAddress: params.shippingAddress,
+          selectedShippingPath: params.selectedShippingPath,
+          cartItems: params.cartItems,
+        }) === null
+      );
+    case 2:
+      return params.selectedPaymentType === "email_confirmation";
+    case 3:
+      return (
+        !params.isSubmitting &&
+        params.agreeToTerms &&
+        validateOrderStep(1, params) &&
+        validateOrderStep(2, params)
+      );
+    default:
+      return false;
+  }
+}
+
+export function calculateOrderSummary(params: {
+  cartItems: CartProductItem[];
+  selectedShippingPath: string[];
+  deliveryMeta: DeliveryMetaState;
+}): {
+  subtotal: number;
+  shipping: number;
+  total: number;
+} {
+  const { cartItems, selectedShippingPath, deliveryMeta } = params;
+  const subtotal = cartItems
+    .filter((item) => item.stock > 0 && !item.isOutOfStock)
+    .reduce((sum, item) => sum + item.price * item.cartQuantity, 0);
+
+  const shipping =
+    selectedShippingPath[0] === "delivery"
+      ? Math.max(0, Number(deliveryMeta.price) || 0)
+      : 0;
+
+  return {
+    subtotal,
+    shipping,
+    total: subtotal + shipping,
   };
 }
 
@@ -145,6 +262,9 @@ const initialDeliveryMeta: DeliveryMetaState = {
   tariffId: null,
   tariffName: null,
   price: 0,
+  postOfficeCode: null,
+  postOfficeAddress: null,
+  estimatedTime: null,
 };
 
 export const useOrderStore = create<OrderStore>((set, get) => ({
@@ -173,14 +293,22 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
       resolved.trail.length > 0
         ? resolved.trail.map((node) => node.name).join(" · ")
         : null;
+    const isPochtaPostOffice =
+      path[1] === "russian_post" && path[2] === "pickup_post_office";
+    const prevMeta = get().deliveryMeta;
 
     set({
       selectedShippingPath: path,
       submitError: null,
       deliveryMeta: {
-        tariffId: resolved.isComplete ? resolved.leaf?.id ?? null : null,
+        tariffId: resolved.isComplete ? (resolved.leaf?.id ?? null) : null,
         tariffName: resolved.isComplete ? leafName : null,
         price: Number.isFinite(leafPrice) ? Math.max(0, leafPrice) : 0,
+        estimatedTime: resolved.isComplete ? (resolved.leaf?.time ?? null) : null,
+        postOfficeCode: isPochtaPostOffice ? (prevMeta.postOfficeCode ?? null) : null,
+        postOfficeAddress: isPochtaPostOffice
+          ? (prevMeta.postOfficeAddress ?? null)
+          : null,
       },
     });
   },
@@ -202,68 +330,31 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   getStep1ValidationMessage: () => {
     const { shippingAddress, selectedShippingPath } = get();
     const cartItems = useCartStore.getState().cartItems;
-    const availableItems = cartItems.filter(
-      (item) => item.stock > 0 && !item.isOutOfStock,
-    );
-    const hasOutOfStock = cartItems.some(
-      (item) => item.stock <= 0 || item.isOutOfStock,
-    );
-
-    if (availableItems.length === 0 || hasOutOfStock) {
-      return "В корзине есть недоступные товары или она пуста";
-    }
-    if (!shippingAddress.firstName.trim()) {
-      return "Укажите имя получателя";
-    }
-    if (!shippingAddress.lastName.trim()) {
-      return "Укажите фамилию получателя";
-    }
-    if (shippingAddress.phone.replace(/\D/g, "").length < 10) {
-      return "Укажите корректный номер телефона";
-    }
-    if (!EMAIL_RE.test(shippingAddress.email.trim())) {
-      return "Укажите корректный e-mail";
-    }
-
-    const shippingResolution = resolveShippingLeaf(selectedShippingPath);
-    if (!shippingResolution.isComplete) {
-      if (selectedShippingPath[0] === "delivery") {
-        if (!selectedShippingPath[1]) {
-          return "Выберите службу доставки (Почта России или СДЭК)";
-        }
-        return "Выберите вариант доставки";
-      }
-      return "Выберите способ получения заказа";
-    }
-
-    if (
-      selectedShippingPath[0] === "delivery" &&
-      shippingAddress.fullAddress.trim().length < 3
-    ) {
-      return "Укажите адрес или населённый пункт доставки";
-    }
-
-    return null;
+    return getStep1ValidationMessage({
+      shippingAddress,
+      selectedShippingPath,
+      cartItems,
+    });
   },
 
   validateStep: (step) => {
-    const { selectedPaymentType, agreeToTerms, isSubmitting } = get();
+    const {
+      shippingAddress,
+      selectedShippingPath,
+      selectedPaymentType,
+      agreeToTerms,
+      isSubmitting,
+    } = get();
+    const cartItems = useCartStore.getState().cartItems;
 
-    switch (step) {
-      case 1:
-        return get().getStep1ValidationMessage() === null;
-      case 2:
-        return selectedPaymentType === "email_confirmation";
-      case 3:
-        return (
-          !isSubmitting &&
-          agreeToTerms &&
-          get().validateStep(1) &&
-          get().validateStep(2)
-        );
-      default:
-        return false;
-    }
+    return validateOrderStep(step, {
+      shippingAddress,
+      selectedShippingPath,
+      selectedPaymentType,
+      agreeToTerms,
+      isSubmitting,
+      cartItems,
+    });
   },
 
   nextStep: () => {
@@ -287,21 +378,11 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   calculateSummary: () => {
     const { selectedShippingPath, deliveryMeta } = get();
     const { cartItems } = useCartStore.getState();
-
-    const subtotal = cartItems
-      .filter((item) => item.stock > 0 && !item.isOutOfStock)
-      .reduce((sum, item) => sum + item.price * item.cartQuantity, 0);
-
-    const shipping =
-      selectedShippingPath[0] === "delivery"
-        ? Math.max(0, Number(deliveryMeta.price) || 0)
-        : 0;
-
-    return {
-      subtotal,
-      shipping,
-      total: subtotal + shipping,
-    };
+    return calculateOrderSummary({
+      cartItems,
+      selectedShippingPath,
+      deliveryMeta,
+    });
   },
 
   submitOrder: async () => {
@@ -326,7 +407,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     const deliveryType =
       deliveryMethod === "pickup"
         ? "pickup"
-        : state.selectedShippingPath[2] ?? deliveryCompany ?? "delivery";
+        : (state.selectedShippingPath[2] ?? deliveryCompany ?? "delivery");
 
     const summary = state.calculateSummary();
 

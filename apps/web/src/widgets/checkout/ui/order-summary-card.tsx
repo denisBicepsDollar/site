@@ -1,7 +1,7 @@
 "use client";
 
 import { ShoppingBag } from "lucide-react";
-import { useOrderStore } from "@/entities/order";
+import { calculateOrderSummary, useOrderStore } from "@/entities/order";
 import { useCartStore } from "@/entities/cart";
 import { Card, CardContent, CardHeader } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
@@ -21,9 +21,12 @@ export function OrderSummaryCard() {
     (state) => state.selectedShippingPath,
   );
   const deliveryMeta = useOrderStore((state) => state.deliveryMeta);
-  const calculateSummary = useOrderStore((state) => state.calculateSummary);
 
-  const summary = calculateSummary();
+  const summary = calculateOrderSummary({
+    cartItems,
+    selectedShippingPath,
+    deliveryMeta,
+  });
   const availableItems = cartItems.filter(
     (item) => item.stock > 0 && !item.isOutOfStock,
   );

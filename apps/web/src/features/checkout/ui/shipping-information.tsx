@@ -1,7 +1,11 @@
 "use client";
 
 import { ArrowRightIcon, MapPin } from "lucide-react";
-import { useOrderStore } from "@/entities/order";
+import {
+  getStep1ValidationMessage,
+  useOrderStore,
+  validateOrderStep,
+} from "@/entities/order";
 import { useCartStore } from "@/entities/cart";
 import { ShippingMethods } from "./shipping-methods";
 import { Form } from "@/shared/ui/form";
@@ -22,19 +26,33 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function ShippingInformation() {
   const nextStep = useOrderStore((state) => state.nextStep);
-  const validateStep = useOrderStore((state) => state.validateStep);
-  const getStep1ValidationMessage = useOrderStore(
-    (state) => state.getStep1ValidationMessage,
-  );
   const shippingAddress = useOrderStore((state) => state.shippingAddress);
-  useOrderStore((state) => state.selectedShippingPath);
-  useCartStore((state) => state.cartItems);
+  const selectedShippingPath = useOrderStore(
+    (state) => state.selectedShippingPath,
+  );
+  const selectedPaymentType = useOrderStore(
+    (state) => state.selectedPaymentType,
+  );
+  const agreeToTerms = useOrderStore((state) => state.agreeToTerms);
+  const isSubmitting = useOrderStore((state) => state.isSubmitting);
+  const cartItems = useCartStore((state) => state.cartItems);
   const handleAddressChange = useOrderStore(
     (state) => state.handleAddressChange,
   );
 
-  const isStepValid = validateStep(1);
-  const validationHint = getStep1ValidationMessage();
+  const validationHint = getStep1ValidationMessage({
+    shippingAddress,
+    selectedShippingPath,
+    cartItems,
+  });
+  const isStepValid = validateOrderStep(1, {
+    shippingAddress,
+    selectedShippingPath,
+    selectedPaymentType,
+    agreeToTerms,
+    isSubmitting,
+    cartItems,
+  });
 
   return (
     <Card className="flex flex-col">

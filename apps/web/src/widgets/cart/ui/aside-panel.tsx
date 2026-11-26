@@ -35,7 +35,7 @@ export function AsidePanel() {
     !isLoadingProducts;
 
   return (
-    <Card variant="header">
+    <Card variant="header" className="w-full lg:w-80 xl:w-96 shrink-0">
       <CardHeader>
         <CardTitle>Ваша корзина</CardTitle>
       </CardHeader>
@@ -80,6 +80,7 @@ export function AsidePanel() {
           </p>
         )}
 
+
         <div className="flex flex-col justify-center">
           {canCheckout ? (
             <Button
@@ -97,6 +98,7 @@ export function AsidePanel() {
               render={<Link href="/cart/checkout">Оформить заказ</Link>}
             />
           )}
+
 
           <div className="flex items-center justify-center gap-2">
             <span className="text-sm font-normal text-gray-500 dark:text-gray-400">

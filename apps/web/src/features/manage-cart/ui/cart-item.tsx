@@ -11,12 +11,7 @@ import {
   NumberFieldInput,
 } from "@/shared/ui/number-field";
 import { ButtonWithIcon } from "@/shared/ui/button";
-import {
-  Card,
-  CardAction,
-  CardHeader,
-  CardTitle,
-} from "@/shared/ui/card";
+import { Card, CardAction, CardHeader, CardTitle } from "@/shared/ui/card";
 import { CardDescription } from "@site/ui/card";
 
 const DEFAULT_IMAGE = "/default-image.png";
@@ -48,9 +43,9 @@ export function CartItem({ variantId }: CartItemProps) {
 
   return (
     <Card>
-      <CardHeader className="flex justify-between">
+      <CardHeader className="flex flex-col sm:flex-row items-start gap-4">
         <Link
-          className="block w-30 self-stretch overflow-hidden border rounded-md"
+          className="block w-full h-44 sm:w-30 sm:h-30 shrink-0 overflow-hidden border rounded-md"
           href={productHref}
         >
           <img
@@ -65,9 +60,12 @@ export function CartItem({ variantId }: CartItemProps) {
             }}
           />
         </Link>
-        <div className="w-full h-full">
+        <div className="min-w-0 flex-1 w-full">
           <CardTitle>
-            <Link className="flex items-center hover:underline" href={productHref}>
+            <Link
+              className="flex items-center hover:underline"
+              href={productHref}
+            >
               {variant.productName}
             </Link>
           </CardTitle>
@@ -81,12 +79,16 @@ export function CartItem({ variantId }: CartItemProps) {
               <div className="flex flex-wrap justify-between items-center gap-3">
                 <NumberField
                   size="sm"
-                  className="max-w-30"
+                  width="fit"
                   min={1}
                   max={Math.max(1, variant.stock)}
                   value={variant.cartQuantity}
                   onValueChange={(val) => {
-                    if (typeof val === "number" && Number.isFinite(val)) {
+                    if (
+                      typeof val === "number" &&
+                      Number.isFinite(val) &&
+                      val >= 1
+                    ) {
                       changeQuantity(variant.variantId, val, variant.stock);
                     }
                   }}
@@ -114,7 +116,7 @@ export function CartItem({ variantId }: CartItemProps) {
             <ButtonWithIcon
               type="button"
               variant="ghost-destructive"
-              className="border --sp-rw-radius-control"
+              className="border"
               size="xs"
               shape="pill"
               onClick={() => removeFromCart(variant.variantId)}

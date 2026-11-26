@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ru">
-      <body className="min-h-full overflow-x-clip flex flex-col bg-cream pt-30 px-42  ">
+      <body className="min-h-full overflow-x-clip flex flex-col bg-cream pt-30 px-4 sm:px-8 md:px-16 xl:px-42">
         <QueryProvider>
           <Header />
           {children}

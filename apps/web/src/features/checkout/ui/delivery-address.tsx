@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AddressSuggestions } from "react-dadata";
-import type { DaDataAddress, DaDataSuggestion } from "react-dadata";
 import "react-dadata/dist/react-dadata.css";
+import "./delivery-address.css";
 import { useOrderStore } from "@/entities/order";
 import { Field, FieldLabel } from "@/shared/ui/field";
 
@@ -13,61 +13,81 @@ const DADATA_TOKEN =
 
 export function DeliveryAddress() {
   const suggestionsRef = useRef<AddressSuggestions | null>(null);
-  const [selectedSuggestion, setSelectedSuggestion] = useState<
-    DaDataSuggestion<DaDataAddress> | undefined
-  >(undefined);
   const shippingAddress = useOrderStore((state) => state.shippingAddress);
   const handleAddressChange = useOrderStore(
     (state) => state.handleAddressChange,
   );
+  const lastSyncedAddressRef = useRef(shippingAddress.fullAddress);
+  const [touched, setTouched] = useState(false);
 
-  // Keep DaData input synced if address changes externally (e.g. RussianPost widget or reset)
+  // Sync input only when address changed externally (e.g. RussianPost stub or order reset)
   useEffect(() => {
+    if (shippingAddress.fullAddress === lastSyncedAddressRef.current) {
+      return;
+    }
+    lastSyncedAddressRef.current = shippingAddress.fullAddress;
     const instance = suggestionsRef.current;
-    if (!instance) return;
-    if (instance.state.query !== shippingAddress.fullAddress) {
+    if (instance && instance.state.query !== shippingAddress.fullAddress) {
       instance.setInputValue(shippingAddress.fullAddress);
     }
   }, [shippingAddress.fullAddress]);
 
+  const showAddressError =
+    touched && shippingAddress.fullAddress.trim().length < 3;
+
   return (
-    <Field className="mt-3">
+    <Field className="mt-3 w-full">
       <FieldLabel htmlFor="address">
         Введите населённый пункт и адрес доставки
         <span className="destructive">*</span>
       </FieldLabel>
 
-      <AddressSuggestions
-        ref={suggestionsRef}
-        token={DADATA_TOKEN}
-        value={selectedSuggestion}
-        defaultQuery={shippingAddress.fullAddress}
-        inputProps={{
-          id: "address",
-          name: "address",
-          required: true,
-          placeholder: "Например: Москва, ул. Тверская, д. 1",
-          onChange: (event) => {
-            setSelectedSuggestion(undefined);
-            handleAddressChange("fullAddress", event.currentTarget.value);
-          },
-        }}
-        onChange={(suggestion) => {
-          setSelectedSuggestion(suggestion);
-          if (suggestion?.value) {
-            handleAddressChange("fullAddress", suggestion.value);
-          }
-          if (suggestion?.data?.city || suggestion?.data?.settlement) {
-            handleAddressChange(
-              "city",
-              suggestion.data.city || suggestion.data.settlement || "",
-            );
-          }
-          if (suggestion?.data?.postal_code) {
-            handleAddressChange("postalCode", suggestion.data.postal_code);
-          }
-        }}
-      />
+      <div
+        className="sp-dadata-field"
+        data-invalid={showAddressError ? "true" : undefined}
+      >
+        <AddressSuggestions
+          ref={suggestionsRef}
+          token={DADATA_TOKEN}
+          defaultQuery={shippingAddress.fullAddress}
+          inputProps={{
+            id: "address",
+            name: "address",
+            required: true,
+            autoComplete: "street-address",
+            placeholder: "Например: г Москва, ул Тверская, д 1",
+            "aria-invalid": showAddressError || undefined,
+            onBlur: () => setTouched(true),
+            onChange: (event) => {
+              const nextValue = event.currentTarget.value;
+              lastSyncedAddressRef.current = nextValue;
+              handleAddressChange("fullAddress", nextValue);
+            },
+          }}
+          onChange={(suggestion) => {
+            const nextValue = suggestion?.value ?? "";
+            lastSyncedAddressRef.current = nextValue;
+            if (nextValue) {
+              handleAddressChange("fullAddress", nextValue);
+            }
+            if (suggestion?.data?.city || suggestion?.data?.settlement) {
+              handleAddressChange(
+                "city",
+                suggestion.data.city || suggestion.data.settlement || "",
+              );
+            }
+            if (suggestion?.data?.postal_code) {
+              handleAddressChange("postalCode", suggestion.data.postal_code);
+            }
+          }}
+        />
+      </div>
+
+      {showAddressError && (
+        <p className="text-xs text-destructive-foreground">
+          Укажите полный адрес доставки (минимум 3 символа) или выберите подсказку.
+        </p>
+      )}
     </Field>
   );
 }
