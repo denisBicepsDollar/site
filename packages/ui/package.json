@@ -28,7 +28,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "tsx --tsconfig jsconfig.json --test tests/*.test.jsx"
+    "test": "node --test tests/*.test.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

@@ -1,6 +1,7 @@
 import * as authController from "@/controllers/authController";
 import * as orderController from "@/controllers/store/orderController";
 import * as productController from "@/controllers/store/productController";
+import * as contactController from "@/controllers/contactController";
 import authHandler from "@/middleware/authHandler";
 import { authLimiter } from "@/middleware/rateLimiters";
 import healthRouter from "./health";
@@ -13,6 +14,7 @@ export function registerRoutes(app) {
   app.get("/api/v1/products/variants/by-ids", productController.getVariants);
   app.get("/api/v1/products/:slug", productController.getOneProduct);
   app.post("/api/v1/orders", orderController.create);
+  app.post("/api/v1/contacts", contactController.create);
 
   // Authenticated admin API
   app.use("/api/v1/admin", adminRouter);

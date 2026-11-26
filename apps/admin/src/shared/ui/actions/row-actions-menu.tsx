@@ -37,7 +37,7 @@ export function RowActionsMenu({id, actions = [], triggerClassName}) {
             >
                 <DropdownMenuItem
                     className={ITEM_CLASS}
-                    onClick={() => navigator.clipboard.writeText(id)}
+                    onClick={() => navigator.clipboard.writeText(String(id))}
                 >
                     Копировать ID
                 </DropdownMenuItem>

@@ -146,7 +146,7 @@ function bindAddToCartButtons() {
         if (!productId) return;
 
         // Получаем полный товар с вариантами
-        const res = await fetch(`/api/products/${productId}`);
+        const res = await fetch(`/api/v1/products/${productId}`);
         const product = await res.json();
 
         // Берём первый доступный вариант

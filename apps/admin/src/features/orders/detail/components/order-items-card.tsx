@@ -24,17 +24,14 @@ export function OrderItemsCard({items, itemsTotal, deliveryPrice, orderTotal}) {
     return (
         <SectionCard radius={20} className="min-w-0">
             <SectionCardHeader
-                className="items-center justify-between gap-3 space-y-0 p-4 pb-3 sm:px-5">
-                <SectionCardHeader
-                    title="Состав заказа"
-                    className="flex flex-1 flex-row items-center justify-between gap-3 space-y-0 sm:px-5"
-                >
-                    <Badge variant="secondary" className="rounded-full tabular-nums">
-                        {itemCount} товара
-                    </Badge>
-                </SectionCardHeader>
-
-                <CardContent className="px-4 pb-4 sm:px-5">
+                title="Состав заказа"
+                className="items-center justify-between gap-3 space-y-0 p-4 pb-3 sm:px-5"
+            >
+                <Badge variant="secondary" className="rounded-full tabular-nums">
+                    {itemCount} товара
+                </Badge>
+            </SectionCardHeader>
+            <CardContent className="px-4 pb-4 sm:px-5">
                     <div className="divide-y divide-[#E5E5EA] dark:divide-[#38383A]">
                         {items.map((item) => (
                             <div
@@ -84,8 +81,7 @@ export function OrderItemsCard({items, itemsTotal, deliveryPrice, orderTotal}) {
                             strong
                         />
                     </div>
-                </CardContent>
-            </SectionCardHeader>
+            </CardContent>
         </SectionCard>
     )
 }

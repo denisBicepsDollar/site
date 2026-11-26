@@ -182,7 +182,7 @@ export function DataTable({columns, data, action}) {
                                         {/* Реальные товары */}
                                         {activeRows.map((row) => (
                                             <TableRow
-                                                onClick={() => navigate(`${row.id}`)}
+                                                onClick={() => navigate(`${row.original.id}`)}
                                                 key={row.id}
                                                 className="cursor-pointer active:bg-black/[0.02] dark:active:bg-white/[0.02]" // Эффект тапа на iOS
                                                 data-state={row.getIsSelected() ? "selected" : undefined}

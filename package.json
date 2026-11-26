@@ -12,7 +12,7 @@
     "npm": ">=10"
   },
   "scripts": {
-    "dev:admin": "npm run dev --workspace admin",
+    "dev:admin": "npm run dev --workspace @site/admin",
     "dev:web": "npm run dev --workspace web",
     "dev:api": "npm run dev --workspace api",
     "build": "npm run build --workspaces --if-present",
@@ -21,7 +21,7 @@
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test:architecture && npm run test:ui && npm run test:api",
     "test:architecture": "node --test tests/*.test.js",
-    "test:ui": "npm run test --workspace ui",
+    "test:ui": "npm run test --workspace @site/ui",
     "test:api": "npm run test --workspace api",
     "check": "npm run lint && npm test && npm run build"
   }
