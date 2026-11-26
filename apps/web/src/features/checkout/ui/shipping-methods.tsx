@@ -8,7 +8,16 @@ import {
 import { DeliveryAddress } from "./delivery-address";
 import { RussianPost } from "@/shared/ui/russian-post";
 import { Radio, RadioGroup } from "@/shared/ui/radio-group";
-import { Label } from "@/shared/ui/label";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardMedia,
+  CardTitle,
+} from "@/shared/ui/card";
+import { cn } from "@/siteplane/system/utils/cn";
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("ru-RU", {
@@ -37,26 +46,39 @@ function ShippingNode({
   const activeRussianPostType =
     selectedPath[2] === "courier" ? "courier" : "pickup_post_office";
   const activeTariffId = selectedPath[3] ?? selectedPath[2];
+  const subtitle = [item.time, item.description].filter(Boolean).join(" · ");
 
   return (
-    <div>
-      <Label variant="card">
-        <Radio id={item.id} value={item.id} />
-        {item.name}
-        {item.time && (
-          <span className="text-sm text-muted-foreground">{item.time}</span>
+    <div className="flex flex-col gap-2">
+      <Card
+        render={<label htmlFor={item.id} />}
+        density="compact"
+        className={cn(
+          "w-full cursor-pointer transition-[box-shadow]",
+          isSelected
+            ? "ring-2 ring-forest"
+            : "hover:ring-1 hover:ring-forest/30",
         )}
-        {item.description && (
-          <span className="text-sm text-muted-foreground">
-            {item.description}
-          </span>
-        )}
-        {item.price !== undefined && (
-          <span className="font-semibold">
-            {item.price === 0 ? "Бесплатно" : formatPrice(item.price)}
-          </span>
-        )}
-      </Label>
+      >
+        <CardHeader>
+          <CardMedia className="min-h-5">
+            <Radio id={item.id} value={item.id} />
+          </CardMedia>
+          <CardTitle className="text-sm font-medium leading-5">
+            {item.name}
+          </CardTitle>
+          {subtitle && (
+            <CardDescription className="text-xs">{subtitle}</CardDescription>
+          )}
+          {item.price !== undefined && (
+            <CardAction>
+              <span className="text-sm font-semibold whitespace-nowrap text-forest">
+                {item.price === 0 ? "Бесплатно" : formatPrice(item.price)}
+              </span>
+            </CardAction>
+          )}
+        </CardHeader>
+      </Card>
 
       {item.id === "delivery" && isSelected && <DeliveryAddress />}
       {item.id === "russian_post" && isSelected && (
@@ -104,9 +126,12 @@ function ShippingNode({
         </div>
       )}
       {item.id === "cdek" && isSelected && (
-        <p className="ml-0 sm:ml-6 mt-2 text-xs text-muted-foreground">
-          Доставка СДЭК по указанному выше адресу или до ближайшего пункта выдачи.
-        </p>
+        <Card variant="inset" density="compact" className="ml-0 sm:ml-6">
+          <CardContent className="text-xs text-muted-foreground">
+            Доставка СДЭК по указанному выше адресу или до ближайшего пункта
+            выдачи.
+          </CardContent>
+        </Card>
       )}
 
       {isSelected && hasChildren && item.variants && (
@@ -139,7 +164,7 @@ function ChildRadioGroup({
     <RadioGroup
       value={selectedPath[level] ?? ""}
       onValueChange={handleSelect}
-      className="ml-4 sm:ml-6 mt-2 flex flex-col gap-3"
+      className="ml-3 sm:ml-6 pl-3 border-l-2 border-forest/15 flex flex-col gap-2"
     >
       {items.map((child) => (
         <ShippingNode key={child.id} item={child} level={level} />

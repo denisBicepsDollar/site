@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { AlertCircle, Check, ChevronRight, ShoppingBag } from "lucide-react";
 import { useOrderStore } from "@/entities/order";
 import { useCartStore } from "@/entities/cart";
 import {
@@ -10,8 +11,19 @@ import {
   ReviewOrder,
   ShippingInformation,
 } from "@/features/checkout";
-import { OrderSummaryCard } from "@/widgets/checkout";
-import { Button, buttonVariants } from "@/shared/ui/button";
+import { CheckoutSkeleton, OrderSummaryCard } from "@/widgets/checkout";
+import { Badge } from "@/shared/ui/badge";
+import { Button } from "@/shared/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardMedia,
+  CardTitle,
+} from "@/shared/ui/card";
+import { cn } from "@/siteplane/system/utils/cn";
 
 export default function CheckoutScreen() {
   const currentStep = useOrderStore((state) => state.currentStep);
@@ -45,7 +57,7 @@ export default function CheckoutScreen() {
 
   if (currentStep === 4 && createdOrder && cartStorage.length === 0) {
     return (
-      <div className="w-full mt-20 mx-auto p-6 flex flex-col gap-6">
+      <div className="w-full py-6 md:py-10 flex flex-col gap-6">
         <OrderSummary order={createdOrder} />
       </div>
     );
@@ -56,28 +68,37 @@ export default function CheckoutScreen() {
     (cartStorage.length > 0 && isLoadingProducts && cartItems.length === 0);
 
   if (isWaitingForCart) {
-    return (
-      <div className="w-full mt-20 mx-auto p-6">
-        <div className="animate-pulse bg-gray-200 h-24 w-full rounded" />
-      </div>
-    );
+    return <CheckoutSkeleton />;
   }
 
   if (isError && cartItems.length === 0 && cartStorage.length > 0) {
     return (
-      <div className="w-full mt-20 mx-auto max-w-xl p-6 text-center space-y-4">
-        <h1 className="text-xl font-semibold">Не удалось загрузить корзину</h1>
-        <p className="text-sm text-muted-foreground">
-          Проверьте соединение и повторите попытку для оформления заказа.
-        </p>
-        <div className="flex justify-center gap-3">
-          <Button type="button" onClick={() => void fetchCartProducts()}>
-            Повторить
-          </Button>
-          <Link href="/cart" className={buttonVariants({ variant: "outline" })}>
-            Вернуться в корзину
-          </Link>
-        </div>
+      <div className="w-full py-10 md:py-16 max-w-2xl mx-auto">
+        <Card variant="error">
+          <CardHeader>
+            <CardMedia>
+              <AlertCircle aria-hidden="true" />
+            </CardMedia>
+            <CardTitle>Не удалось загрузить корзину</CardTitle>
+            <CardDescription>
+              Проверьте соединение и повторите попытку для оформления заказа.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="border-t justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              render={<Link href="/cart">Вернуться в корзину</Link>}
+            />
+            <Button
+              type="button"
+              variant="accent"
+              onClick={() => void fetchCartProducts()}
+            >
+              Повторить
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     );
   }
@@ -91,31 +112,37 @@ export default function CheckoutScreen() {
 
   if (availableItems.length === 0 || hasOutOfStock) {
     return (
-      <div className="w-full mt-20 mx-auto max-w-xl p-6 text-center space-y-4">
-        <h1 className="text-xl font-semibold">
-          {hasOutOfStock
-            ? "В корзине есть недоступные товары"
-            : "Корзина пуста"}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {hasOutOfStock
-            ? "Удалите товары, которых нет в наличии, прежде чем оформить заказ."
-            : "Добавьте растения в корзину, чтобы перейти к оформлению."}
-        </p>
-        <div className="flex justify-center gap-3">
-          {hasOutOfStock ? (
-            <Link href="/cart" className={buttonVariants({ variant: "accent" })}>
-              Перейти в корзину
-            </Link>
-          ) : (
-            <Link
-              href="/products"
-              className={buttonVariants({ variant: "accent" })}
-            >
-              Перейти в каталог
-            </Link>
-          )}
-        </div>
+      <div className="w-full py-10 md:py-16 max-w-2xl mx-auto">
+        <Card variant="header">
+          <CardHeader>
+            <CardMedia>
+              <ShoppingBag aria-hidden="true" />
+            </CardMedia>
+            <CardTitle>
+              {hasOutOfStock
+                ? "В корзине есть недоступные товары"
+                : "Корзина пуста"}
+            </CardTitle>
+            <CardDescription>
+              {hasOutOfStock
+                ? "Удалите товары, которых нет в наличии, прежде чем оформить заказ."
+                : "Добавьте растения в корзину, чтобы перейти к оформлению."}
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="border-t justify-end">
+            {hasOutOfStock ? (
+              <Button
+                variant="accent"
+                render={<Link href="/cart">Перейти в корзину</Link>}
+              />
+            ) : (
+              <Button
+                variant="accent"
+                render={<Link href="/products">Перейти в каталог</Link>}
+              />
+            )}
+          </CardFooter>
+        </Card>
       </div>
     );
   }
@@ -127,37 +154,72 @@ export default function CheckoutScreen() {
   ];
 
   return (
-    <div className="w-full mt-20 mx-auto p-6 flex flex-col gap-6">
-      <nav
-        aria-label="Этапы оформления заказа"
-        className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground"
-      >
-        {steps.map((item, idx) => (
-          <div key={item.step} className="flex items-center gap-2">
-            <span
-              className={
-                currentStep === item.step
-                  ? "font-semibold text-foreground"
-                  : currentStep > item.step
-                    ? "text-foreground/70"
-                    : ""
-              }
-            >
-              {item.step}. {item.label}
-            </span>
-            {idx < steps.length - 1 && <span aria-hidden="true">→</span>}
-          </div>
-        ))}
-      </nav>
+    <div className="w-full py-6 md:py-10 flex flex-col gap-6">
+      <Card density="compact">
+        <CardContent>
+          <nav
+            aria-label="Этапы оформления заказа"
+            className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm"
+          >
+            {steps.map((item, idx) => {
+              const isCurrent = currentStep === item.step;
+              const isCompleted = currentStep > item.step;
+              return (
+                <div
+                  key={item.step}
+                  className="flex items-center gap-2 sm:gap-3"
+                >
+                  {idx > 0 && (
+                    <ChevronRight
+                      className="size-4 text-muted-foreground shrink-0"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <div
+                    aria-current={isCurrent ? "step" : undefined}
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full py-1 px-2.5 text-sm",
+                      isCurrent && "bg-forest/10 font-semibold text-forest",
+                      !isCurrent &&
+                        isCompleted &&
+                        "font-medium text-foreground",
+                      !isCurrent && !isCompleted && "text-muted-foreground",
+                    )}
+                  >
+                    <Badge
+                      size="sm"
+                      variant={
+                        isCurrent
+                          ? "accent"
+                          : isCompleted
+                            ? "success"
+                            : "secondary"
+                      }
+                      className="min-w-5 h-5 px-1.5"
+                    >
+                      {isCompleted ? (
+                        <Check className="size-3" aria-hidden="true" />
+                      ) : (
+                        item.step
+                      )}
+                    </Badge>
+                    <span>{item.label}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </nav>
+        </CardContent>
+      </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2 flex flex-col gap-6">
           {currentStep === 1 && <ShippingInformation />}
           {currentStep === 2 && <PaymentInformation />}
           {currentStep === 3 && <ReviewOrder />}
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="lg:col-span-1">
           <OrderSummaryCard />
         </div>
       </div>

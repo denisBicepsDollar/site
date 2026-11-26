@@ -69,7 +69,7 @@ const truncate = (content) => {
 };
 
 export const AboutScreen = (props) => {
-  const { heading, description, images, sections, className } = {
+  const { heading, images, sections, className } = {
     ...defaultProps,
     ...props,
   };
@@ -81,15 +81,15 @@ export const AboutScreen = (props) => {
   const valuesBody = sections?.[3]?.content;
 
   return (
-    <section className={cn("py-32", className)}>
+    <section className={cn("py-16 md:py-24", className)}>
       <div className="container mx-auto">
-        <div className="flex flex-col gap-16 lg:gap-28">
+        <div className="flex flex-col gap-16 lg:gap-24">
           <div className="flex flex-col gap-4 lg:gap-8">
-            <h2 className="max-w-3xl text-4xl font-semibold tighter lg:text-7xl">
+            <h2 className="max-w-4xl text-4xl font-semibold tracking-tighter lg:text-7xl">
               {heading}
             </h2>
 
-            <p className="max-w-xl text-xl leading-relaxed text-muted-foreground">
+            <p className="w-full text-lg sm:text-xl leading-relaxed text-muted-foreground">
               Здравствуйте, дорогие друзья и ценители прекрасного! Меня зовут
               Сузопова Елена Анатольевна. И если вы сейчас читаете эти строки,
               значит, вам тоже знакомо то самое чувство, когда взгляд падает на
@@ -156,9 +156,9 @@ export const AboutScreen = (props) => {
             </div>
           </div>
           <div className="flex flex-col gap-10">
-            <div className="flex max-w-xl flex-col gap-4">
+            <div className="flex max-w-4xl flex-col gap-4">
               {valuesTitle && (
-                <h3 className="text-3xl font-semibold tight md:text-5xl">
+                <h3 className="text-3xl font-semibold tracking-tight md:text-5xl">
                   {valuesTitle}
                 </h3>
               )}

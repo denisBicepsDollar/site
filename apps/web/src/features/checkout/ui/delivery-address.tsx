@@ -36,10 +36,9 @@ export function DeliveryAddress() {
     touched && shippingAddress.fullAddress.trim().length < 3;
 
   return (
-    <Field className="mt-3 w-full">
+    <Field className="mt-3 w-full" requiredIndicator>
       <FieldLabel htmlFor="address">
         Введите населённый пункт и адрес доставки
-        <span className="destructive">*</span>
       </FieldLabel>
 
       <div
@@ -84,7 +83,7 @@ export function DeliveryAddress() {
       </div>
 
       {showAddressError && (
-        <p className="text-xs text-destructive-foreground">
+        <p className="text-xs text-[var(--sp-rw-fg-destructive)]">
           Укажите полный адрес доставки (минимум 3 символа) или выберите подсказку.
         </p>
       )}

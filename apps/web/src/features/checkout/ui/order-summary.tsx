@@ -9,12 +9,17 @@ import {
   Printer,
   Truck,
 } from "lucide-react";
-import { cn } from "@site/ui/lib/utils";
-import { AspectRatio } from "@site/ui/aspect-ratio";
-import { Badge } from "@site/ui/badge";
-import { Button, buttonVariants } from "@site/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@site/ui/card";
-import { Separator } from "@site/ui/separator";
+import { Badge } from "@/shared/ui/badge";
+import { Button } from "@/shared/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardMedia,
+  CardTitle,
+} from "@/shared/ui/card";
+import { Separator } from "@/shared/ui/separator";
+import { cn } from "@/siteplane/system/utils/cn";
 import type { CreatedOrderRecord } from "@/entities/order";
 
 const DEFAULT_IMAGE = "/default-image.png";
@@ -42,6 +47,7 @@ interface OrderSummaryProps {
 }
 
 export function OrderSummary({ order, className }: OrderSummaryProps) {
+  const items = order.items ?? [];
   const deliveryTitle =
     order.deliveryMethod === "pickup"
       ? "Самовывоз"
@@ -54,24 +60,29 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
             : "Доставка");
 
   return (
-    <section className={cn("py-8 md:py-12", className)}>
-      <div className="container max-w-4xl mx-auto">
-        <div className="mb-10 text-center">
-          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-emerald-500/10">
-            <CheckCircle className="size-8 text-emerald-600" />
-          </div>
-          <h1 className="mb-2 text-2xl font-bold tight md:text-3xl">
-            Спасибо за заказ!
-          </h1>
-          <p className="text-muted-foreground">
-            Заказ успешно оформлен. Письмо с подтверждением оформления заказа
-            придёт на указанную почту{" "}
-            <span className="font-medium text-foreground">{order.email}</span>
-          </p>
-        </div>
+    <section className={cn("py-4 md:py-8", className)}>
+      <div className="container max-w-4xl mx-auto space-y-6">
+        <Card>
+          <CardContent className="text-center space-y-3">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-500/10">
+              <CheckCircle
+                className="size-8 text-emerald-600"
+                aria-hidden="true"
+              />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
+              Спасибо за заказ!
+            </h1>
+            <p className="text-muted-foreground">
+              Заказ успешно оформлен. Письмо с подтверждением оформления заказа
+              придёт на указанную почту{" "}
+              <span className="font-medium text-foreground">{order.email}</span>
+            </p>
+          </CardContent>
+        </Card>
 
-        <Card className="mb-6 shadow-none">
-          <CardContent className="flex flex-wrap items-center justify-between gap-4 p-4 md:p-6">
+        <Card density="compact">
+          <CardContent className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
               <div>
                 <p className="text-sm text-muted-foreground">Номер заказа</p>
@@ -86,30 +97,25 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
                 <p className="font-medium">{formatDate(order.createdAt)}</p>
               </div>
             </div>
-            <Badge className="bg-emerald-500/10 text-emerald-600">
-              Заказ принят
-            </Badge>
+            <Badge variant="success">Заказ принят</Badge>
           </CardContent>
         </Card>
 
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
-            <Card className="shadow-none">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Package className="size-5" aria-hidden="true" />
-                  Состав заказа
-                </CardTitle>
+            <Card variant="header">
+              <CardHeader>
+                <CardMedia>
+                  <Package aria-hidden="true" />
+                </CardMedia>
+                <CardTitle>Состав заказа</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {order.items.map((item, index) => (
-                  <div key={item.variantId}>
+                {items.map((item, index) => (
+                  <div key={`${item.variantId}-${index}`}>
                     <div className="flex gap-4">
                       <div className="w-20 shrink-0">
-                        <AspectRatio
-                          ratio={1}
-                          className="overflow-hidden rounded-lg bg-muted"
-                        >
+                        <div className="aspect-square overflow-hidden rounded-lg bg-muted">
                           <img
                             src={item.previewImage || DEFAULT_IMAGE}
                             alt={item.name}
@@ -121,7 +127,7 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
                             }}
                             className="size-full object-cover"
                           />
-                        </AspectRatio>
+                        </div>
                       </div>
                       <div className="min-w-0 flex-1">
                         <h3 className="font-medium">{item.name}</h3>
@@ -143,7 +149,7 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
                         )}
                       </div>
                     </div>
-                    {index < order.items.length - 1 && (
+                    {index < items.length - 1 && (
                       <Separator className="mt-4" />
                     )}
                   </div>
@@ -151,38 +157,36 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
               </CardContent>
             </Card>
 
-            <Card className="shadow-none">
-              <CardContent className="p-6">
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Товары</span>
-                    <span>{formatPrice(order.productsTotal)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Доставка</span>
-                    <span>
-                      {order.deliveryPrice === 0
-                        ? "Бесплатно"
-                        : formatPrice(order.deliveryPrice)}
-                    </span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between text-lg font-semibold">
-                    <span>Итого</span>
-                    <span>{formatPrice(order.totalPrice)}</span>
-                  </div>
+            <Card>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Товары</span>
+                  <span>{formatPrice(order.productsTotal)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Доставка</span>
+                  <span>
+                    {order.deliveryPrice === 0
+                      ? "Бесплатно"
+                      : formatPrice(order.deliveryPrice)}
+                  </span>
+                </div>
+                <Separator />
+                <div className="flex justify-between text-lg font-semibold">
+                  <span>Итого</span>
+                  <span>{formatPrice(order.totalPrice)}</span>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           <div className="space-y-6">
-            <Card className="shadow-none">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <MapPin className="size-5" aria-hidden="true" />
-                  Доставка и получатель
-                </CardTitle>
+            <Card variant="header">
+              <CardHeader>
+                <CardMedia>
+                  <MapPin aria-hidden="true" />
+                </CardMedia>
+                <CardTitle>Доставка и получатель</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -196,7 +200,10 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
                 </div>
                 <Separator />
                 <div className="flex items-start gap-3">
-                  <Truck className="mt-0.5 size-4 text-muted-foreground" />
+                  <Truck
+                    className="mt-0.5 size-4 text-muted-foreground"
+                    aria-hidden="true"
+                  />
                   <div>
                     <p className="text-sm font-medium">{deliveryTitle}</p>
                   </div>
@@ -204,12 +211,12 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
               </CardContent>
             </Card>
 
-            <Card className="shadow-none">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <CreditCard className="size-5" aria-hidden="true" />
-                  Оплата
-                </CardTitle>
+            <Card variant="header">
+              <CardHeader>
+                <CardMedia>
+                  <CreditCard aria-hidden="true" />
+                </CardMedia>
+                <CardTitle>Оплата</CardTitle>
               </CardHeader>
               <CardContent className="space-y-1">
                 <p className="text-sm font-medium">
@@ -224,15 +231,15 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
               </CardContent>
             </Card>
 
-            <Card className="shadow-none">
-              <CardContent className="space-y-3 p-4">
+            <Card density="compact">
+              <CardContent>
                 <Button
                   type="button"
-                  className="w-full"
+                  className="w-full gap-2"
                   variant="ghost"
                   onClick={() => window.print()}
                 >
-                  <Printer className="mr-2 size-4" />
+                  <Printer className="size-4" aria-hidden="true" />
                   Распечатать заказ
                 </Button>
               </CardContent>
@@ -240,25 +247,23 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
           </div>
         </div>
 
-        <div className="mt-10 text-center">
-          <p className="mb-4 text-muted-foreground">
-            Есть вопросы по вашему заказу?
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Link
-              href="/contact"
-              className={buttonVariants({ variant: "outline" })}
-            >
-              Связаться с нами
-            </Link>
-            <Link
-              href="/products"
-              className={buttonVariants({ variant: "default" })}
-            >
-              Продолжить покупки
-            </Link>
-          </div>
-        </div>
+        <Card variant="subtle" density="compact">
+          <CardContent className="text-center space-y-4">
+            <p className="text-muted-foreground">
+              Есть вопросы по вашему заказу?
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button
+                variant="outline"
+                render={<Link href="/contact">Связаться с нами</Link>}
+              />
+              <Button
+                variant="accent"
+                render={<Link href="/products">Продолжить покупки</Link>}
+              />
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </section>
   );

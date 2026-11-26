@@ -8,8 +8,10 @@ import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
+  CardMedia,
   CardTitle,
 } from "@/shared/ui/card";
 import {
@@ -79,18 +81,25 @@ export function ReviewOrder() {
         : selectedPaymentType;
 
   return (
-    <Card className="flex flex-col gap-6">
+    <Card variant="header">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold flex items-center gap-2">
-          <Check className="h-5 w-5" aria-hidden="true" />
-          Подтверждение заказа
-        </CardTitle>
+        <CardMedia>
+          <Check aria-hidden="true" />
+        </CardMedia>
+        <CardTitle>Подтверждение заказа</CardTitle>
+        <CardDescription>
+          Проверьте данные получателя, выбранную доставку и способ оплаты.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-6">
-        {/* Recipient & Delivery */}
-        <div className="flex flex-col gap-2">
-          <h3 className="font-medium">Получатель и доставка</h3>
-          <div className="text-sm text-muted-foreground p-3 bg-accent rounded-ele space-y-1">
+
+      <CardContent className="flex flex-col gap-5">
+        <Card variant="inset" density="compact">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold">
+              Получатель и доставка
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground space-y-1">
             <p className="font-medium text-foreground">{fullName}</p>
             <p>{shippingAddress.phone}</p>
             <p>{shippingAddress.email}</p>
@@ -100,62 +109,70 @@ export function ReviewOrder() {
             ) : (
               <p>Адрес доставки: {shippingAddress.fullAddress}</p>
             )}
+            {deliveryMeta.postOfficeCode && (
+              <p>Отделение: ОПС {deliveryMeta.postOfficeCode}</p>
+            )}
             {shippingAddress.comment && (
               <p>Комментарий: {shippingAddress.comment}</p>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        {/* Payment Method */}
-        <div className="flex flex-col gap-2">
-          <h3 className="font-medium">Способ оплаты</h3>
-          <div className="text-sm text-muted-foreground p-3 bg-accent rounded-ele space-y-1">
+        <Card variant="inset" density="compact">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold">
+              Способ оплаты
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground space-y-1">
             <p className="font-medium text-foreground">{paymentLabel}</p>
             <p>
               На указанную почту ({shippingAddress.email}) придёт письмо с
               подтверждением оформления заказа и дальнейшими деталями.
             </p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {submitError && (
-          <div
-            role="alert"
-            className="flex flex-col gap-2 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800"
-          >
-            <div className="flex items-start gap-2">
-              <AlertCircle
-                className="size-4 shrink-0 mt-0.5"
-                aria-hidden="true"
-              />
-              <span>{submitError}</span>
-            </div>
-            <div>
+          <Card variant="error" density="compact" role="alert">
+            <CardHeader>
+              <CardMedia>
+                <AlertCircle aria-hidden="true" />
+              </CardMedia>
+              <CardTitle className="text-sm font-semibold">
+                Ошибка при оформлении заказа
+              </CardTitle>
+              <CardDescription>{submitError}</CardDescription>
+            </CardHeader>
+            <CardFooter>
               <Button
                 variant="outline"
                 size="xs"
-                render={<Link href="/cart" />}
-              >
-                Вернуться в корзину
-              </Button>
-            </div>
-          </div>
+                render={<Link href="/cart">Вернуться в корзину</Link>}
+              />
+            </CardFooter>
+          </Card>
         )}
 
-        {/* Terms */}
-        <div className="flex items-start gap-2 border-t pt-4">
-          <Checkbox
-            id="agreeTerms"
-            checked={agreeToTerms}
-            onCheckedChange={(checked) => setAgreeToTerms(checked === true)}
-          />
-          <Label htmlFor="agreeTerms" className="text-sm leading-relaxed">
-            Я согласен с условиями обработки персональных данных и оформления
-            заказа
-          </Label>
-        </div>
+        <Card variant="subtle" density="compact">
+          <CardContent className="flex items-start gap-3">
+            <Checkbox
+              id="agreeTerms"
+              checked={agreeToTerms}
+              onCheckedChange={(checked) => setAgreeToTerms(checked === true)}
+            />
+            <Label
+              htmlFor="agreeTerms"
+              className="text-sm leading-relaxed cursor-pointer"
+            >
+              Я согласен с условиями обработки персональных данных и оформления
+              заказа
+            </Label>
+          </CardContent>
+        </Card>
       </CardContent>
-      <CardFooter className="flex justify-between">
+
+      <CardFooter className="border-t justify-between gap-4">
         <Button
           type="button"
           variant="outline"
@@ -164,7 +181,7 @@ export function ReviewOrder() {
           onClick={prevStep}
           className="flex items-center gap-2"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           Назад
         </Button>
         <Button
