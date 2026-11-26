@@ -10,10 +10,12 @@ import {
   SidebarTrigger,
   SidebarBrand,
 } from "@/shared/ui/sidebar";
-import { SidebarGroupCategory } from "@/pages-flat/products/ui/sidebar-group-category";
-import { SidebarGroupPrice } from "@/pages-flat/products/ui/sidebar-group-price";
-import { SidebarGroupSize } from "@/pages-flat/products/ui/sidebar-group-size";
-import { ProductsHeader } from "@/pages-flat/products/ui/products-header";
+import {
+  ProductsHeader,
+  SidebarGroupCategory,
+  SidebarGroupPrice,
+  SidebarGroupSize,
+} from "@/pages-flat/products";
 
 export default function ProductsLayout({
   children,

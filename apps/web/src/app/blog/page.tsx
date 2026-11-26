@@ -1,6 +1,6 @@
-import {BlogScreen} from "../../pages-flat/blog/gallery6";
-import {Header} from "../../widgets/header/ui/header";
-import {Footer} from "../../widgets/footer/ui/footer";
+import { BlogScreen } from "@/pages-flat/blog";
+import { Header } from "@/widgets/header";
+import { Footer } from "@/widgets/footer";
 
 export default function BlogPage() {
     return (

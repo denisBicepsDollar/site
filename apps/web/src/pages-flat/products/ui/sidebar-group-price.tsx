@@ -11,7 +11,7 @@ import {
   SidebarMenu,
 } from "@/shared/ui/sidebar";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useProductsCatalog } from "../model/useProductsStore";
+import { useProductsCatalog } from "../model/use-products-store";
 
 export function SidebarGroupPrice() {
   const router = useRouter();

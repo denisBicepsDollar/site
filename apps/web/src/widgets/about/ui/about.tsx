@@ -2,7 +2,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {animate, useInView} from 'framer-motion';
 import {MessageCircleHeart, ShieldCheck, Sprout, Truck} from 'lucide-react';
-import {Eyebrow, Reveal} from '../../reveal/reveal';
+import { Eyebrow, Reveal } from "@/shared/ui/reveal";
 
 function Counter({to, suffix = ''}) {
     const ref = useRef(null);

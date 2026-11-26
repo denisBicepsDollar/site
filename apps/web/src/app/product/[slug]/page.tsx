@@ -1,8 +1,8 @@
 // src/app/product/[slug]/page.js
-import {Header} from "@/widgets/header/ui/header";
-import {Footer} from "@/widgets/footer/ui/footer";
-import {getProductBySlug, getProducts} from "@/shared/api/api";
-import ProductScreen from "@/pages-flat/product-page/ui/product-screen";
+import { Header } from "@/widgets/header";
+import { Footer } from "@/widgets/footer";
+import { getProductBySlug, getProducts } from "@/shared/api";
+import { ProductScreen } from "@/pages-flat/product";
 
 export default async function ProductPage({params}) {
     const resolvedParams = await params;

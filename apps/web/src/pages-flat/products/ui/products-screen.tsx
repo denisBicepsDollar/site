@@ -4,7 +4,7 @@ import { SidebarInsetContent } from "./sidebar-inset-content";
 import {
   ProductsCatalogProvider,
   type ProductsApiResponse,
-} from "../model/useProductsStore";
+} from "../model/use-products-store";
 
 export default function ProductsScreen({
   initialData,

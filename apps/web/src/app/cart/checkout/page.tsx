@@ -1,6 +1,6 @@
-import {Header} from "@/widgets/header/ui/header";
-import {Footer} from "@/widgets/footer/ui/footer";
-import CheckoutScreen from "@/pages-flat/checkout/checkout-screen";
+import { Header } from "@/widgets/header";
+import { Footer } from "@/widgets/footer";
+import { CheckoutScreen } from "@/pages-flat/checkout";
 
 export default function CartPage() {
     return (

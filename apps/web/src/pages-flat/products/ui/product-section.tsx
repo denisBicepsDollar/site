@@ -1,4 +1,4 @@
-import { ProductList } from "@/pages-flat/products/ui/product-list";
+import { ProductList } from "./product-list";
 
 export function ProductSection() {
   return <ProductList />;

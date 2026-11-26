@@ -1,3 +1,5 @@
+"use client";
+
 import { usePathname } from "next/navigation";
 const TITLES: Record<string, string> = {
   "/products": "Все товары",
