@@ -109,8 +109,8 @@ export function Footer() {
                 </span>
               </a>
               <p className="mt-5 max-w-xs text-sm leading-relaxed text-cream/55">
-                Магазин комнатных и садовых растений. Выращиваем сами,
-                доставляем бережно и остаёмся на связи после покупки.
+                Магазин комнатных и садовых растений. Выращиваем сами и остаёмся
+                на связи после покупки.
               </p>
               <div className="mt-7 flex gap-3">
                 {[
@@ -135,13 +135,7 @@ export function Footer() {
                 Каталог
               </h4>
               <ul className="mt-5 space-y-3 text-sm text-cream/60">
-                {[
-                  "Комнатные",
-                  "Садовые",
-                  "Кашпо и грунт",
-                  "Подарочные карты",
-                  "Под заказ",
-                ].map((l) => (
+                {["Комнатные", "Садовые"].map((l) => (
                   <li key={l}>
                     <a
                       href="#catalog"
@@ -215,16 +209,16 @@ export function Footer() {
                     strokeWidth={1.8}
                   />
                   <a
-                    href="mailto:hello@botanika.shop"
+                    href="mailto:info@zelenyeusy.ru"
                     className="transition-colors hover:text-cream"
                   >
-                    hello@botanika.shop
+                    info@zelenyeusy.ru
                   </a>
                 </li>
               </ul>
             </div>
           </div>
-
+          {/*
           <div className="overflow-hidden">
             <p
               aria-hidden
@@ -232,7 +226,7 @@ export function Footer() {
             >
               zelenye usy
             </p>
-          </div>
+          </div>*/}
 
           <div className="border-t border-cream/10">
             <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-5 py-6 text-[12px] text-cream/35 md:px-10">

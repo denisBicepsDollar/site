@@ -20,12 +20,12 @@ export function Hero() {
   return (
     <section ref={ref} id="top" className="">
       {/* водяной знак */}
-      <motion.span
+      {/*<motion.span
         aria-hidden
         className="pointer-events-none absolute bottom-30 inset-x-0 select-none whitespace-nowrap font-display text-[13.5vw] font-semibold leading-none text-outline"
       >
         zelenye usy
-      </motion.span>
+      </motion.span>*/}
 
       <div className="relative items-start flex gap-14 lg:gap-8 ">
         {/* текст */}

@@ -44,15 +44,7 @@ const defaultProps = {
           Дадим подробные инструкции, если у вас возникнут вопросы.`,
     },
     {
-      title: "Экология",
-      content: "Природа лечит, наполняет и вдохновляет.",
-    },
-    {
-      label: "Поддержка",
-      title:
-        "We are a team of creators, thinkers, and builders who believe in crafting experiences that truly connect. Our story is built on passion, innovation, and the drive to bring meaningful ideas to life.",
-      content: `Нужна консультация перед покупкой или помощь после получения?
-        Дадим подробные инструкции, если у вас возникнут вопросы`,
+      title: "Качество, забота, поддержка",
     },
   ],
 };
@@ -77,7 +69,7 @@ export const AboutScreen = (props) => {
   const gallery = (images ?? []).slice(0, MAX_IMAGES);
   const columns = (sections ?? []).slice(0, MAX_COLUMNS);
   const mission = sections?.[2];
-  const valuesTitle = sections?.[2]?.title;
+  const valuesTitle = sections?.[3]?.title;
   const valuesBody = sections?.[3]?.content;
 
   return (
@@ -114,7 +106,7 @@ export const AboutScreen = (props) => {
               листочкам, Сузопова Елена Анатольевна 🌿
             </p>
           </div>
-          <div className="grid gap-6 md:grid-cols-2">
+          {/*<div className="grid gap-6 md:grid-cols-2">
             {gallery[0] && (
               <img
                 src={gallery[0].src}
@@ -154,7 +146,7 @@ export const AboutScreen = (props) => {
                 )}
               </div>
             </div>
-          </div>
+          </div>*/}
           <div className="flex flex-col gap-10">
             <div className="flex max-w-4xl flex-col gap-4">
               {valuesTitle && (
