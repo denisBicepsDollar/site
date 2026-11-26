@@ -1,6 +1,6 @@
-import { Header } from "@/widgets/header/ui/header";
+import { Header } from "@/widgets/header";
 import "./globals.css";
-import { Footer } from "@/widgets/footer/ui/footer";
+import { Footer } from "@/widgets/footer";
 import { QueryProvider } from "./providers/query-providers";
 
 export default function RootLayout({ children }) {

@@ -1,8 +1,7 @@
 /* ───────────────────── FAQ ───────────────────── */
 "use client";
-import { Reveal } from "@/widgets/reveal/reveal";
+import { Eyebrow, Reveal } from "@/shared/ui/reveal";
 import { useState } from "react";
-import { Eyebrow } from "../../reveal/reveal";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@site/ui/lib/utils";

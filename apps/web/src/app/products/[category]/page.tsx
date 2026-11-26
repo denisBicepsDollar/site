@@ -1,5 +1,5 @@
-import ProductsScreen from "@/pages-flat/products/ui/products-screen";
-import { getProducts } from "@/shared/api/api";
+import { ProductsScreen } from "@/pages-flat/products";
+import { getProducts } from "@/shared/api";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 

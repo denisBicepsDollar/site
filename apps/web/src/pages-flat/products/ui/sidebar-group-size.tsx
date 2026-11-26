@@ -12,7 +12,7 @@ import { CheckboxGroup } from "@/shared/ui/checkbox-group";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "@/shared/ui/badge";
 import { useEffect, useMemo } from "react";
-import { useProductsCatalog } from "../model/useProductsStore";
+import { useProductsCatalog } from "../model/use-products-store";
 
 export function SidebarGroupSize() {
   const router = useRouter();

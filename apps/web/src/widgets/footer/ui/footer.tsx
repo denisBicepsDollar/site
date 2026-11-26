@@ -13,7 +13,7 @@ import {
   Play,
   Send,
 } from "lucide-react";
-import { Eyebrow, Reveal } from "../../reveal/reveal";
+import { Eyebrow, Reveal } from "@/shared/ui/reveal";
 
 function Newsletter() {
   const [email, setEmail] = useState("");

@@ -12,7 +12,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/shared/ui/sidebar";
-import { useProductsCatalog } from "../model/useProductsStore";
+import { useProductsCatalog } from "../model/use-products-store";
 
 export function SidebarGroupCategory() {
   const pathname = usePathname();

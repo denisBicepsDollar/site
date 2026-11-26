@@ -1,6 +1,6 @@
-import {AboutScreen} from "@/pages-flat/about/about29";
-import {Header} from "@/widgets/header/ui/header";
-import {Footer} from "@/widgets/footer/ui/footer";
+import { AboutScreen } from "@/pages-flat/about";
+import { Header } from "@/widgets/header";
+import { Footer } from "@/widgets/footer";
 
 export default function AboutPage() {
     return (

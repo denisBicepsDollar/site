@@ -1,6 +1,6 @@
 import {AnimatePresence, motion} from "framer-motion";
 import {X} from "lucide-react";
-import {nav} from "@/widgets/header/config/const";
+import { nav } from "../config/const";
 import Link from "next/link";
 
 export function MobileMenu({open, onClose}) {

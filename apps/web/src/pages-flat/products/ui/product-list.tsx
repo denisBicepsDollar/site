@@ -1,6 +1,6 @@
 "use client";
-import { ProductCard } from "@/entities/product/ui/product-card/product-card";
-import { useProductsCatalog } from "../model/useProductsStore";
+import { ProductCard } from "@/entities/product";
+import { useProductsCatalog } from "../model/use-products-store";
 import { useEffect, useRef } from "react";
 import { Button } from "@/shared/ui/button";
 
@@ -144,15 +144,6 @@ export function ProductList() {
           <span className="text-sm text-muted-foreground">
             Загружаем еще товары...
           </span>
-        )}
-        {!isFetchingNextPage && hasNextPage && !isFetchNextPageError && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => fetchNextPage()}
-          >
-            Загрузить еще
-          </Button>
         )}
         {isFetchNextPageError && (
           <div className="flex items-center gap-3">

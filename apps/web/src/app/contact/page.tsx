@@ -1,11 +1,11 @@
-import { Header } from "@/widgets/header/ui/header";
-import { ContactScreen } from "@/pages-flat/contact/contant-screen";
+import { Header } from "@/widgets/header";
+import { ContactScreen } from "@/pages-flat/contact";
 import { MailIcon, MapPinIcon, PhoneIcon } from "lucide-react";
 import { Label } from "@site/ui/label";
 import { Input } from "@site/ui/input";
 import { Button } from "@site/ui/button";
 import { Textarea } from "@site/ui/textarea";
-import { Footer } from "@/widgets/footer/ui/footer";
+import { Footer } from "@/widgets/footer";
 
 export default function ContactPage() {
   return (
