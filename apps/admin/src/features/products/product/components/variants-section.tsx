@@ -16,7 +16,6 @@ export function VariantsSection({
                                     onMakeVariantCover,
                                     onUploadPhotos,
                                     onOpenPhoto,
-                                    onOpenMorePhotos,
                                 }) {
     return (
         <SectionCard className="min-w-0">
@@ -82,7 +81,6 @@ export function VariantsSection({
                                 onMakeVariantCover={(src) => onMakeVariantCover(index, src)}
                                 onUploadPhotos={(files) => onUploadPhotos(index, files)}
                                 onOpenPhoto={(imageIndex) => onOpenPhoto(index, imageIndex)}
-                                onOpenMorePhotos={() => onOpenMorePhotos?.(index)}
                             />
                         ))}
                     </div>

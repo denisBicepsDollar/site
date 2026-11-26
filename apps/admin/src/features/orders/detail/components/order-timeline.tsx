@@ -34,7 +34,7 @@ export function OrderTimeline({
                         </p>
                     </div>
 
-                    <StatusBadge tone={cancelled ? "danger" : "info"}>
+                    <StatusBadge tone={cancelled ? "danger" : "info"} className="">
                         {currentTitle}
                     </StatusBadge>
                 </div>
@@ -119,10 +119,9 @@ export function OrderTimeline({
                                     </p>
 
                                     {time && (
-                                        <time
-                                            className="mt-1 block text-[11px] tabular-nums text-[#8E8E93] dark:text-[#98989D]">
+                                        <span className="mt-1 block text-[11px] tabular-nums text-[#8E8E93] dark:text-[#98989D]">
                                             {time}
-                                        </time>
+                                        </span>
                                     )}
                                 </div>
                             </li>

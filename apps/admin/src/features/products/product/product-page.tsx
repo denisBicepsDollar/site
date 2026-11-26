@@ -31,7 +31,7 @@ function ProductForm({id}) {
     const saveProduct = async () => {
         try {
             await form.save();
-            if (form.isCreateMode) navigate("/products");
+            if (form.isCreateMode) navigate("/dashboard/products", {replace: true});
         } catch (error) {
             window.alert(error instanceof Error ? error.message : "Не удалось сохранить товар");
         }
@@ -41,11 +41,10 @@ function ProductForm({id}) {
     const [activePhotoIndex, setActivePhotoIndex] = useState(null);
 
     const photos = useMemo(() => collectPhotos(form.cover, form.variants), [form.cover, form.variants]);
-    console.log(photos)
     const activePhoto = activePhotoIndex === null ? null : photos[activePhotoIndex] ?? null;
 
     const isVariantCover = activePhoto
-        ? form.variants.some(variant => variant.name === activePhoto.variantName && activePhoto.src.endsWith(variant.previewImage))
+        ? form.variants[activePhoto.variantIndex]?.previewImage === activePhoto.src
         : false;
     /* ── Просмотрщик фото ────────────────────────────────────────────────── */
     const openVariantPhoto = (variantIndex, imageIndex) => {
@@ -84,13 +83,14 @@ function ProductForm({id}) {
         if (!window.confirm(`Сделать фото обложкой варианта ${variantName}`)) return;
 
         form.setVariantCover(variantIndex, src);
-        setActivePhotoIndex(variantIndex);
+        const photoIndex = photos.findIndex((photo) => photo.src === src && photo.variantIndex === variantIndex);
+        if (photoIndex >= 0) setActivePhotoIndex(photoIndex);
     };
 
     /* ── Динамический расчёт состояния изменений (Badge) ────────────────── */
     const changesBadge = useMemo(() => {
         // Проверяем, изменены ли данные в форме (флаг isDirty из вашего useProductForm)
-        if (form.isDirty) {
+        if (form.hasChanges) {
             return {
                 text: "Изменения не сохранены",
                 className: "bg-[#FF3B30]/10 text-[#D70015] dark:bg-[#FF453A]/15 dark:text-[#FF6961] border-none rounded-full px-2.5 py-0.5 text-sm font-medium"
@@ -100,7 +100,7 @@ function ProductForm({id}) {
             text: "Изменений нет",
             className: " bg-[#34C759]/10 h-[40px] text-[#248A3D] dark:bg-[#30D158]/15 dark:text-[#30D158] border-none rounded-xl px-2.5 py-0.5 text-sm font-medium"
         };
-    }, [form.isDirty]);
+    }, [form.hasChanges]);
 
     /* ── Разметка ────────────────────────────────────────────────────────── */
 
@@ -115,7 +115,7 @@ function ProductForm({id}) {
                     >
                         <Button
                             className="mt-5 rounded-xl bg-[#007AFF] text-white hover:bg-[#006FE6]"
-                            onClick={() => navigate("/products")}
+                            onClick={() => navigate("/dashboard/products")}
                         >
                             Вернуться в каталог
                         </Button>
@@ -124,15 +124,14 @@ function ProductForm({id}) {
             </div>
         );
     }
-    console.log(activePhoto);
-
     return (
-        <div className="bg-muted/10 min-h-screen flex flex-col">
+        <div className="flex min-h-screen flex-col bg-muted/10 print:bg-white">
 
             <EntityHeader
                 className="border-b"
                 backLabel="К товарам"
                 title={form.name || "Новый товар"}
+                metadata={null}
                 status={
                     <Badge className={changesBadge.className + " hidden sm:flex"}>
                         {changesBadge.text}
@@ -203,19 +202,24 @@ function ProductForm({id}) {
                         {changesBadge.text}
                     </Badge>
                     <Button
+                        type="button"
                         variant="default"
-                        title="Удаление товара"
-                        className={"sm:hidden"}
+                        title="Сохранить товар"
+                        className="sm:hidden"
+                        onClick={saveProduct}
                     >
                         <Save/>
                         Сохранить
                     </Button>
-                    <Button
-                        variant="destructive"
-                        title="Удаление товара"
-                    >
-                        Удалить товар
-                    </Button>
+                    {!form.isCreateMode && (
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            title="Удаление товара"
+                        >
+                            Удалить товар
+                        </Button>
+                    )}
                 </aside>
             </div>
             {/* Модалка просмотра изображений */}
@@ -223,6 +227,8 @@ function ProductForm({id}) {
                 <PhotoViewer
                     photo={activePhoto}
                     photos={photos}
+                    index={photos.findIndex((photo) => photo.src === activePhoto.src)}
+                    total={photos.length}
                     isProductCover={form.cover === activePhoto.src}
                     isVariantCover={isVariantCover}
                     onClose={() => setActivePhotoIndex(null)}

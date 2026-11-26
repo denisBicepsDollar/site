@@ -73,7 +73,7 @@ export function OrderPage() {
     const orderTotal = order.summary.totalPrice || itemsTotal + order.deliveryPrice;
 
     return (
-        <div className="min-h-screen bg-[#F2F2F7] dark:bg-black">
+        <div className="min-h-screen bg-[#F2F2F7] dark:bg-black print:bg-white">
             <EntityHeader
                 backLabel="К заказам"
                 title={`Заказ ${order.orderNumber}`}
@@ -83,7 +83,7 @@ export function OrderPage() {
                         {new Date(order.createdAt).toLocaleString("ru-RU")}
                     </span>
                 )}
-                status={<StatusBadge tone={cancelled ? "danger" : "info"}>{statusText}</StatusBadge>}
+                status={<StatusBadge tone={cancelled ? "danger" : "info"} className="">{statusText}</StatusBadge>}
                 actions={[
                     {
                         id: "print",
@@ -142,7 +142,7 @@ export function OrderPage() {
                         deliveryPrice={order.deliveryPrice}
                         orderTotal={orderTotal}
                     />
-                    <DeliveryCard delivery={order.delivery} className="md:col-span-2" />
+                    <DeliveryCard delivery={order.delivery} />
                 </div>
                 <aside className="min-w-0 space-y-4">
                     <CustomerPaymentCard customer={order.customer} payment={order.payment} />

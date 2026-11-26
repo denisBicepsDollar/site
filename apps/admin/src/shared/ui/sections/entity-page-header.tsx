@@ -12,6 +12,7 @@ export function EntityHeader({
                                  backLabel = "Назад",
                                  onBack = undefined,
                                  actions = [],
+                                 className = "",
                              }) {
     const navigate = useNavigate()
     const [pendingAction, setPendingAction] = useState(null)
@@ -44,18 +45,17 @@ export function EntityHeader({
     return (
         <>
             <header
-                className="
-                    flex w-full flex-col gap-3
-                    border-b bg-white/90 p-4 backdrop-blur-2xl
-                    sm:flex-row sm:items-center sm:justify-between sm:px-5
-                "
+                className={cn(
+                    "flex w-full flex-col gap-3 border-b bg-white/90 p-4 backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#1C1C1E]/90 sm:flex-row sm:items-center sm:justify-between sm:px-5",
+                    className,
+                )}
             >
-                <div className="flex min-w-0 items-center justify-center gap-3">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
                     <Button
                         type="button"
                         variant="ghost"
                         onClick={handleBackClick}
-                        className="shrink-0 rounded-full "
+                        className="shrink-0 rounded-full print:hidden"
                     >
                         <ArrowLeft aria-hidden="true" className="size-4"/>
                         {backLabel}
@@ -68,7 +68,7 @@ export function EntityHeader({
                         /
                     </span>
 
-                    <div className="hidden min-w-0">
+                    <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                             <h1 className="truncate text-base font-semibold tracking-tight text-[#1C1C1E] dark:text-white sm:text-lg">
                                 {title}
@@ -83,39 +83,29 @@ export function EntityHeader({
                     </div>
                 </div>
 
-                {actions.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-2">
-                        <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                                {status}
+                {(status || actions.length > 0) && (
+                    <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                        {status && <div className="min-w-0">{status}</div>}
+                        {actions.length > 0 && (
+                            <div className="flex flex-wrap items-center gap-2 print:hidden">
+                                {actions.map((action) => {
+                                    const Icon = action.icon
+                                    return (
+                                        <Button
+                                            key={action.id ?? action.label}
+                                            type="button"
+                                            variant={action.variant ?? "outline"}
+                                            disabled={action.disabled}
+                                            onClick={() => handleActionClick(action)}
+                                            className={cn("h-10 rounded-full active:scale-[0.98]", action.className)}
+                                        >
+                                            {Icon && <Icon aria-hidden="true" className="size-4"/>}
+                                            {action.label}
+                                        </Button>
+                                    )
+                                })}
                             </div>
-                        </div>
-                        {actions.map((action) => {
-                            const Icon = action.icon
-
-                            return (
-
-                                <Button
-                                    key={action.id ?? action.label}
-                                    type="button"
-                                    variant={action.variant ?? "outline"}
-                                    disabled={action.disabled}
-                                    onClick={() => handleActionClick(action)}
-                                    className={cn(
-                                        "h-10 rounded-full active:scale-[0.98]",
-                                        action.className,
-                                    )}
-                                >
-                                    {Icon && (
-                                        <Icon
-                                            aria-hidden="true"
-                                            className="size-4"
-                                        />
-                                    )}
-                                    {action.label}
-                                </Button>
-                            )
-                        })}
+                        )}
                     </div>
                 )}
             </header>

@@ -42,7 +42,7 @@ export function CoverPanel({cover, onOpen, onUpload}) {
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <span className="text-sm font-medium text-[#6E6E73] ]">
+                            <span className="text-sm font-medium text-[#6E6E73]">
                                 Обложка не выбрана
                             </span>
                             <span className="max-w-[180px] text-xs text-zinc-400 ">
