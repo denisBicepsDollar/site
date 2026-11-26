@@ -19,6 +19,16 @@ function parseUrlPrice(value: string | null): number | null {
   return Number.isFinite(num) && num >= 0 ? num : null;
 }
 
+function sanitizePriceInput(raw: string): string {
+  const cleaned = raw.replace(",", ".").replace(/[^\d.]/g, "");
+  const dotIndex = cleaned.indexOf(".");
+  if (dotIndex === -1) return cleaned;
+  return (
+    cleaned.slice(0, dotIndex + 1) +
+    cleaned.slice(dotIndex + 1).replace(/\./g, "")
+  );
+}
+
 export function SidebarGroupPrice() {
   const router = useRouter();
   const pathname = usePathname();
@@ -36,18 +46,10 @@ export function SidebarGroupPrice() {
   const parsedUrlMax = parseUrlPrice(rawUrlMax);
 
   const [minVal, setMinVal] = useState<string>(
-    parsedUrlMin !== null
-      ? String(parsedUrlMin)
-      : metaMin > 0
-        ? String(metaMin)
-        : "",
+    parsedUrlMin !== null ? String(parsedUrlMin) : "",
   );
   const [maxVal, setMaxVal] = useState<string>(
-    parsedUrlMax !== null
-      ? String(parsedUrlMax)
-      : metaMax > 0
-        ? String(metaMax)
-        : "",
+    parsedUrlMax !== null ? String(parsedUrlMax) : "",
   );
 
   useEffect(() => {
@@ -87,33 +89,23 @@ export function SidebarGroupPrice() {
       return;
     }
 
-    setMinVal(
-      parsedUrlMin !== null
-        ? String(parsedUrlMin)
-        : metaMin > 0
-          ? String(metaMin)
-          : "",
-    );
-    setMaxVal(
-      parsedUrlMax !== null
-        ? String(parsedUrlMax)
-        : metaMax > 0
-          ? String(metaMax)
-          : "",
-    );
+    setMinVal(parsedUrlMin !== null ? String(parsedUrlMin) : "");
+    setMaxVal(parsedUrlMax !== null ? String(parsedUrlMax) : "");
   }, [
     rawUrlMin,
     rawUrlMax,
     parsedUrlMin,
     parsedUrlMax,
-    metaMin,
-    metaMax,
     pathname,
     router,
     searchString,
   ]);
 
   const updateUrlPrices = (nextMin: number | null, nextMax: number | null) => {
+    if (nextMin === parsedUrlMin && nextMax === parsedUrlMax) {
+      return;
+    }
+
     const params = new URLSearchParams(searchParams.toString());
     params.delete("page");
 
@@ -136,9 +128,10 @@ export function SidebarGroupPrice() {
   };
 
   const getActiveRadio = () => {
-    if (parsedUrlMin === null && parsedUrlMax === null) return "all";
-    if (parsedUrlMin === null && parsedUrlMax === 500) return "under-500";
-    if (parsedUrlMin === null && parsedUrlMax === 1000) return "under-1000";
+    const noMin = parsedUrlMin === null || parsedUrlMin === 0;
+    if (noMin && parsedUrlMax === null) return "all";
+    if (noMin && parsedUrlMax === 500) return "under-500";
+    if (noMin && parsedUrlMax === 1000) return "under-1000";
     if (parsedUrlMin === 1000 && parsedUrlMax === null) return "over-1000";
     return "";
   };
@@ -160,39 +153,19 @@ export function SidebarGroupPrice() {
       [nextMin, nextMax] = [nextMax, nextMin];
     }
 
-    if (
-      nextMin !== null &&
-      metaMin > 0 &&
-      nextMin === metaMin &&
-      parsedUrlMin === null
-    ) {
-      nextMin = null;
-    }
-
-    if (
-      nextMax !== null &&
-      metaMax > 0 &&
-      nextMax === metaMax &&
-      parsedUrlMax === null
-    ) {
-      nextMax = null;
-    }
-
-    setMinVal(
-      nextMin !== null
-        ? String(nextMin)
-        : metaMin > 0
-          ? String(metaMin)
-          : "",
-    );
-    setMaxVal(
-      nextMax !== null
-        ? String(nextMax)
-        : metaMax > 0
-          ? String(metaMax)
-          : "",
-    );
+    setMinVal(nextMin !== null ? String(nextMin) : "");
+    setMaxVal(nextMax !== null ? String(nextMax) : "");
     updateUrlPrices(nextMin, nextMax);
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const related = e.relatedTarget as HTMLElement | null;
+    if (
+      related?.closest('a[href], [role="radio"], [role="checkbox"], button')
+    ) {
+      return;
+    }
+    applyPriceBounds(minVal, maxVal);
   };
 
   const handleRadioChange = (value: string) => {
@@ -220,12 +193,10 @@ export function SidebarGroupPrice() {
           <Field className="flex flex-row gap-2">
             <Input
               aria-label="Цена от"
-              placeholder={metaMin > 0 ? String(metaMin) : "От"}
+              placeholder={metaMin > 0 ? `от ${metaMin}` : "От"}
               value={minVal}
-              onValueChange={(val) => setMinVal(val.replace(/\D/g, ""))}
-              onBlur={() => {
-                applyPriceBounds(minVal, maxVal);
-              }}
+              onValueChange={(val) => setMinVal(sanitizePriceInput(val))}
+              onBlur={handleBlur}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   applyPriceBounds(minVal, maxVal);
@@ -234,12 +205,10 @@ export function SidebarGroupPrice() {
             />
             <Input
               aria-label="Цена до"
-              placeholder={metaMax > 0 ? String(metaMax) : "До"}
+              placeholder={metaMax > 0 ? `до ${metaMax}` : "До"}
               value={maxVal}
-              onValueChange={(val) => setMaxVal(val.replace(/\D/g, ""))}
-              onBlur={() => {
-                applyPriceBounds(minVal, maxVal);
-              }}
+              onValueChange={(val) => setMaxVal(sanitizePriceInput(val))}
+              onBlur={handleBlur}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   applyPriceBounds(minVal, maxVal);

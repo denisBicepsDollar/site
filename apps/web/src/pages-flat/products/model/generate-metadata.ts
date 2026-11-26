@@ -60,13 +60,13 @@ export async function buildCatalogMetadata({
       typeQuery,
   );
 
-  const decodedCategory = decodeRouteSegment(category);
-  const decodedSubcategory = decodeRouteSegment(subcategory);
-  const decodedType = decodeRouteSegment(type ?? typeQuery);
+  const decodedCategory = decodeRouteSegment(category)?.trim();
+  const decodedSubcategory = decodeRouteSegment(subcategory)?.trim();
+  const decodedType = decodeRouteSegment(type ?? typeQuery)?.trim();
 
   const [labels, routeData] = await Promise.all([
     getCachedCatalogLabels(),
-    decodedCategory && !q && !size && !minPrice && !maxPrice
+    decodedCategory
       ? getCachedCatalogProducts({
           category: decodedCategory,
           subcategory: decodedSubcategory,
@@ -81,7 +81,7 @@ export async function buildCatalogMetadata({
     routeData &&
     isUnknownEmptyCatalogRoute(routeData, {
       category: decodedCategory,
-      subcategory: decodedSubcategory,
+      ...(decodedSubcategory ? { subcategory: decodedSubcategory } : {}),
       ...(type && decodedType ? { type: decodedType } : {}),
     })
   ) {

@@ -16,18 +16,24 @@ export function ProductsSearch() {
 
   const urlQuery = searchParams.get("q") ?? "";
   const [value, setValue] = useState(urlQuery);
-  const lastPushedRef = useRef(urlQuery);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const latestRef = useRef({ pathname, searchParams, urlQuery });
   latestRef.current = { pathname, searchParams, urlQuery };
 
-  useEffect(() => {
-    if (urlQuery !== lastPushedRef.current) {
-      lastPushedRef.current = urlQuery;
-      setValue(urlQuery);
+  const clearPendingTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
     }
-  }, [urlQuery]);
+  }, []);
+
+  useEffect(() => {
+    clearPendingTimer();
+    setValue(urlQuery);
+  }, [urlQuery, pathname, clearPendingTimer]);
+
+  useEffect(() => clearPendingTimer, [clearPendingTimer]);
 
   const applySearchToUrl = useCallback(
     (rawText: string) => {
@@ -38,9 +44,8 @@ export function ProductsSearch() {
       } = latestRef.current;
 
       const trimmed = rawText.trim();
-      if (trimmed === currentUrlQuery) return;
+      if (trimmed === currentUrlQuery.trim()) return;
 
-      lastPushedRef.current = trimmed;
       const params = new URLSearchParams(currentSearchParams.toString());
       params.delete("page");
 
@@ -58,28 +63,17 @@ export function ProductsSearch() {
     [router],
   );
 
-  useEffect(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
+  const handleValueChange = (nextValue: string) => {
+    setValue(nextValue);
+    clearPendingTimer();
     timerRef.current = setTimeout(() => {
       timerRef.current = null;
-      applySearchToUrl(value);
+      applySearchToUrl(nextValue);
     }, 400);
-
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [value, applySearchToUrl]);
+  };
 
   const handleClear = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
+    clearPendingTimer();
     setValue("");
     applySearchToUrl("");
   };
@@ -89,13 +83,10 @@ export function ProductsSearch() {
       <InputGroupInput
         aria-label="Найти товар"
         value={value}
-        onValueChange={setValue}
+        onValueChange={handleValueChange}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            if (timerRef.current) {
-              clearTimeout(timerRef.current);
-              timerRef.current = null;
-            }
+            clearPendingTimer();
             applySearchToUrl(value);
           }
         }}
