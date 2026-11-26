@@ -35,6 +35,7 @@ export function ProductsSortCombobox() {
     if (!selected) return;
 
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("page");
 
     // Дефолтную сортировку ("score") не пишем в URL, чтобы ссылка была чистой
     if (selected.value === "score") {

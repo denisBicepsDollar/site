@@ -12,15 +12,16 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/shared/ui/sidebar";
-import { useEffect, useState } from "react";
-import { useProductsCatalog } from "../model/useProductsStore";
+import { useProductsCatalog } from "../model/use-products-store";
 
 export function SidebarGroupCategory() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const createHref = (path: string) => {
-    const queryString = searchParams.toString();
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("page");
+    const queryString = params.toString();
     return queryString ? `${path}?${queryString}` : path;
   };
 
@@ -37,76 +38,74 @@ export function SidebarGroupCategory() {
   const subcategories = counts?.subcategories ?? {};
 
   return (
-    <>
-      <SidebarGroup>
-        <SidebarGroupLabel>Категория</SidebarGroupLabel>
-        <SidebarMenu>
-          <SidebarMenuItem key="all">
-            <SidebarMenuButton
-              active={pathname === "/products"}
-              render={<Link href={createHref("/products")} />}
-            >
-              <span>Все</span>
-            </SidebarMenuButton>
-            <SidebarMenuBadge>{total}</SidebarMenuBadge>
-          </SidebarMenuItem>
-          {category.map(({ label, key }) => {
-            const hrefCategory = `/products/${key}`;
-            return (
-              <SidebarMenuItem key={key}>
-                <SidebarMenuButton
-                  active={pathname.includes(hrefCategory)}
-                  render={<Link href={createHref(hrefCategory)} />}
-                >
-                  <span>{label}</span>
-                </SidebarMenuButton>
-                <SidebarMenuBadge>{categories[key] ?? 0}</SidebarMenuBadge>
+    <SidebarGroup>
+      <SidebarGroupLabel>Категория</SidebarGroupLabel>
+      <SidebarMenu>
+        <SidebarMenuItem key="all">
+          <SidebarMenuButton
+            active={pathname === "/products"}
+            render={<Link href={createHref("/products")} />}
+          >
+            <span>Все</span>
+          </SidebarMenuButton>
+          <SidebarMenuBadge>{total}</SidebarMenuBadge>
+        </SidebarMenuItem>
+        {category.map(({ label, key }) => {
+          const hrefCategory = `/products/${key}`;
+          return (
+            <SidebarMenuItem key={key}>
+              <SidebarMenuButton
+                active={pathname.includes(hrefCategory)}
+                render={<Link href={createHref(hrefCategory)} />}
+              >
+                <span>{label}</span>
+              </SidebarMenuButton>
+              <SidebarMenuBadge>{categories[key] ?? 0}</SidebarMenuBadge>
 
-                {key === "indoor" &&
-                  pathname.includes("indoor") &&
-                  indoorCategory.map(({ label, key }) => {
-                    const hrefSubcategory = `/products/indoor/${key}`;
+              {key === "indoor" && pathname.includes("indoor") && (
+                <SidebarMenuSub>
+                  {indoorCategory.map((sub) => {
+                    const hrefSubcategory = `/products/indoor/${sub.key}`;
                     return (
-                      <SidebarMenuSub>
-                        <SidebarMenuSubItem key={key}>
-                          <SidebarMenuSubButton
-                            render={<Link href={createHref(hrefSubcategory)} />}
-                            active={pathname === hrefSubcategory}
-                          >
-                            {label}
-                          </SidebarMenuSubButton>
-                          <SidebarMenuBadge>
-                            {subcategories[key] ?? 0}
-                          </SidebarMenuBadge>
-                        </SidebarMenuSubItem>
-                      </SidebarMenuSub>
+                      <SidebarMenuSubItem key={sub.key}>
+                        <SidebarMenuSubButton
+                          render={<Link href={createHref(hrefSubcategory)} />}
+                          active={pathname === hrefSubcategory}
+                        >
+                          {sub.label}
+                        </SidebarMenuSubButton>
+                        <SidebarMenuBadge>
+                          {subcategories[sub.key] ?? 0}
+                        </SidebarMenuBadge>
+                      </SidebarMenuSubItem>
                     );
                   })}
-                {key === "outdoor" &&
-                  pathname.includes("outdoor") &&
-                  outdoorCategory.map(({ label, key }) => {
-                    const hrefSubcategory = `/products/outdoor/${key}`;
+                </SidebarMenuSub>
+              )}
+              {key === "outdoor" && pathname.includes("outdoor") && (
+                <SidebarMenuSub>
+                  {outdoorCategory.map((sub) => {
+                    const hrefSubcategory = `/products/outdoor/${sub.key}`;
                     return (
-                      <SidebarMenuSub>
-                        <SidebarMenuSubItem key={key}>
-                          <SidebarMenuSubButton
-                            render={<Link href={createHref(hrefSubcategory)} />}
-                            active={pathname === hrefSubcategory}
-                          >
-                            {label}
-                          </SidebarMenuSubButton>
-                          <SidebarMenuBadge>
-                            {subcategories[key] ?? 0}
-                          </SidebarMenuBadge>
-                        </SidebarMenuSubItem>
-                      </SidebarMenuSub>
+                      <SidebarMenuSubItem key={sub.key}>
+                        <SidebarMenuSubButton
+                          render={<Link href={createHref(hrefSubcategory)} />}
+                          active={pathname === hrefSubcategory}
+                        >
+                          {sub.label}
+                        </SidebarMenuSubButton>
+                        <SidebarMenuBadge>
+                          {subcategories[sub.key] ?? 0}
+                        </SidebarMenuBadge>
+                      </SidebarMenuSubItem>
                     );
                   })}
-              </SidebarMenuItem>
-            );
-          })}
-        </SidebarMenu>
-      </SidebarGroup>
-    </>
+                </SidebarMenuSub>
+              )}
+            </SidebarMenuItem>
+          );
+        })}
+      </SidebarMenu>
+    </SidebarGroup>
   );
 }

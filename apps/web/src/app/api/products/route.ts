@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const backendUrl = process.env.BACKEND_URL || "http://localhost:3000";
 
     const res = await fetch(`${backendUrl}/api/v1/products?${searchParams}`, {
-      next: { revalidate: 60 },
+      cache: "no-store",
     });
 
     if (!res.ok) {

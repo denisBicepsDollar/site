@@ -1,7 +1,5 @@
-import ProductsScreen from "@/pages-flat/products/ui/products-screen";
-import { Footer } from "../../widgets/footer/ui/footer";
-import { Header } from "../../widgets/header/ui/header";
-import { getProducts } from "@/shared/api/api";
+import { ProductsScreen } from "@/pages-flat/products";
+import { getProducts } from "@/shared/api";
 import { Suspense } from "react";
 import { cacheLife, cacheTag } from "next/cache";
 
@@ -19,14 +17,13 @@ export async function generateMetadata() {
     description: "Изучите полный каталог товаров...",
   };
 }
+
 export default async function ProductsPage() {
-  const data = await getInitialCatalog({ page: "1" });
+  const data = await getInitialCatalog();
 
   return (
-    <>
-      <Suspense fallback={<div>Загрузка каталога...</div>}>
-        <ProductsScreen initialData={data} />
-      </Suspense>
-    </>
+    <Suspense fallback={<div>Загрузка каталога...</div>}>
+      <ProductsScreen initialData={data} />
+    </Suspense>
   );
 }

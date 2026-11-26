@@ -4,11 +4,11 @@ import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Leaf, Menu, Phone, ShoppingBag, X } from "lucide-react";
-import { MobileMenu } from "@/widgets/header/ui/mobile-menu";
+import { MobileMenu } from "./mobile-menu";
 import { buttonVariants } from "@site/ui/button";
-import { CardDropdown } from "@/features/card-dropdown/card-dropdown";
-import { useCartStore } from "@/entities/cart/model/cartStore";
-import { NavLinks } from "@/widgets/header/ui/navLinks";
+import { CardDropdown } from "@/features/cart-dropdown";
+import { useCartStore } from "@/entities/cart";
+import { NavLinks } from "./nav-links";
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
