@@ -64,7 +64,8 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
             Спасибо за заказ!
           </h1>
           <p className="text-muted-foreground">
-            Заказ успешно оформлен. Детали отправлены на{" "}
+            Заказ успешно оформлен. Письмо с подтверждением оформления заказа
+            придёт на указанную почту{" "}
             <span className="font-medium text-foreground">{order.email}</span>
           </p>
         </div>
@@ -210,10 +211,15 @@ export function OrderSummary({ order, className }: OrderSummaryProps) {
                   Оплата
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm font-medium">Перевод по СБП</p>
+              <CardContent className="space-y-1">
+                <p className="text-sm font-medium">
+                  {order.paymentMethod === "sbp"
+                    ? "Перевод по СБП"
+                    : "Оплата после подтверждения"}
+                </p>
                 <p className="text-sm text-muted-foreground">
-                  Менеджер свяжется с вами для подтверждения и отправки реквизитов
+                  Подтверждение оформления заказа и детали оплаты придут на
+                  указанную почту ({order.email})
                 </p>
               </CardContent>
             </Card>

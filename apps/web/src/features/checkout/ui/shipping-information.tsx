@@ -18,6 +18,8 @@ import {
   CardTitle,
 } from "@/shared/ui/card";
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function ShippingInformation() {
   const nextStep = useOrderStore((state) => state.nextStep);
   const validateStep = useOrderStore((state) => state.validateStep);
@@ -96,11 +98,21 @@ export function ShippingInformation() {
               </Field>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Field labelPlacement="floating" name="phone" requiredIndicator>
+              <Field
+                labelPlacement="floating"
+                name="phone"
+                requiredIndicator
+                validate={(value) => {
+                  const str = String(value ?? "");
+                  if (!str.trim()) return null;
+                  return str.replace(/\D/g, "").length >= 10
+                    ? null
+                    : "Укажите не менее 10 цифр номера телефона.";
+                }}
+              >
                 <FieldLabel>Номер телефона</FieldLabel>
                 <Input
                   autoComplete="tel"
-                  placeholder="+7 900 123-45-67"
                   required
                   type="tel"
                   value={shippingAddress.phone}
@@ -111,9 +123,23 @@ export function ShippingInformation() {
                 <FieldError match="valueMissing">
                   Укажите номер телефона.
                 </FieldError>
+                <FieldError match="customError">
+                  Укажите не менее 10 цифр номера телефона.
+                </FieldError>
               </Field>
-              <Field labelPlacement="floating" name="email" requiredIndicator>
-                <FieldLabel>Эл. Почта</FieldLabel>
+              <Field
+                labelPlacement="floating"
+                name="email"
+                requiredIndicator
+                validate={(value) => {
+                  const str = String(value ?? "").trim();
+                  if (!str) return null;
+                  return EMAIL_RE.test(str)
+                    ? null
+                    : "Укажите корректную почту, например name@example.com.";
+                }}
+              >
+                <FieldLabel>Эл. Почта (для подтверждения)</FieldLabel>
                 <Input
                   autoComplete="email"
                   type="email"
@@ -128,6 +154,9 @@ export function ShippingInformation() {
                 </FieldError>
                 <FieldError match="typeMismatch">
                   Некорректный формат электронной почты.
+                </FieldError>
+                <FieldError match="customError">
+                  Укажите корректную почту, например name@example.com.
                 </FieldError>
               </Field>
             </div>
