@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -27,6 +28,14 @@ export async function POST(request: NextRequest) {
         { status: "error", message: "Некорректный ответ сервера" },
         { status: res.status || 502 },
       );
+    }
+
+    if (res.ok) {
+      try {
+        revalidateTag("catalog", { expire: 0 });
+      } catch {
+        // Ignore outside request cache context
+      }
     }
 
     return NextResponse.json(data, { status: res.status });
