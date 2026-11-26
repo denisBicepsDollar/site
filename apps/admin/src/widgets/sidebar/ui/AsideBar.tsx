@@ -1,6 +1,6 @@
 import icon from '/icon.png'
 import {useState} from 'react'
-import {ArrowUpRight, Bell, Pin, PinOff, Menu, X} from 'lucide-react'
+import {ArrowUpRight, Pin, PinOff, Menu, X} from 'lucide-react'
 import {AsideNavButton} from './AsideNavButton'
 import {dashboardNavigation} from "../config/navigation";
 
@@ -92,7 +92,7 @@ export function Sidebar() {
                 <hr className="border-t border-white/5 mx-2"/>
 
                 <AsideNavButton
-                    to="localhost"
+                    to="https://zelenyeusy.ru"
                     text="В магазин"
                     icon={ArrowUpRight}
                     isExpanded={true}
@@ -162,7 +162,7 @@ export function Sidebar() {
                     <hr className="border-t border-white/5 mx-2 shrink-0"/>
 
                     <AsideNavButton
-                        to="localhost"
+                        to="https://zelenyeusy.ru"
                         text="В магазин"
                         icon={ArrowUpRight}
                         isExpanded={isExpanded}

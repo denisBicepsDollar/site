@@ -20,7 +20,11 @@
     "./sheet": "./src/layout/sheet.jsx",
     "./skeleton": "./src/layout/skeleton.jsx",
     "./textarea": "./src/forms/textarea.jsx",
-    "./radio-group": "./src/forms/radio-group.jsx"
+    "./radio-group": "./src/forms/radio-group.jsx",
+    "./search-input": "./src/forms/search-input.jsx",
+    "./alert-dialog": "./src/overlays/alert-dialog.jsx",
+    "./confirm-dialog": "./src/overlays/confirm-dialog.jsx",
+    "./dialog": "./src/overlays/dialog.jsx"
   },
   "scripts": {
     "lint": "eslint .",

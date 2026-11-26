@@ -1,6 +1,6 @@
 import {Search, X} from "lucide-react"
 import {useState} from "react";
-import {Input} from "@site/ui/ui/forms/input.jsx"
+import {Input} from "./input.jsx"
 import {cn} from "cn"
 
 /* Поле поиска админки: иконка слева + Input с отступом под неё.
