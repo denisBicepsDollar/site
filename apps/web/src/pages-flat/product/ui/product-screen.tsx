@@ -77,7 +77,10 @@ export default function ProductScreen({
   const cartStorage = useCartStore((state) => state.cartStorage);
 
   const [qty, setQty] = useState(1);
-  const [addedFeedback, setAddedFeedback] = useState(false);
+  const [cartFeedback, setCartFeedback] = useState<{
+    message: string;
+    isLimit: boolean;
+  } | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
 
   const rawVariants = useMemo(
@@ -93,7 +96,7 @@ export default function ProductScreen({
   useEffect(() => {
     setSelectedVariantId(sortedVariants[0]?.id ?? "");
     setQty(1);
-    setAddedFeedback(false);
+    setCartFeedback(null);
     // Reset selection only when navigating to a different product
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product?.id]);
@@ -140,10 +143,10 @@ export default function ProductScreen({
   }, [currentVariant?.id, currentVariant?.previewImage, currentVariant?.images, galleryImages]);
 
   useEffect(() => {
-    if (!addedFeedback) return;
-    const timer = setTimeout(() => setAddedFeedback(false), 2000);
+    if (!cartFeedback) return;
+    const timer = setTimeout(() => setCartFeedback(null), 3500);
     return () => clearTimeout(timer);
-  }, [addedFeedback]);
+  }, [cartFeedback]);
 
   useEffect(() => {
     if (!copiedLink) return;
@@ -231,17 +234,45 @@ export default function ProductScreen({
     setSelectedVariantId(selected.id);
     const nextMax = Math.max(1, Number(selected.stock) || 0);
     setQty((prev) => Math.min(Math.max(1, prev), nextMax));
-    setAddedFeedback(false);
+    setCartFeedback(null);
   };
 
   const handleAddToCart = () => {
     if (!currentVariant?.id || availableStock <= 0) return;
-    addToCart({
+    const result = addToCart({
       variantId: currentVariant.id,
       stock: availableStock,
       quantity: safeQty,
     });
-    setAddedFeedback(true);
+
+    if (result.outOfStock) {
+      setCartFeedback({
+        message: "Товара нет в наличии",
+        isLimit: true,
+      });
+      return;
+    }
+
+    if (result.added === 0 && result.reachedLimit) {
+      setCartFeedback({
+        message: `В корзине уже максимальное количество (${result.totalInCart} шт.)`,
+        isLimit: true,
+      });
+      return;
+    }
+
+    if (result.reachedLimit) {
+      setCartFeedback({
+        message: `Добавлено ещё ${result.added} шт. (достигнут лимит остатка — ${result.totalInCart} шт.)`,
+        isLimit: true,
+      });
+      return;
+    }
+
+    setCartFeedback({
+      message: `Добавлено в корзину (${result.added} шт.)`,
+      isLimit: false,
+    });
   };
 
   const handleShare = async () => {
@@ -578,7 +609,7 @@ export default function ProductScreen({
                 <ButtonWithIcon
                   width="fit"
                   icon={
-                    addedFeedback ? (
+                    cartFeedback && !cartFeedback.isLimit ? (
                       <Check aria-hidden="true" />
                     ) : (
                       <ShoppingBag aria-hidden="true" />
@@ -591,7 +622,7 @@ export default function ProductScreen({
                 >
                   {!isInStock
                     ? "Нет в наличии"
-                    : addedFeedback
+                    : cartFeedback && !cartFeedback.isLimit
                       ? "Добавлено в корзину"
                       : `В корзину · ${formatPrice(activePrice * safeQty)}`}
                 </ButtonWithIcon>
@@ -605,6 +636,20 @@ export default function ProductScreen({
                   </Link>
                 )}
               </div>
+
+              {cartFeedback && (
+                <p
+                  role="status"
+                  aria-live="polite"
+                  className={
+                    cartFeedback.isLimit
+                      ? "text-xs font-medium text-clay"
+                      : "text-xs font-medium text-leaf"
+                  }
+                >
+                  {cartFeedback.message}
+                </p>
+              )}
 
               <Accordion
                 className="mt-4 w-full"

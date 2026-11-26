@@ -1,4 +1,5 @@
 export {
+  createOrder,
   getCatalogLabels,
   getProducts,
   getProductBySlug,

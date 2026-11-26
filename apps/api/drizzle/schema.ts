@@ -20,7 +20,7 @@ export const orderItemsInOrders = orders.table("order_items", {
 	id: serial().primaryKey(),
 	orderId: integer("order_id"),
 	productId: text("product_id"),
-	variantId: integer("variant_id"),
+	variantId: text("variant_id"),
 	name: text().notNull(),
 	price: integer().notNull(),
 	quantity: integer().notNull(),
