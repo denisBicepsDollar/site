@@ -1,6 +1,6 @@
 import {useMemo, useState} from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {CalendarDays, Printer} from "lucide-react";
 import {StatusBadge} from "@/shared/ui/display/status-badge.tsx";
 import {NotesSection} from "@/shared/ui/sections/notes-section.tsx";
@@ -31,6 +31,7 @@ const NEXT_STATUS: AdminOrderStatus[] = ["confirmed", "processing", "shipped", "
 
 export function OrderPage() {
     const {id} = useParams();
+    const navigate = useNavigate();
     const orderId = Number(id);
     const queryClient = useQueryClient();
     const [note, setNote] = useState("");
@@ -76,6 +77,7 @@ export function OrderPage() {
         <div className="min-h-screen bg-[#F2F2F7] dark:bg-black print:bg-white">
             <EntityHeader
                 backLabel="К заказам"
+                onBack={() => navigate("/dashboard/orders")}
                 title={`Заказ ${order.orderNumber}`}
                 metadata={(
                     <span className="inline-flex items-center gap-1.5">

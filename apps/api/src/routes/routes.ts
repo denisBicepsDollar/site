@@ -23,6 +23,8 @@ export function registerRoutes(app) {
   app.post("/auth/v1/login", authLimiter, authController.login);
   app.post("/auth/v1/logout", authController.logout);
   app.get("/auth/v1/validation", authHandler, (req, res) => {
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+    res.set("Pragma", "no-cache");
     return res.status(200).json("ok");
   });
 

@@ -17,6 +17,7 @@ export function Sidebar() {
     const [isHovered, setIsHovered] = useState(false)
     const [isPinned, setIsPinned] = useState(false)
     const [isMobileOpen, setIsMobileOpen] = useState(false)
+    const [isLoggingOut, setIsLoggingOut] = useState(false)
     const navigate = useNavigate()
     const queryClient = useQueryClient()
 
@@ -24,6 +25,8 @@ export function Sidebar() {
     const PinIcon = isPinned ? PinOff : Pin
 
     const handleLogout = async () => {
+        if (isLoggingOut) return
+        setIsLoggingOut(true)
         try {
             await authApi.logout()
         } catch {
@@ -31,6 +34,7 @@ export function Sidebar() {
         } finally {
             queryClient.clear()
             setIsMobileOpen(false)
+            setIsLoggingOut(false)
             navigate('/', {replace: true})
         }
     }
@@ -121,10 +125,12 @@ export function Sidebar() {
                         onClick={() => setIsMobileOpen(false)}
                     />
                     <AsideNavButton
-                        text="Выйти"
+                        text={isLoggingOut ? "Выход..." : "Выйти"}
                         icon={LogOut}
                         isExpanded={true}
+                        disabled={isLoggingOut}
                         onClick={handleLogout}
+                        className="hover:bg-[#FF3B30]/15 hover:text-[#FF453A]"
                     />
                 </div>
             </div>
@@ -199,10 +205,12 @@ export function Sidebar() {
                             isExpanded={isExpanded}
                         />
                         <AsideNavButton
-                            text="Выйти"
+                            text={isLoggingOut ? "Выход..." : "Выйти"}
                             icon={LogOut}
                             isExpanded={isExpanded}
+                            disabled={isLoggingOut}
                             onClick={handleLogout}
+                            className="hover:bg-[#FF3B30]/15 hover:text-[#FF453A]"
                         />
                     </div>
                 </div>

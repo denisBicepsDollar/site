@@ -52,12 +52,6 @@ async function generateUniqueSlug(
   return `${base}-${randomUUID().slice(0, 8)}`;
 }
 
-const sortableFields = {
-  name: productsInProducts.name,
-  category: productsInProducts.category,
-  status: productsInProducts.status,
-  createdAt: productsInProducts.createdAt,
-} as const;
 const statuses = ["active", "draft", "archived"] as const;
 
 type ProductStatus = (typeof statuses)[number];
@@ -205,14 +199,14 @@ function safeInt(value: unknown, fallback: number, min: number, max: number) {
   return Number.isInteger(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback;
 }
 
-function filters(req: Request) {
+function buildFilters(req: Request, table: typeof productsInProducts) {
   const q = typeof req.query.q === "string" ? req.query.q.trim().slice(0, 100) : "";
   const status = typeof req.query.status === "string" ? req.query.status : "";
   return and(
-    q ? or(ilike(productsInProducts.name, `%${q}%`), ilike(productsInProducts.sku, `%${q}%`)) : undefined,
-    statuses.includes(status as ProductStatus) ? eq(productsInProducts.status, status) : undefined,
+    q ? or(ilike(table.name, `%${q}%`), ilike(table.sku, `%${q}%`)) : undefined,
+    statuses.includes(status as ProductStatus) ? eq(table.status, status) : undefined,
     req.query.lowStock === "true"
-      ? sql`(select coalesce(sum(v.stock), 0) from products.product_variants v where v.product_id = ${productsInProducts.id}) <= 5`
+      ? sql`(select coalesce(sum(v.stock), 0) from products.product_variants v where v.product_id = ${table.id}) <= 5`
       : undefined,
   );
 }
@@ -234,7 +228,8 @@ export async function list(req: Request, res: Response) {
   const pageSize = safeInt(req.query.pageSize, 8, 1, 100);
   const sortBy = typeof req.query.sortBy === "string" ? req.query.sortBy : "createdAt";
   const direction = req.query.sortDirection === "asc" ? "asc" : "desc";
-  const where = filters(req);
+  const countWhere = buildFilters(req, productsInProducts);
+  const hasWhere = Boolean(countWhere);
   const orderBy = (product: typeof productsInProducts, helpers: { asc: typeof asc; desc: typeof desc }) => {
     const order = direction === "asc" ? helpers.asc : helpers.desc;
     if (sortBy === "price") {
@@ -249,15 +244,21 @@ export async function list(req: Request, res: Response) {
         helpers.desc(product.id),
       ];
     }
-    const field = Object.hasOwn(sortableFields, sortBy)
-      ? sortableFields[sortBy as keyof typeof sortableFields]
-      : productsInProducts.createdAt;
+    const sortableColumns = {
+      name: product.name,
+      category: product.category,
+      status: product.status,
+      createdAt: product.createdAt,
+    } as const;
+    const field = Object.hasOwn(sortableColumns, sortBy)
+      ? sortableColumns[sortBy as keyof typeof sortableColumns]
+      : product.createdAt;
     return [order(field), helpers.desc(product.id)];
   };
 
   const [rows, countRows, statusRows, lowStockRows] = await Promise.all([
     db.query.productsInProducts.findMany({
-      ...(where ? { where: { RAW: () => where } } : {}),
+      ...(hasWhere ? { where: { RAW: (product) => buildFilters(req, product)! } } : {}),
       limit: pageSize,
       offset: (page - 1) * pageSize,
       orderBy,
@@ -268,7 +269,7 @@ export async function list(req: Request, res: Response) {
         },
       },
     }),
-    db.select({ total: count() }).from(productsInProducts).where(where),
+    db.select({ total: count() }).from(productsInProducts).where(countWhere),
     db.select({ status: productsInProducts.status, total: count() })
       .from(productsInProducts).groupBy(productsInProducts.status),
     db.select({ total: count() })

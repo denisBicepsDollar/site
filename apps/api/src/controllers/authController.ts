@@ -9,6 +9,7 @@ function buildCookieOptions(req) {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production" && isHttps,
     sameSite: "lax",
+    path: "/",
   };
 }
 
@@ -24,15 +25,27 @@ export async function login(req, res) {
 
   const token = await authService.login(username, password);
 
+  res.set("Cache-Control", "no-store");
   return res
     .status(200)
-    .cookie("token", token, buildCookieOptions(req))
+    .cookie("token", token, {
+      ...buildCookieOptions(req),
+      maxAge: 24 * 60 * 60 * 1000,
+    })
     .json({ message: "ok" });
 }
 
 export async function logout(req, res) {
-  return res
-    .status(200)
-    .clearCookie("token", buildCookieOptions(req))
-    .json({ message: "ok" });
+  const options = buildCookieOptions(req);
+  res.set("Cache-Control", "no-store");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    path: "/",
+  });
+  if (options.secure) {
+    res.clearCookie("token", options);
+  }
+  return res.status(200).json({ message: "ok" });
 }
