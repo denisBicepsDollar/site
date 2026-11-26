@@ -156,6 +156,7 @@ export function createProductColumns({onDeleteProduct}: {onDeleteProduct?: (prod
 
                 const MAX_VISIBLE = 2;
                 const visible = variants.slice(0, MAX_VISIBLE);
+                const hiddenVariantsCount = variants.length - visible.length;
 
                 const stockColor = (stock: number) =>
                     stock === 0
@@ -180,6 +181,11 @@ export function createProductColumns({onDeleteProduct}: {onDeleteProduct?: (prod
                                 </span>
                             </span>
                         ))}
+                        {hiddenVariantsCount > 0 && (
+                            <span className="inline-flex h-6 shrink-0 items-center rounded-full bg-[#787880]/10 px-2 text-xs font-semibold text-[#6E6E73] dark:text-[#AEAEB2]">
+                                +{hiddenVariantsCount}
+                            </span>
+                        )}
                     </span>
                 )
             }

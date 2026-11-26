@@ -11,6 +11,7 @@ export function PhotoTile({
                               badge = null,
                               onOpen,
                               onRemove = undefined,
+                              removeLabel = "Удалить фото",
                               onMakeCover = undefined,
                               makeCoverTitle = "Сделать обложкой",
                               fluid = false,
@@ -74,8 +75,8 @@ export function PhotoTile({
                             type="button"
                             variant="secondary"
                             size="icon-sm"
-                            title="Удалить фото"
-                            aria-label="Удалить фото"
+                            title={removeLabel}
+                            aria-label={removeLabel}
                             onClick={onRemove}
                             className="
                                 h-8 w-8 rounded-full border border-black/5 bg-white/80 text-[#1C1C1E]

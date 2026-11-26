@@ -1,10 +1,8 @@
+import type {ComponentPropsWithoutRef} from "react"
 import {Badge} from "@site/ui/badge"
 import {cn} from "cn"
 
-/* Палитра статусных «пилюль» админки. Раньше одни и те же наборы классов были
-   скопированы в шапке заказа, в таймлайне, в карточке оплаты и в списке
-   обращений — теперь тон задаётся словом, а классы живут в одном месте.
-   Значения оставлены литералами, чтобы Tailwind их увидел. */
+/* Палитра статусных «пилюль» админки. */
 const STATUS_TONES = {
     /* синий — обычный/текущий статус */
     info: "bg-[#007AFF]/10 text-[#007AFF] dark:bg-[#0A84FF]/20 dark:text-[#64D2FF]",
@@ -18,9 +16,16 @@ const STATUS_TONES = {
         "bg-[#FF9F0A]/10 text-[#A65E00] dark:bg-[#FF9F0A]/15 dark:text-[#FFB340]",
     /* серый — нейтральный статус (цвет не добавляем, остаётся secondary-подложка) */
     neutral: "",
+} as const
+
+export type StatusTone = keyof typeof STATUS_TONES
+
+export interface StatusBadgeProps extends ComponentPropsWithoutRef<"span"> {
+    tone?: StatusTone
+    className?: string
 }
 
-export function StatusBadge({tone = "info", className, ...props}) {
+export function StatusBadge({tone = "info", className = "", ...props}: StatusBadgeProps) {
     return (
         <Badge
             variant="secondary"

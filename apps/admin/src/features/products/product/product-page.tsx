@@ -1,14 +1,15 @@
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {Button} from "@site/ui/button";
 import {Badge} from "@site/ui/badge";
+import {ConfirmDialog} from "@site/ui/confirm-dialog";
 import {EmptyState} from "@/shared/ui/EmptyState.tsx";
 
 import {useProductForm} from "./model/useProductForm.ts";
 import {collectPhotos, findCoverIndex, findVariantPhotoIndex, stepIndex} from "./model/photos.ts";
 import {MAX_NOTE_LENGTH} from "./constants.ts";
 
-import {Save} from 'lucide-react'
+import {Save} from 'lucide-react';
 
 import {GeneralInfoSection} from "./components/general-info-section.tsx";
 import {DescriptionSection} from "./components/description-section.tsx";
@@ -18,6 +19,14 @@ import {StatusSection} from "./components/status-section.tsx";
 import {NotesSection} from "@/shared/ui/sections/notes-section.tsx";
 import {PhotoViewer} from "./components/photo-viewer.tsx";
 import {EntityHeader} from "@/shared/ui/sections/entity-page-header.tsx";
+
+type ConfirmModalState =
+    | {kind: "delete-product"}
+    | {kind: "delete-photo"; variantIndex: number; imageIndex: number}
+    | {kind: "leave-unsaved"}
+    | null;
+
+type ActivePhotoTarget = {src: string; variantIndex: number | null} | null;
 
 /* Обёртка нужна ради key: при переходе на другой товар форма монтируется заново
    и не тащит в себе данные предыдущего товара. */
@@ -32,6 +41,18 @@ function ProductForm({id}: {id?: string}) {
     const routeFeedback = (location.state as {feedback?: {type: "success" | "error"; text: string}} | null)?.feedback ?? null;
     const form = useProductForm(id);
     const [feedback, setFeedback] = useState<{type: "success" | "error"; text: string} | null>(routeFeedback);
+    const [confirmModal, setConfirmModal] = useState<ConfirmModalState>(null);
+    const [activePhotoTarget, setActivePhotoTarget] = useState<ActivePhotoTarget>(null);
+
+    useEffect(() => {
+        if (!form.hasChanges) return;
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            event.preventDefault();
+            event.returnValue = "";
+        };
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [form.hasChanges]);
 
     const saveProduct = async () => {
         setFeedback(null);
@@ -53,10 +74,8 @@ function ProductForm({id}: {id?: string}) {
         }
     };
 
-    const deleteProduct = async () => {
-        if (!window.confirm(`Удалить товар «${form.name || "Без названия"}»? Действие нельзя отменить.`)) {
-            return;
-        }
+    const performDeleteProduct = async () => {
+        setConfirmModal(null);
         setFeedback(null);
         try {
             await form.remove();
@@ -69,53 +88,69 @@ function ProductForm({id}: {id?: string}) {
         }
     };
 
-    const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
-
     const photos = useMemo(() => collectPhotos(form.cover, form.variants), [form.cover, form.variants]);
-    const activePhoto = activePhotoIndex === null ? null : photos[activePhotoIndex] ?? null;
+    const activePhotoIndex = useMemo(() => {
+        if (!activePhotoTarget) return -1;
+        const exact = photos.findIndex(
+            (photo) => photo.src === activePhotoTarget.src && photo.variantIndex === activePhotoTarget.variantIndex,
+        );
+        if (exact !== -1) return exact;
+        return photos.findIndex((photo) => photo.src === activePhotoTarget.src);
+    }, [activePhotoTarget, photos]);
+    const activePhoto = activePhotoIndex >= 0 ? photos[activePhotoIndex] ?? null : null;
 
     const isVariantCover = activePhoto && activePhoto.variantIndex !== null
         ? form.variants[activePhoto.variantIndex]?.previewImage === activePhoto.src
         : false;
 
     /* ── Просмотрщик фото ────────────────────────────────────────────────── */
-    const openVariantPhoto = (variantIndex: number, imageIndex: number) => {
+    const openVariantPhoto = (variantIndex: number | null, imageIndex: number | null) => {
+        if (variantIndex === null) {
+            const idx = findCoverIndex(photos, form.cover);
+            const target = idx >= 0 ? photos[idx] : null;
+            if (target) setActivePhotoTarget({src: target.src, variantIndex: target.variantIndex});
+            return;
+        }
+        if (imageIndex === null) return;
         const index = findVariantPhotoIndex(photos, variantIndex, imageIndex);
-        if (index !== -1) setActivePhotoIndex(index);
+        const target = index !== -1 ? photos[index] : null;
+        if (target) setActivePhotoTarget({src: target.src, variantIndex: target.variantIndex});
     };
 
     const openCoverPhoto = () => {
         const index = findCoverIndex(photos, form.cover);
-        if (index !== -1) setActivePhotoIndex(index);
+        const target = index !== -1 ? photos[index] : null;
+        if (target) setActivePhotoTarget({src: target.src, variantIndex: target.variantIndex});
     };
 
     const stepPhoto = (direction: number) => {
-        if (!photos.length) return;
-        setActivePhotoIndex(index => stepIndex(index ?? 0, direction, photos.length));
+        if (!photos.length || activePhotoIndex < 0) return;
+        const nextIndex = stepIndex(activePhotoIndex, direction, photos.length);
+        const nextPhoto = photos[nextIndex];
+        if (nextPhoto) {
+            setActivePhotoTarget({src: nextPhoto.src, variantIndex: nextPhoto.variantIndex});
+        }
     };
 
-    /* ── Действия с фото (с подтверждением) ──────────────────────────────── */
+    /* ── Действия с фото ─────────────────────────────────────────────────── */
     const handleRemovePhoto = (variantIndex: number, imageIndex: number) => {
-        if (!window.confirm("Удалить это фото?")) return;
-
-        form.removeVariantPhoto(variantIndex, imageIndex);
-        setActivePhotoIndex(null);
+        setConfirmModal({kind: "delete-photo", variantIndex, imageIndex});
     };
 
     const handleMakeProductCover = (src: string) => {
-        if (!window.confirm("Сделать фото обложкой всего товара?")) return;
-
         form.setProductCover(src);
     };
 
     const handleMakeVariantCover = (variantIndex: number, src: string) => {
-        const variantName = form.variants[variantIndex]?.name?.trim() || "без названия";
-
-        if (!window.confirm(`Сделать фото обложкой варианта ${variantName}?`)) return;
-
         form.setVariantCover(variantIndex, src);
-        const photoIndex = photos.findIndex((photo) => photo.src === src && photo.variantIndex === variantIndex);
-        if (photoIndex >= 0) setActivePhotoIndex(photoIndex);
+    };
+
+    const handleBack = () => {
+        if (form.hasChanges) {
+            setConfirmModal({kind: "leave-unsaved"});
+            return;
+        }
+        navigate("/dashboard/products");
     };
 
     /* ── Динамический расчёт состояния изменений (Badge) ────────────────── */
@@ -147,7 +182,7 @@ function ProductForm({id}: {id?: string}) {
             : "Возможно, карточка была удалена или ссылка устарела. Вернитесь в каталог и выберите товар из списка.";
         return (
             <div className="mx-auto flex min-h-screen max-w-3xl items-center justify-center p-6">
-                <div className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black p-4">
+                <div className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1C1C1E] p-4">
                     <EmptyState
                         title="Товар не найден"
                         description={errorText}
@@ -164,13 +199,59 @@ function ProductForm({id}: {id?: string}) {
         );
     }
 
+    const feedbackBox = feedback && (
+        <div
+            role={feedback.type === "error" ? "alert" : "status"}
+            className={`rounded-xl px-4 py-2.5 text-sm font-medium ${
+                feedback.type === "error"
+                    ? "bg-[#FF3B30]/10 text-[#D70015] dark:bg-[#FF453A]/15 dark:text-[#FF6961]"
+                    : "bg-[#34C759]/10 text-[#248A3D] dark:bg-[#30D158]/15 dark:text-[#30D158]"
+            }`}
+        >
+            {feedback.text}
+        </div>
+    );
+
+    const confirmConfig = confirmModal?.kind === "delete-product"
+        ? {
+            title: "Удалить товар?",
+            description: `Товар «${form.name || "Без названия"}» будет удалён без возможности восстановления.`,
+            confirmLabel: "Удалить",
+            destructive: true,
+            onConfirm: performDeleteProduct,
+        }
+        : confirmModal?.kind === "delete-photo"
+            ? {
+                title: "Удалить фото?",
+                description: "Фотография будет удалена из этого варианта товара.",
+                confirmLabel: "Удалить",
+                destructive: true,
+                onConfirm: () => {
+                    form.removeVariantPhoto(confirmModal.variantIndex, confirmModal.imageIndex);
+                    setActivePhotoTarget(null);
+                    setConfirmModal(null);
+                },
+            }
+            : confirmModal?.kind === "leave-unsaved"
+                ? {
+                    title: "Выйти без сохранения?",
+                    description: "Несохранённые изменения карточки товара будут потеряны.",
+                    confirmLabel: "Выйти",
+                    destructive: true,
+                    onConfirm: () => {
+                        setConfirmModal(null);
+                        navigate("/dashboard/products");
+                    },
+                }
+                : null;
+
     return (
         <div className="flex min-h-screen flex-col bg-muted/10 print:bg-white">
 
             <EntityHeader
                 className="border-b"
                 backLabel="К товарам"
-                onBack={() => navigate("/dashboard/products")}
+                onBack={handleBack}
                 title={form.name || "Новый товар"}
                 metadata={null}
                 status={
@@ -191,20 +272,9 @@ function ProductForm({id}: {id?: string}) {
                 ]}
             />
 
-            {feedback && (
-                <div
-                    role={feedback.type === "error" ? "alert" : "status"}
-                    className={`mx-auto mt-4 w-full max-w-screen-2xl px-4 sm:px-5`}
-                >
-                    <div
-                        className={`rounded-xl px-4 py-2.5 text-sm font-medium ${
-                            feedback.type === "error"
-                                ? "bg-[#FF3B30]/10 text-[#D70015] dark:bg-[#FF453A]/15 dark:text-[#FF6961]"
-                                : "bg-[#34C759]/10 text-[#248A3D] dark:bg-[#30D158]/15 dark:text-[#30D158]"
-                        }`}
-                    >
-                        {feedback.text}
-                    </div>
+            {feedbackBox && (
+                <div className="mx-auto mt-4 w-full max-w-screen-2xl px-4 sm:px-5">
+                    {feedbackBox}
                 </div>
             )}
 
@@ -248,6 +318,7 @@ function ProductForm({id}: {id?: string}) {
                     <VariantsSection
                         variants={form.variants}
                         sizePresets={form.sizePresets}
+                        uploadError={form.uploadError}
                         onAddVariant={form.addVariant}
                         onUpdateVariant={form.updateVariant}
                         onRemoveVariant={form.removeVariant}
@@ -266,6 +337,7 @@ function ProductForm({id}: {id?: string}) {
                     <Badge className={changesBadge.className + " flex sm:hidden"}>
                         {changesBadge.text}
                     </Badge>
+                    {feedbackBox && <div className="sm:hidden">{feedbackBox}</div>}
                     <Button
                         type="button"
                         variant="default"
@@ -283,7 +355,7 @@ function ProductForm({id}: {id?: string}) {
                             variant="destructive"
                             title="Удаление товара"
                             disabled={form.isSaving || form.isDeleting}
-                            onClick={deleteProduct}
+                            onClick={() => setConfirmModal({kind: "delete-product"})}
                         >
                             {form.isDeleting ? "Удаление..." : "Удалить товар"}
                         </Button>
@@ -295,18 +367,35 @@ function ProductForm({id}: {id?: string}) {
                 <PhotoViewer
                     photo={activePhoto}
                     photos={photos}
-                    index={photos.findIndex((photo) => photo.src === activePhoto.src)}
+                    index={activePhotoIndex}
                     total={photos.length}
                     isProductCover={form.cover === activePhoto.src}
                     isVariantCover={isVariantCover}
-                    onClose={() => setActivePhotoIndex(null)}
+                    onClose={() => setActivePhotoTarget(null)}
                     onOpenPhoto={openVariantPhoto}
                     onPrev={() => stepPhoto(-1)}
                     onNext={() => stepPhoto(1)}
                     onMakeProductCover={() => handleMakeProductCover(activePhoto.src)}
-                    onMakeVariantCover={() => handleMakeVariantCover(activePhoto.variantIndex, activePhoto.src)}
+                    onMakeVariantCover={() => {
+                        if (activePhoto.variantIndex !== null) {
+                            handleMakeVariantCover(activePhoto.variantIndex, activePhoto.src);
+                        }
+                    }}
                 />
             )}
+
+            <ConfirmDialog
+                open={Boolean(confirmConfig)}
+                onOpenChange={(open) => {
+                    if (!open) setConfirmModal(null);
+                }}
+                title={confirmConfig?.title ?? ""}
+                description={confirmConfig?.description ?? ""}
+                cancelLabel="Отмена"
+                confirmLabel={confirmConfig?.confirmLabel ?? "Продолжить"}
+                destructive={Boolean(confirmConfig?.destructive)}
+                onConfirm={() => confirmConfig?.onConfirm()}
+            />
         </div>
     );
 }

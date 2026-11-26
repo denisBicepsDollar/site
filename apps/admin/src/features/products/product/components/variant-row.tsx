@@ -19,6 +19,7 @@ const MAX_PHOTOS_BY_BREAKPOINT = {
 
 export function VariantRow({
                                variant,
+                               uploadError = null,
                                onUpdate,
                                onRemove,
                                onRemovePhoto,
@@ -30,6 +31,7 @@ export function VariantRow({
     const closePhotosModal = useCallback(() => setPhotosModalOpen(false), []);
 
     const {clientId, name, stock, price, images, previewImage} = variant;
+    const variantLabel = name?.trim() || "Стандарт";
 
     const breakpoint = useBreakpoint();
     const maxPhotos = Math.min(
@@ -102,11 +104,11 @@ export function VariantRow({
                         <PhotoTile
                             src={image}
                             alt={`Фото ${imageIndex + 1}`}
-                            badge={image === previewImage ? `Обложка ${name}` : null}
+                            badge={image === previewImage ? `Обложка ${variantLabel}` : null}
                             onOpen={() => onOpenPhoto(imageIndex)}
                             onRemove={() => onRemovePhoto(imageIndex)}
                             onMakeCover={() => onMakeVariantCover(image)}
-                            makeCoverTitle={`Сделать обложкой варианта ${name}`}
+                            makeCoverTitle={`Сделать обложкой варианта ${variantLabel}`}
                         />
                     </div>
                 ))}
@@ -122,6 +124,7 @@ export function VariantRow({
                                 h-28 w-28 shrink-0 flex-col gap-1
                                 border border-dashed border-zinc-300
                                 bg-zinc-100
+                                dark:border-white/[0.12] dark:bg-[#2C2C2E]
                                 active:scale-[0.95] transition-all duration-200
                             "
                         >
@@ -160,6 +163,7 @@ export function VariantRow({
                 open={photosModalOpen}
                 onClose={closePhotosModal}
                 variant={variant}
+                uploadError={uploadError}
                 onOpenPhoto={onOpenPhoto}
                 onRemovePhoto={onRemovePhoto}
                 onMakeVariantCover={onMakeVariantCover}

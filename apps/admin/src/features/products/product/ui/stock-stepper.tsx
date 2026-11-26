@@ -79,6 +79,7 @@ export function StockStepper({value, onChange, className = ""}) {
                     [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none
                 "
                 value={draft}
+                onWheel={(event) => event.currentTarget.blur()}
                 onChange={handleChange}
                 onBlur={handleBlur}
             />

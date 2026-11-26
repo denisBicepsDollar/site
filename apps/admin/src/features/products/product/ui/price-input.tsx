@@ -49,6 +49,7 @@ export function PriceInput({
                     )}
                     placeholder="0"
                     value={value ?? ""}
+                    onWheel={(event) => event.currentTarget.blur()}
                     onChange={(event) => onChange(event.target.value)}
                 />
 

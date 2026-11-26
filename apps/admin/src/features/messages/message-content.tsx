@@ -1,5 +1,5 @@
-import {useMemo, useState} from "react";
-import {useParams} from "react-router-dom";
+import {useEffect, useMemo, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import {useQuery} from "@tanstack/react-query";
 import {PageHeader} from "@/features/dashboard/components/PageHeader.tsx";
 import {Avatar, AvatarFallback} from "@site/ui/avatar";
@@ -18,14 +18,21 @@ function getInitials(name: string | null): string {
 
 export function MessagesListPage() {
     const {id: routeId} = useParams();
+    const navigate = useNavigate();
     const parsedRouteId = routeId && /^\d+$/.test(routeId) ? Number(routeId) : null;
     const {data: messages = [], isLoading, isError, error, refetch} = useQuery({
         queryKey: ["admin", "messages"],
         queryFn: messagesApi.list,
-        staleTime: 30_000,
+        staleTime: 0,
     });
     const [selectedId, setSelectedId] = useState<number | null>(parsedRouteId);
     const [search, setSearch] = useState("");
+
+    useEffect(() => {
+        if (parsedRouteId !== null) {
+            setSelectedId(parsedRouteId);
+        }
+    }, [parsedRouteId]);
 
     const filteredMessages = useMemo(() => {
         const query = search.trim().toLowerCase();
@@ -84,7 +91,10 @@ export function MessagesListPage() {
                                                 key={message.id}
                                                 message={message}
                                                 selected={message.id === effectiveSelectedId}
-                                                onClick={() => setSelectedId(message.id)}
+                                                onClick={() => {
+                                                    setSelectedId(message.id);
+                                                    navigate(`/dashboard/messages/${message.id}`, {replace: true});
+                                                }}
                                             />
                                         ))
                                     ) : (

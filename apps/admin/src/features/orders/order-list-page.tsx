@@ -9,7 +9,7 @@ export function OrdersListPage() {
     const {data = [], isLoading, isError, error, refetch} = useQuery({
         queryKey: ["admin", "orders"],
         queryFn: ordersApi.list,
-        staleTime: 30_000,
+        staleTime: 0,
     });
 
     return (
