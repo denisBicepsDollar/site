@@ -53,6 +53,7 @@ function parsePage(value?: string): number {
 
 type ProductVariantSummary = {
   price?: number | string | null;
+  oldPrice?: number | string | null;
   stock?: number | null;
 };
 
@@ -80,6 +81,15 @@ function formatCatalogProduct(product: any) {
       ? Math.min(...validPrices)
       : Number(product.price) || 0;
 
+  const cheapestVariant = priceSource.find(
+    (v: ProductVariantSummary) => Number(v.price) === minProductPrice,
+  );
+  const rawOldPrice = Number(cheapestVariant?.oldPrice ?? product.oldPrice);
+  const oldPrice =
+    Number.isFinite(rawOldPrice) && rawOldPrice > minProductPrice
+      ? rawOldPrice
+      : undefined;
+
   const allStock = variants.reduce(
     (acc: number, curr: ProductVariantSummary) => acc + (curr.stock || 0),
     0,
@@ -87,8 +97,9 @@ function formatCatalogProduct(product: any) {
 
   return {
     ...product,
-    previewImage: product.previewImage ?? defaultImage,
+    previewImage: product.previewImage?.trim() || defaultImage,
     price: minProductPrice,
+    ...(oldPrice !== undefined ? { oldPrice } : {}),
     stock: allStock,
   };
 }
@@ -183,18 +194,18 @@ export async function labels() {
   return await productsRepo.labels();
 }
 
-export async function getOneProduct(slug) {
-  console.log("dasdasd");
-  let product = await productRepo.getOneProduct(slug);
+export async function getOneProduct(slug: string) {
+  const product = await productRepo.getOneProduct(slug);
+  if (!product) return null;
 
-  product.previewImage = product.previewImage ?? defaultImage;
+  product.previewImage = product.previewImage?.trim() || defaultImage;
   return product;
 }
 
-export async function getVariants(variantIds) {
+export async function getVariants(variantIds: string[]) {
   const variants = await productRepo.getVariants(variantIds);
-  variants.forEach((product) => {
-    product.previewImage = product.previewImage ?? defaultImage;
+  variants.forEach((product: { previewImage?: string | null }) => {
+    product.previewImage = product.previewImage?.trim() || defaultImage;
   });
   return variants;
 }

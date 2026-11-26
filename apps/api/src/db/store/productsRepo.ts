@@ -155,17 +155,45 @@ export async function counts(
     >,
   };
 
+  const canonicalKey = (
+    map: Record<string, string>,
+    rawValue: string,
+  ): string => {
+    const lower = rawValue.toLowerCase();
+    if (!map[lower]) {
+      map[lower] = rawValue;
+    }
+    return map[lower];
+  };
+
+  const categoryKeys: Record<string, string> = {};
+  const subcategoryKeys: Record<string, string> = {};
+  const byCategorySubKeys: Record<string, Record<string, string>> = {};
+  const typeKeysByCatSub: Record<
+    string,
+    Record<string, Record<string, string>>
+  > = {};
+
   for (const row of rows) {
     const num = Number(row.count);
     result.total += num;
 
-    const cat = row.category?.trim() || "";
+    const rawCat = row.category?.trim() || "";
     const rawSub = row.subcategory?.trim() || "";
     const rawType = row.type?.trim() || "";
 
+    const cat = rawCat ? canonicalKey(categoryKeys, rawCat) : "";
+
     // Иерархия: category -> subcategory ?? type -> type (subtype не используем)
-    const effectiveSub = rawSub || rawType;
-    const effectiveType = rawSub && rawType && rawType !== rawSub ? rawType : "";
+    const chosenSub = rawSub || rawType;
+    const chosenType =
+      rawSub && rawType && rawType.toLowerCase() !== rawSub.toLowerCase()
+        ? rawType
+        : "";
+
+    const effectiveSub = chosenSub
+      ? canonicalKey(subcategoryKeys, chosenSub)
+      : "";
 
     if (cat) {
       result.categories[cat] = (result.categories[cat] ?? 0) + num;
@@ -176,17 +204,28 @@ export async function counts(
         (result.subcategories[effectiveSub] ?? 0) + num;
     }
 
-    if (cat && effectiveSub) {
+    let catEffectiveSub = "";
+    if (cat && chosenSub) {
+      const catSubKeyMap = byCategorySubKeys[cat] ?? {};
+      byCategorySubKeys[cat] = catSubKeyMap;
+      catEffectiveSub = canonicalKey(catSubKeyMap, chosenSub);
+
       const catSubs = result.byCategory[cat] ?? {};
-      catSubs[effectiveSub] = (catSubs[effectiveSub] ?? 0) + num;
+      catSubs[catEffectiveSub] = (catSubs[catEffectiveSub] ?? 0) + num;
       result.byCategory[cat] = catSubs;
     }
 
-    if (cat && effectiveSub && effectiveType) {
+    if (cat && catEffectiveSub && chosenType) {
+      const catTypeMap = typeKeysByCatSub[cat] ?? {};
+      typeKeysByCatSub[cat] = catTypeMap;
+      const subTypeKeyMap = catTypeMap[catEffectiveSub] ?? {};
+      catTypeMap[catEffectiveSub] = subTypeKeyMap;
+      const effectiveType = canonicalKey(subTypeKeyMap, chosenType);
+
       const catTypes = result.typesByCategory[cat] ?? {};
-      const subTypes = catTypes[effectiveSub] ?? {};
+      const subTypes = catTypes[catEffectiveSub] ?? {};
       subTypes[effectiveType] = (subTypes[effectiveType] ?? 0) + num;
-      catTypes[effectiveSub] = subTypes;
+      catTypes[catEffectiveSub] = subTypes;
       result.typesByCategory[cat] = catTypes;
     }
   }

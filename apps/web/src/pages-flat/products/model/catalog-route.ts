@@ -1,6 +1,15 @@
 import type { ProductsApiResponse } from "../model/use-products-store";
 import { decodeRouteSegment } from "../config/catalog-labels";
 
+export const ALLOWED_CATALOG_SEARCH_KEYS = new Set([
+  "q",
+  "size",
+  "minPrice",
+  "maxPrice",
+  "sort",
+  "type",
+]);
+
 export function normalizeCatalogFilters(
   search: Record<string, string | string[] | undefined>,
   route: Record<string, string | undefined> = {},
@@ -8,15 +17,16 @@ export function normalizeCatalogFilters(
   const filters: Record<string, string> = {};
 
   for (const [key, value] of Object.entries(search)) {
-    if (key === "page" || value === undefined) continue;
-    const normalized = Array.isArray(value) ? value[value.length - 1] : value;
-    if (normalized) {
-      filters[key] = normalized;
-    }
+    if (!ALLOWED_CATALOG_SEARCH_KEYS.has(key) || value === undefined) continue;
+    const raw = Array.isArray(value) ? value[value.length - 1] : value;
+    const normalized = raw?.trim();
+    if (!normalized) continue;
+    if (key === "sort" && normalized === "score") continue;
+    filters[key] = normalized;
   }
 
   for (const [key, value] of Object.entries(route)) {
-    const decoded = decodeRouteSegment(value);
+    const decoded = decodeRouteSegment(value)?.trim();
     if (decoded) {
       filters[key] = decoded;
     }
@@ -70,18 +80,12 @@ export function isUnknownEmptyCatalogRoute(
   if (type && category && subcategory) {
     const catTypes = findValueIgnoreCase(counts?.typesByCategory, category);
     const subTypes = findValueIgnoreCase(catTypes, subcategory);
-    return (
-      !hasKeyIgnoreCase(subTypes, type) && !hasKeyIgnoreCase(labels?.types, type)
-    );
+    return !hasKeyIgnoreCase(subTypes, type);
   }
 
   if (subcategory && category) {
     const catSubs = findValueIgnoreCase(counts?.byCategory, category);
-    return (
-      !hasKeyIgnoreCase(catSubs, subcategory) &&
-      !hasKeyIgnoreCase(labels?.subcategories, subcategory) &&
-      !hasKeyIgnoreCase(labels?.types, subcategory)
-    );
+    return !hasKeyIgnoreCase(catSubs, subcategory);
   }
 
   if (category) {
