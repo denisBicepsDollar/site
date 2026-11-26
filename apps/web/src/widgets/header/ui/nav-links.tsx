@@ -15,7 +15,7 @@ export function NavLinks() {
                     <Link
                         key={n.to}
                         href={n.to}
-                        className={`group relative text-[13px] font-semibold uppercase [0.14em] transition-colors hover:text-forest ${
+                        className={`group relative text-[13px] font-semibold uppercase tracking-[0.14em] transition-colors hover:text-forest ${
                             active ? 'text-forest' : 'text-ink/70'
                         }`}
                     >

@@ -128,8 +128,8 @@ export async function list(
           ];
         case "sales":
           return [
-            desc(hasStock),
             desc(p.salesCount),
+            desc(hasStock),
             desc(p.id),
           ];
         case "score":

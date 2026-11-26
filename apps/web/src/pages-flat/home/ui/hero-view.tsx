@@ -1,10 +1,15 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown, ArrowUpRight, Sprout } from "lucide-react";
-import type { HeroFeaturedProduct } from "@/shared/api/catalog-cache";
+import {
+  extractHeroDataFromResponse,
+  type HeroData,
+  type HeroFeaturedProduct,
+  type ProductsApiResponse,
+} from "@/shared/api";
 import { formatPrice } from "@/shared/lib";
 import { Button } from "@/shared/ui/button";
 
@@ -13,9 +18,14 @@ const HERO_IMG = "/default-image.png";
 export interface HeroViewProps {
   featuredProduct: HeroFeaturedProduct | null;
   totalCount: number | null;
+  isPending?: boolean;
 }
 
-export function HeroView({ featuredProduct, totalCount }: HeroViewProps) {
+export function HeroView({
+  featuredProduct,
+  totalCount,
+  isPending = false,
+}: HeroViewProps) {
   const ref = useRef<HTMLElement | null>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -23,17 +33,92 @@ export function HeroView({ featuredProduct, totalCount }: HeroViewProps) {
   });
   const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "14%"]);
 
-  const productHref = featuredProduct
-    ? `/product/${encodeURIComponent(String(featuredProduct.slug || featuredProduct.id))}`
+  const [clientHero, setClientHero] = useState<HeroData | null>(null);
+  const [hasLoadedFallback, setHasLoadedFallback] = useState(
+    Boolean(featuredProduct),
+  );
+
+  useEffect(() => {
+    if (featuredProduct) {
+      setHasLoadedFallback(true);
+      return;
+    }
+
+    let cancelled = false;
+    const controller = new AbortController();
+
+    async function loadTopProduct() {
+      try {
+        const res = await fetch("/api/products?sort=sales", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!res.ok) return;
+        const body = (await res.json()) as ProductsApiResponse;
+        if (!cancelled) {
+          setClientHero(extractHeroDataFromResponse(body));
+        }
+      } catch {
+        // Ignore network/abort errors in client fallback.
+      } finally {
+        if (!cancelled) {
+          setHasLoadedFallback(true);
+        }
+      }
+    }
+
+    void loadTopProduct();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [featuredProduct]);
+
+  const activeProduct = featuredProduct ?? clientHero?.product ?? null;
+  const activeTotalCount = totalCount ?? clientHero?.totalCount ?? null;
+
+  const productHref = activeProduct
+    ? `/product/${encodeURIComponent(String(activeProduct.slug || activeProduct.id))}`
     : "/products";
-  const heroImage = featuredProduct?.previewImage || HERO_IMG;
-  const heroImageAlt = featuredProduct?.name || "Комнатные и садовые растения";
+  const heroImage = activeProduct?.previewImage || HERO_IMG;
+  const heroImageAlt = activeProduct?.name || "Комнатные и садовые растения";
   const productsCountLabel =
-    totalCount !== null && totalCount > 0 ? String(totalCount) : "500+";
+    activeTotalCount !== null && activeTotalCount > 0
+      ? String(activeTotalCount)
+      : "500+";
+
+  const showFloatingSkeleton = !activeProduct && (isPending || !hasLoadedFallback);
+
+  const archImage = (
+    <motion.div
+      initial={{ opacity: 0, y: 40, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{
+        duration: 1.1,
+        delay: 0.35,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      className="relative aspect-[4/5] w-full overflow-hidden rounded-b-[28px] rounded-t-[999px] bg-parchment shadow-[0_60px_80px_-50px_rgba(20,38,27,0.55)]"
+    >
+      <motion.img
+        src={heroImage}
+        alt={heroImageAlt}
+        onError={(e) => {
+          const img = e.currentTarget;
+          if (!img.src.endsWith(HERO_IMG)) {
+            img.src = HERO_IMG;
+          }
+        }}
+        style={{ y: imgY, scale: 1.18 }}
+        className="h-full w-full object-cover"
+      />
+    </motion.div>
+  );
 
   return (
-    <section ref={ref} id="top" className="">
-      <div className="relative grid items-start gap-14 lg:grid-cols-12 lg:gap-8">
+    <section ref={ref} id="top">
+      <div className="relative grid gap-12 lg:grid-cols-12 lg:gap-10">
         {/* текст */}
         <div className="lg:col-span-7">
           <motion.div
@@ -145,82 +230,105 @@ export function HeroView({ featuredProduct, totalCount }: HeroViewProps) {
         </div>
 
         {/* изображение */}
-        <div className="lg:col-span-5 sticky top-30 w-full max-w-lg lg:max-w-none mx-auto relative">
-          <Link href={productHref} className="block" aria-label={heroImageAlt}>
-            <motion.div
-              initial={{ opacity: 0, y: 40, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{
-                duration: 1.1,
-                delay: 0.35,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="relative aspect-[4/5] w-full overflow-hidden rounded-b-[28px] rounded-t-[999px] shadow-[0_60px_80px_-50px_rgba(20,38,27,0.55)]"
-            >
-              <motion.img
-                src={heroImage}
-                alt={heroImageAlt}
-                style={{ y: imgY, scale: 1.18 }}
-                className="h-full w-full object-cover"
-              />
-            </motion.div>
-          </Link>
-
-          {/* вращающаяся печать */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{
-              duration: 0.7,
-              delay: 1,
-              type: "spring",
-              stiffness: 120,
-            }}
-            className="pointer-events-none absolute -bottom-7 left-2 grid size-32 place-items-center rounded-full bg-clay text-cream shadow-xl md:left-6 lg:-left-8"
-          >
-            <svg
-              viewBox="0 0 100 100"
-              className="absolute inset-0 animate-rotate-slow"
-            >
-              <defs>
-                <path
-                  id="circlePath"
-                  d="M50,50 m-36,0 a36,36 0 1,1 72,0 a36,36 0 1,1 -72,0"
-                />
-              </defs>
-              <text
-                className="fill-cream text-[8.2px] font-semibold uppercase"
-                style={{ letterSpacing: "2.6px" }}
+        <div className="lg:col-span-5">
+          <div className="relative mx-auto w-full max-w-[460px] lg:sticky lg:top-28 lg:ml-auto lg:mr-0">
+            {activeProduct ? (
+              <Link
+                href={productHref}
+                className="block"
+                aria-label={heroImageAlt}
               >
-                <textPath href="#circlePath">
-                  комнатные и садовые растения
-                </textPath>
-              </text>
-            </svg>
-            <Sprout className="size-8" strokeWidth={1.6} />
-          </motion.div>
+                {archImage}
+              </Link>
+            ) : (
+              <div className="block">{archImage}</div>
+            )}
 
-          {/* плавающая карточка */}
-          <Link
-            href={productHref}
-            className="absolute right-2 bottom-4 z-10 max-w-[230px] sm:max-w-xs md:bottom-auto md:right-0 md:top-10 lg:-right-4"
-          >
+            {/* вращающаяся печать */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 1.15 }}
-              className="animate-float rounded-2xl border border-forest/10 bg-cream/90 px-5 py-4 shadow-lg backdrop-blur transition-colors duration-300 hover:border-clay/50"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                duration: 0.7,
+                delay: 1,
+                type: "spring",
+                stiffness: 120,
+              }}
+              className="pointer-events-none absolute -bottom-6 left-2 z-10 grid size-28 place-items-center rounded-full bg-clay text-cream shadow-xl sm:size-32 md:-left-6"
             >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-leaf">
-                {featuredProduct ? "Хит продаж" : "Наш каталог"}
-              </p>
-              <p className="mt-1 font-display text-lg sm:text-xl font-semibold text-forest leading-snug">
-                {featuredProduct
-                  ? `${featuredProduct.name} · ${formatPrice(featuredProduct.price)}`
-                  : "Смотреть все растения"}
-              </p>
+              <svg
+                viewBox="0 0 100 100"
+                className="absolute inset-0 animate-rotate-slow"
+              >
+                <defs>
+                  <path
+                    id="circlePath"
+                    d="M50,50 m-36,0 a36,36 0 1,1 72,0 a36,36 0 1,1 -72,0"
+                  />
+                </defs>
+                <text
+                  className="fill-cream text-[8.2px] font-semibold uppercase"
+                  style={{ letterSpacing: "2.6px" }}
+                >
+                  <textPath href="#circlePath">
+                    комнатные и садовые растения
+                  </textPath>
+                </text>
+              </svg>
+              <Sprout className="size-8" strokeWidth={1.6} />
             </motion.div>
-          </Link>
+
+            {/* плавающая карточка */}
+            {activeProduct ? (
+              <Link
+                href={productHref}
+                className="absolute right-3 bottom-4 z-10 max-w-[230px] sm:max-w-[270px] md:bottom-auto md:right-3 md:top-8"
+              >
+                <motion.div
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 1.15 }}
+                  className="animate-float rounded-2xl border border-forest/10 bg-cream/90 px-5 py-4 shadow-lg backdrop-blur transition-colors duration-300 hover:border-clay/50"
+                >
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-leaf">
+                    Хит продаж
+                  </p>
+                  <p className="mt-1 font-display text-lg sm:text-xl font-semibold text-forest leading-snug">
+                    {activeProduct.name} · {formatPrice(activeProduct.price)}
+                  </p>
+                </motion.div>
+              </Link>
+            ) : showFloatingSkeleton ? (
+              <div
+                aria-hidden="true"
+                className="absolute right-3 bottom-4 z-10 w-[210px] sm:w-[240px] md:bottom-auto md:right-3 md:top-8"
+              >
+                <div className="rounded-2xl border border-forest/10 bg-cream/90 px-5 py-4 shadow-lg backdrop-blur">
+                  <div className="h-2.5 w-20 animate-pulse rounded bg-forest/15" />
+                  <div className="mt-2.5 h-5 w-full animate-pulse rounded bg-forest/10" />
+                </div>
+              </div>
+            ) : (
+              <Link
+                href="/products"
+                className="absolute right-3 bottom-4 z-10 max-w-[230px] sm:max-w-[270px] md:bottom-auto md:right-3 md:top-8"
+              >
+                <motion.div
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 1.15 }}
+                  className="animate-float rounded-2xl border border-forest/10 bg-cream/90 px-5 py-4 shadow-lg backdrop-blur transition-colors duration-300 hover:border-clay/50"
+                >
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-leaf">
+                    Каталог
+                  </p>
+                  <p className="mt-1 font-display text-lg sm:text-xl font-semibold text-forest leading-snug">
+                    Смотреть все растения
+                  </p>
+                </motion.div>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </section>

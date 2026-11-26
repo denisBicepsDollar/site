@@ -73,8 +73,8 @@ export const AboutScreen = (props) => {
   const valuesBody = sections?.[3]?.content;
 
   return (
-    <section className={cn("py-16 md:py-24", className)}>
-      <div className="container mx-auto">
+    <section className={cn("w-full py-6 md:py-10", className)}>
+      <div className="w-full">
         <div className="flex flex-col gap-16 lg:gap-24">
           <div className="flex flex-col gap-4 lg:gap-8">
             <h2 className="max-w-4xl text-4xl font-semibold tracking-tighter lg:text-7xl">
