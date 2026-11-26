@@ -38,12 +38,16 @@ async function CategoryCatalogLoader({ params, searchParams }: PageProps) {
   ]);
 
   const initialFilters = normalizeFilters(resolvedSearch, resolvedRoute);
-  const data = await getProducts({ ...initialFilters, page: "1" });
+  const data = await getProducts(
+    { ...initialFilters, page: "1" },
+    { noStore: true },
+  );
 
   if (
     !data?.isError &&
     Array.isArray(data?.data) &&
     data.data.length === 0 &&
+    !initialFilters.q &&
     (initialFilters.size || initialFilters.minPrice || initialFilters.maxPrice)
   ) {
     const newParams = new URLSearchParams();

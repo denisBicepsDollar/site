@@ -21,23 +21,35 @@ export function SidebarGroupSize() {
   const { sizes } = useProductsCatalog();
 
   const sortedSizes = useMemo(
-    () => [...sizes].sort((a, b) => b.stock - a.stock),
+    () =>
+      [...sizes]
+        .filter((s) => Boolean(s?.size?.trim()))
+        .sort((a, b) => b.stock - a.stock || a.size.localeCompare(b.size, "ru")),
     [sizes],
   );
   const sizeParam = searchParams.get("size") ?? "";
+  const searchString = searchParams.toString();
   const selectedSizes = useMemo(
-    () => sizeParam.split(",").filter(Boolean),
+    () =>
+      Array.from(
+        new Set(
+          sizeParam
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+        ),
+      ),
     [sizeParam],
   );
 
   useEffect(() => {
-    if (!sizes.length || !selectedSizes.length) return;
+    if (!sortedSizes.length || !selectedSizes.length) return;
 
-    const available = sizes.map((s) => s.size);
+    const available = sortedSizes.map((s) => s.size);
     const validSizes = selectedSizes.filter((s) => available.includes(s));
 
     if (validSizes.length !== selectedSizes.length) {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchString);
       params.delete("page");
 
       validSizes.length
@@ -49,14 +61,18 @@ export function SidebarGroupSize() {
         scroll: false,
       });
     }
-  }, [sizes, selectedSizes, pathname, router, searchParams]);
+  }, [sortedSizes, selectedSizes, pathname, router, searchString]);
 
   const handleSizeChange = (newValues: string[]) => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("page");
 
-    if (newValues.length > 0) {
-      params.set("size", newValues.join(","));
+    const cleaned = Array.from(
+      new Set(newValues.map((s) => s.trim()).filter(Boolean)),
+    );
+
+    if (cleaned.length > 0) {
+      params.set("size", cleaned.join(","));
     } else {
       params.delete("size");
     }
@@ -71,23 +87,37 @@ export function SidebarGroupSize() {
       <SidebarMenu>
         <Fieldset>
           <Field>
-            <CheckboxGroup
-              className="w-full"
-              value={selectedSizes}
-              onValueChange={handleSizeChange}
-            >
-              {sortedSizes.map(({ size, stock }) => {
-                return (
-                  <Label className="w-full" key={size}>
-                    <Checkbox value={size} disabled={stock <= 0} />
-                    {size}
-                    <Badge size="sm" variant="secondary" className="ml-auto">
-                      {stock}
-                    </Badge>
-                  </Label>
-                );
-              })}
-            </CheckboxGroup>
+            {sortedSizes.length === 0 ? (
+              <p className="px-2 py-1 text-xs text-muted-foreground">
+                Нет доступных размеров
+              </p>
+            ) : (
+              <CheckboxGroup
+                className="w-full"
+                value={selectedSizes}
+                onValueChange={handleSizeChange}
+              >
+                {sortedSizes.map(({ size, stock }) => {
+                  const isSelected = selectedSizes.includes(size);
+                  return (
+                    <Label className="w-full" key={size}>
+                      <Checkbox
+                        value={size}
+                        disabled={stock <= 0 && !isSelected}
+                      />
+                      {size}
+                      <Badge
+                        size="sm"
+                        variant="secondary"
+                        className="ml-auto"
+                      >
+                        {stock}
+                      </Badge>
+                    </Label>
+                  );
+                })}
+              </CheckboxGroup>
+            )}
           </Field>
         </Fieldset>
       </SidebarMenu>

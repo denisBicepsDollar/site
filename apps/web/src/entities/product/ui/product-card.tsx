@@ -24,7 +24,9 @@ export function ProductCard({ product }) {
           <Badge
             shape="pill"
             className={`pointer-events-none absolute left-3.5 top-3.5 z-10 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] shadow-sm ${
-              badgeStyle[product.badge] || "bg-forest text-cream"
+              badgeStyle[product.tags[0]] ||
+              badgeStyle[product.badge] ||
+              "bg-forest text-cream"
             }`}
           >
             {product.tags[0]}
@@ -49,7 +51,7 @@ export function ProductCard({ product }) {
         <CardMedia
           render={
             <Link
-              href={`/product/${product.slug}`}
+              href={`/product/${product.slug || product.id}`}
               aria-label={product.name}
               className="block aspect-[4/5] w-full overflow-hidden"
             >
@@ -67,7 +69,7 @@ export function ProductCard({ product }) {
       <CardContent className="flex flex-col flex-grow justify-between p-4">
         {/* Приглушенное название товара */}
         <Link
-          href={`/product/${product.slug}`}
+          href={`/product/${product.slug || product.id}`}
           className="group/title block mb-3"
         >
           <h3 className="line-clamp-2 text-sm font-medium leading-snug text-ink/60 transition-colors group-hover/title:text-ink">

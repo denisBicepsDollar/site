@@ -1,7 +1,10 @@
-export const sortOptions = [
-    {value: "newest", label: "Newest", orderBy: "createdAt", orderDirection: "desc"},
-    {value: "price-asc", label: "Price: Low to High", orderBy: "price", orderDirection: "asc"},
-    {value: "price-desc", label: "Price: High to Low", orderBy: "price", orderDirection: "desc"},
-    {value: "name", label: "Name: A–Z", orderBy: "name", orderDirection: "asc"},
-];
-export const PRODUCTS_PER_PAGE = 5;
+export const SORTING_TAGS = [
+  { label: "Популярные", value: "score" },
+  { label: "Новинки", value: "new" },
+  { label: "Дешевле", value: "price" },
+  { label: "Дороже", value: "price_desc" },
+] as const;
+
+export const sortOptions = SORTING_TAGS;
+
+export const PRODUCTS_PER_PAGE = 12;

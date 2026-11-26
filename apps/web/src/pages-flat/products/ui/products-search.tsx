@@ -7,7 +7,7 @@ import {
 } from "@/shared/ui/input-group";
 import { Search, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function ProductsSearch() {
   const router = useRouter();
@@ -17,6 +17,10 @@ export function ProductsSearch() {
   const urlQuery = searchParams.get("q") ?? "";
   const [value, setValue] = useState(urlQuery);
   const lastPushedRef = useRef(urlQuery);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const latestRef = useRef({ pathname, searchParams, urlQuery });
+  latestRef.current = { pathname, searchParams, urlQuery };
 
   useEffect(() => {
     if (urlQuery !== lastPushedRef.current) {
@@ -25,44 +29,73 @@ export function ProductsSearch() {
     }
   }, [urlQuery]);
 
-  const applySearchToUrl = (rawText: string) => {
-    const trimmed = rawText.trim();
+  const applySearchToUrl = useCallback(
+    (rawText: string) => {
+      const {
+        pathname: currentPathname,
+        searchParams: currentSearchParams,
+        urlQuery: currentUrlQuery,
+      } = latestRef.current;
 
-    if (trimmed === urlQuery) return;
+      const trimmed = rawText.trim();
+      if (trimmed === currentUrlQuery) return;
 
-    lastPushedRef.current = trimmed;
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("page");
+      lastPushedRef.current = trimmed;
+      const params = new URLSearchParams(currentSearchParams.toString());
+      params.delete("page");
 
-    if (trimmed) {
-      params.set("q", trimmed);
-    } else {
-      params.delete("q");
-    }
-    const query = params.toString();
-    router.push(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
-  };
+      if (trimmed) {
+        params.set("q", trimmed);
+      } else {
+        params.delete("q");
+      }
+
+      const query = params.toString();
+      router.push(`${currentPathname}${query ? `?${query}` : ""}`, {
+        scroll: false,
+      });
+    },
+    [router],
+  );
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
       applySearchToUrl(value);
     }, 400);
-    return () => clearTimeout(timer);
-  }, [value]);
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [value, applySearchToUrl]);
 
   const handleClear = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
     setValue("");
     applySearchToUrl("");
   };
 
   return (
-    <InputGroup className="max" insetEnd>
+    <InputGroup className="w-full" insetEnd>
       <InputGroupInput
         aria-label="Найти товар"
         value={value}
         onValueChange={setValue}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
+            if (timerRef.current) {
+              clearTimeout(timerRef.current);
+              timerRef.current = null;
+            }
             applySearchToUrl(value);
           }
         }}

@@ -1,18 +1,7 @@
-import type { SearchParams } from "@/controllers/store/productController";
 import db from "@/db/index";
 import { productsInProducts, productVariantsInProducts } from "@drizzle/schema";
-
-import {
-  and,
-  count,
-  eq,
-  exists,
-  gte,
-  ilike,
-  inArray,
-  lte,
-  or,
-} from "drizzle-orm";
+import { and, count, eq, exists, gte, inArray, lte } from "drizzle-orm";
+import { buildProductSearchSql } from "./productSearch";
 
 export async function counts(
   minPrice?: number,
@@ -20,7 +9,7 @@ export async function counts(
   sizes?: string[],
   search?: string,
 ) {
-  const searchPattern = search ? `%${search}%` : undefined;
+  const searchSql = buildProductSearchSql(productsInProducts, search);
   const hasVariantFilters =
     minPrice !== undefined ||
     maxPrice !== undefined ||
@@ -35,13 +24,7 @@ export async function counts(
     .from(productsInProducts)
     .where(
       and(
-        searchPattern
-          ? or(
-              ilike(productsInProducts.name, searchPattern),
-              ilike(productsInProducts.shortDescription, searchPattern),
-              ilike(productsInProducts.sku, searchPattern),
-            )
-          : undefined,
+        searchSql,
         hasVariantFilters
           ? exists(
               db
@@ -74,6 +57,7 @@ export async function counts(
     total: 0,
     categories: {} as Record<string, number>,
     subcategories: {} as Record<string, number>,
+    byCategory: {} as Record<string, Record<string, number>>,
   };
 
   for (const row of rows) {
@@ -88,6 +72,12 @@ export async function counts(
     if (row.subcategory) {
       result.subcategories[row.subcategory] =
         (result.subcategories[row.subcategory] ?? 0) + num;
+    }
+
+    if (row.category && row.subcategory) {
+      const catSubs = result.byCategory[row.category] ?? {};
+      catSubs[row.subcategory] = (catSubs[row.subcategory] ?? 0) + num;
+      result.byCategory[row.category] = catSubs;
     }
   }
 
