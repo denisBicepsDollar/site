@@ -17,6 +17,7 @@ import { buildProductSearchSql } from "./productSearch";
 export async function sizes(
   category?: string,
   subcategory?: string,
+  type?: string,
   minPrice?: number,
   maxPrice?: number,
   search?: string,
@@ -40,7 +41,10 @@ export async function sizes(
         sql`trim(${productVariantsInProducts.name}) <> ''`,
         category ? eq(productsInProducts.category, category) : undefined,
         subcategory
-          ? eq(productsInProducts.subcategory, subcategory)
+          ? sql`coalesce(nullif(btrim(${productsInProducts.subcategory}), ''), nullif(btrim(${productsInProducts.type}), '')) = ${subcategory}`
+          : undefined,
+        type
+          ? sql`nullif(btrim(${productsInProducts.type}), '') = ${type}`
           : undefined,
         minPrice !== undefined
           ? gte(productVariantsInProducts.price, minPrice)
@@ -63,6 +67,7 @@ export async function sizes(
 export async function prices(
   category?: string,
   subcategory?: string,
+  type?: string,
   sizes?: string[],
   search?: string,
 ) {
@@ -87,7 +92,10 @@ export async function prices(
       and(
         category ? eq(productsInProducts.category, category) : undefined,
         subcategory
-          ? eq(productsInProducts.subcategory, subcategory)
+          ? sql`coalesce(nullif(btrim(${productsInProducts.subcategory}), ''), nullif(btrim(${productsInProducts.type}), '')) = ${subcategory}`
+          : undefined,
+        type
+          ? sql`nullif(btrim(${productsInProducts.type}), '') = ${type}`
           : undefined,
         sizes && sizes.length > 0
           ? inArray(productVariantsInProducts.name, sizes)

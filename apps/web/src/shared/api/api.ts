@@ -31,6 +31,21 @@ export async function getProducts(
   }
 }
 
+export async function getCatalogLabels(options?: { noStore?: boolean }) {
+  try {
+    const res = await fetch(`${getBackendUrl()}/api/v1/products/labels`, {
+      ...(options?.noStore
+        ? { cache: "no-store" }
+        : { next: { revalidate: 60 } }),
+    });
+
+    if (!res.ok) return {};
+    return await res.json();
+  } catch {
+    return {};
+  }
+}
+
 export async function getProductBySlug(slug) {
   try {
     const res = await fetch(`${getBackendUrl()}/api/v1/products/${slug}`, {
