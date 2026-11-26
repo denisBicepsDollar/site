@@ -1,12 +1,11 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { ProductsScreen } from "@/pages-flat/products";
+import { buildCatalogMetadata, ProductsScreen } from "@/pages-flat/products";
 import {
   isUnknownEmptyCatalogRoute,
   normalizeCatalogFilters,
-} from "@/pages-flat/products/model/catalog-route";
-import { buildCatalogMetadata } from "@/pages-flat/products/model/generate-metadata";
-import { fetchCatalogPageData } from "@/shared/api/catalog-cache";
+} from "@/entities/product";
+import { fetchCatalogPageData } from "@/shared/api/server";
 
 type PageProps = {
   params: Promise<{ category: string }>;

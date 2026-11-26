@@ -3,7 +3,7 @@ import { Header } from "@/widgets/header";
 import "./globals.css";
 import { Footer } from "@/widgets/footer";
 import { QueryProvider } from "./providers/query-providers";
-import { DEFAULT_OG_IMAGE, getSiteUrl, SITE_NAME } from "@/shared/config/site";
+import { DEFAULT_OG_IMAGE, getSiteUrl, SITE_NAME } from "@/shared/config";
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Heart } from "lucide-react";
-import { formatPrice } from "@/shared/data";
+import { formatPrice } from "@/shared/lib";
 import { Card, CardContent, CardHeader, CardMedia } from "@/shared/ui/card";
 import { CardTitle } from "@site/ui/card";
 import { Badge } from "@site/ui/badge";

@@ -1,11 +1,14 @@
 "use client";
 
-import { shippingMethodsConfig } from "../config/const";
-import { useOrderStore, type ShippingConfigNode } from "@/entities/order";
+import {
+  shippingMethodsConfig,
+  useOrderStore,
+  type ShippingConfigNode,
+} from "@/entities/order";
 import { DeliveryAddress } from "./delivery-address";
 import { RussianPost } from "@/shared/ui/russian-post";
 import { Radio, RadioGroup } from "@/shared/ui/radio-group";
-import { Label } from "@/shared/ui/label/label";
+import { Label } from "@/shared/ui/label";
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("ru-RU", {

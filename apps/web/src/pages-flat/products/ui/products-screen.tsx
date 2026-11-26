@@ -1,10 +1,7 @@
 "use client";
 
-import { SidebarInsetContent } from "./sidebar-inset-content";
-import {
-  ProductsCatalogProvider,
-  type ProductsApiResponse,
-} from "../model/use-products-store";
+import { ProductsCatalogProvider, type ProductsApiResponse } from "@/entities/product";
+import { SidebarInsetContent } from "@/widgets/catalog-grid";
 
 export default function ProductsScreen({
   initialData,

@@ -1,4 +1,4 @@
-import { getProductsByVariant } from "@/shared/api/api";
+import { getProductsByVariant } from "@/shared/api";
 import { create } from "zustand";
 
 export interface CartStorageItem {

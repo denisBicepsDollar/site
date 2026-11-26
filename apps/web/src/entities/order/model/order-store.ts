@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import { createOrder } from "@/shared/api/api";
+import { createOrder } from "@/shared/api";
 import { useCartStore } from "@/entities/cart/@x/order";
-import { shippingMethodsConfig } from "@/features/checkout/config/const";
+import { shippingMethodsConfig } from "../config/shipping-methods";
 
 export interface ShippingAddressState {
   fullAddress: string;

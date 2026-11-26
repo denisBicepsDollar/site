@@ -1,11 +1,8 @@
 import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
-import type {
-  CatalogLabels,
-  ProductsApiResponse,
-} from "@/pages-flat/products";
 import { getProducts } from "./api";
+import type { CatalogLabels, ProductsApiResponse } from "./types";
 
 const getBackendUrl = () =>
   process.env.BACKEND_URL || "http://localhost:3000";

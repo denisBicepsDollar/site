@@ -22,8 +22,8 @@ import {
   type Button,
   type ButtonBaseProps,
   type ButtonStandardProps,
-} from "../../../siteplane/components/button";
-import { KitButton, type KitButtonProps } from "../../../siteplane/components/button/button-internal";
+} from "../button";
+import { KitButton, type KitButtonProps } from "../button/button-internal";
 
 const paginationIconSizeByControlSize = {
   sm: "icon-sm",

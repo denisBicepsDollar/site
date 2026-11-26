@@ -1,8 +1,10 @@
+export { shippingMethodsConfig } from "./config/shipping-methods";
 export {
-  useOrderStore,
   resolveShippingLeaf,
-  type CreatedOrderRecord,
+  useOrderStore,
   type CreatedOrderItem,
+  type CreatedOrderRecord,
+  type DeliveryMetaState,
   type ShippingAddressState,
   type ShippingConfigNode,
 } from "./model/order-store";
