@@ -1,11 +1,17 @@
-import { after, before, describe, it } from "node:test";
+import {after, before, describe, it} from "node:test";
 import assert from "node:assert/strict";
 import http from "node:http";
 import express from "express";
 
-import db from "@/db/index";
-import { registerRoutes } from "@/routes/routes";
-import * as orderService from "@/services/store/orderService";
+// The repository is stubbed in these tests; a syntactically valid connection
+// string is only required because the DB module creates its pool at import time.
+process.env.CONNECTION_STRING ??= "postgres://test:test@127.0.0.1:5432/test";
+process.env.SECRET_KEY ??= "unit-test-secret";
+
+const {default: db} = await import("@/db/index");
+const {registerRoutes} = await import("@/routes/routes");
+const orderService = await import("@/services/store/orderService");
+const orderRepo = await import("@/db/store/orderRepo");
 
 const VALID_UUID_1 = "11111111-1111-4111-8111-111111111111";
 const VALID_UUID_2 = "22222222-2222-4222-8222-222222222222";
@@ -350,5 +356,46 @@ describe("Order API & Service & Repo integration", () => {
     if (disabledPaymentResult.status === 400) {
       assert.ok(disabledPaymentResult.error.fields?.paymentMethod);
     }
+  });
+
+  it("updates admin order status and restores inventory exactly once on cancellation", async () => {
+    const captured: Array<Record<string, unknown>> = [];
+    const tx = {
+      select() {
+        return {
+          from() {
+            return {
+              where() {
+                return {
+                  for() {
+                    return Promise.resolve([{id: 42, status: "processing"}]);
+                  },
+                  then(resolve: (value: unknown) => void) {
+                    resolve([{id: 7, orderId: 42, productId: "prod-1", variantId: VALID_UUID_1, quantity: 2}]);
+                  },
+                };
+              },
+            };
+          },
+        };
+      },
+      update() {
+        return {
+          set(values: Record<string, unknown>) {
+            captured.push(values);
+            return {where: () => Promise.resolve()};
+          },
+        };
+      },
+    };
+
+    (db as unknown as {transaction: unknown}).transaction = async (callback: (transaction: unknown) => Promise<unknown>) => callback(tx);
+
+    const result = await orderRepo.updateAdminOrderStatus(42, "cancelled", ["processing"]);
+    assert.deepEqual(result, {kind: "updated"});
+    assert.equal(captured.length, 3);
+    assert.ok("stock" in captured[0]);
+    assert.ok("salesCount" in captured[1]);
+    assert.deepEqual(captured[2], {status: "cancelled"});
   });
 });

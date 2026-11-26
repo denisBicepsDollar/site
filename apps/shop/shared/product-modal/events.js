@@ -11,7 +11,7 @@ export async function openModal(productId) {
 
     try {
         // Запрашиваем полный товар с вариантами
-        const res = await fetch(`/api/products/${productId}`);
+        const res = await fetch(`/api/v1/products/${productId}`);
         if (res.ok) {
             product = await res.json();
         }

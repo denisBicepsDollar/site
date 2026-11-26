@@ -5,7 +5,7 @@ import {
   productsInProducts,
   productVariantsInProducts,
 } from "@drizzle/schema";
-import { and, eq, gte, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, sql } from "drizzle-orm";
 
 export interface CreateOrderItemInput {
   variantId: string;
@@ -290,5 +290,148 @@ export async function createOrder(
         items: orderItemsToInsert,
       },
     };
+  });
+}
+
+export type AdminOrderStatusUpdate =
+  | { kind: "updated" }
+  | { kind: "not_found" }
+  | { kind: "conflict"; currentStatus: string };
+
+function toAdminOrder(row: typeof ordersInOrders.$inferSelect, items: Array<typeof orderItemsInOrders.$inferSelect>) {
+  const createdAt = row.createdAt instanceof Date
+    ? row.createdAt.toISOString()
+    : new Date(row.createdAt ?? Date.now()).toISOString();
+  const year = new Date(createdAt).getFullYear();
+  const nameParts = row.customerName.trim().split(/\s+/).filter(Boolean);
+  const productsTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const deliveryCompany = row.deliveryCompany === "cdek"
+    ? "СДЭК"
+    : row.deliveryCompany === "russian_post"
+      ? "Почта России"
+      : row.deliveryCompany ?? "—";
+
+  return {
+    id: row.id,
+    orderNumber: `ORD-${year}-${String(row.id).padStart(5, "0")}`,
+    status: row.status ?? "new",
+    createdAt,
+    customer: {
+      name: row.customerName,
+      firstName: nameParts[0] ?? "",
+      lastName: nameParts.slice(1).join(" "),
+      initials: nameParts.slice(0, 2).map((part) => part[0]?.toLocaleUpperCase("ru-RU") ?? "").join(""),
+      email: row.email,
+      phone: row.phone,
+    },
+    payment: {
+      method: "Оплата после подтверждения заказа",
+      status: "Ожидает оплаты",
+      isPaid: false,
+    },
+    delivery: {
+      company: deliveryCompany,
+      method: row.deliveryMethod === "pickup" ? "Самовывоз" : row.deliveryType ?? "Доставка",
+      address: row.address ?? "—",
+    },
+    deliveryPrice: row.deliveryPrice ?? 0,
+    items: items.map((item) => ({
+      id: item.id,
+      productId: item.productId ?? "",
+      variantId: item.variantId ?? "",
+      title: item.name,
+      name: item.name,
+      options: item.volume ?? "",
+      quantity: item.quantity,
+      price: item.price,
+    })),
+    summary: {
+      itemsPrice: productsTotal,
+      deliveryPrice: row.deliveryPrice ?? 0,
+      totalPrice: row.totalPrice,
+    },
+    comment: row.comment ?? "",
+  };
+}
+
+async function attachItems(rows: Array<typeof ordersInOrders.$inferSelect>) {
+  if (rows.length === 0) return [];
+  const ids = rows.map((row) => row.id);
+  const itemRows = await db
+    .select()
+    .from(orderItemsInOrders)
+    .where(inArray(orderItemsInOrders.orderId, ids));
+  const itemsByOrder = new Map<number, Array<typeof orderItemsInOrders.$inferSelect>>();
+  for (const item of itemRows) {
+    if (item.orderId === null) continue;
+    const grouped = itemsByOrder.get(item.orderId) ?? [];
+    grouped.push(item);
+    itemsByOrder.set(item.orderId, grouped);
+  }
+  return rows.map((row) => toAdminOrder(row, itemsByOrder.get(row.id) ?? []));
+}
+
+export async function listAdminOrders() {
+  const rows = await db
+    .select()
+    .from(ordersInOrders)
+    .orderBy(desc(ordersInOrders.createdAt), desc(ordersInOrders.id));
+  return attachItems(rows);
+}
+
+export async function getAdminOrderById(id: number) {
+  const [row] = await db
+    .select()
+    .from(ordersInOrders)
+    .where(eq(ordersInOrders.id, id))
+    .limit(1);
+  if (!row) return null;
+  const [order] = await attachItems([row]);
+  return order ?? null;
+}
+
+export async function updateAdminOrderStatus(
+  id: number,
+  status: string,
+  allowedFrom: string[],
+): Promise<AdminOrderStatusUpdate> {
+  return db.transaction(async (tx) => {
+    const [order] = await tx
+      .select()
+      .from(ordersInOrders)
+      .where(eq(ordersInOrders.id, id))
+      .for("update");
+    if (!order) return {kind: "not_found"};
+    const currentStatus = order.status ?? "new";
+    if (currentStatus === status) return {kind: "updated"};
+    if (!allowedFrom.includes(currentStatus)) {
+      return {kind: "conflict", currentStatus};
+    }
+
+    if (status === "cancelled") {
+      const items = await tx
+        .select()
+        .from(orderItemsInOrders)
+        .where(eq(orderItemsInOrders.orderId, id));
+      for (const item of items) {
+        if (!item.variantId) continue;
+        await tx
+          .update(productVariantsInProducts)
+          .set({stock: sql`${productVariantsInProducts.stock} + ${item.quantity}`})
+          .where(eq(productVariantsInProducts.id, item.variantId));
+        if (item.productId) {
+          await tx
+            .update(productsInProducts)
+            .set({salesCount: sql`greatest(${productsInProducts.salesCount} - ${item.quantity}, 0)`})
+            .where(eq(productsInProducts.id, item.productId));
+        }
+      }
+    }
+
+    await tx
+      .update(ordersInOrders)
+      .set({status})
+      .where(eq(ordersInOrders.id, id));
+    return {kind: "updated"};
   });
 }
