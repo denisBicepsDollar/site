@@ -1,46 +1,61 @@
 "use client";
 
-import { useOrderStore } from "@/entities/order";
-import { AddressSuggestions } from "react-dadata";
-import "react-dadata/dist/react-dadata.css";
 import { useState } from "react";
+import { AddressSuggestions } from "react-dadata";
+import type { DaDataAddress, DaDataSuggestion } from "react-dadata";
+import "react-dadata/dist/react-dadata.css";
+import { useOrderStore } from "@/entities/order";
 import { Field, FieldLabel } from "@/shared/ui/field";
-import { Input } from "@/shared/ui/input";
+
+const DADATA_TOKEN =
+  process.env.NEXT_PUBLIC_DADATA_TOKEN ??
+  "1c7e7688522344e4a329ef6d21221a321e230ff1";
 
 export function DeliveryAddress() {
-  const [value, setValue] = useState();
-
-  const sameAsShipping = useOrderStore((state) => state.sameAsShipping);
-  const savePaymentMethod = useOrderStore((state) => state.savePaymentMethod);
-  const appliedPromo = useOrderStore((state) => state.appliedPromo);
-  const selectedShipping = useOrderStore((state) => state.selectedShipping);
+  const [selectedSuggestion, setSelectedSuggestion] = useState<
+    DaDataSuggestion<DaDataAddress> | undefined
+  >(undefined);
   const shippingAddress = useOrderStore((state) => state.shippingAddress);
-  const paymentMethod = useOrderStore((state) => state.paymentMethod);
-  const setSelectedShipping = useOrderStore(
-    (state) => state.setSelectedShipping,
-  );
-
-  const calculateSummary = useOrderStore((state) => state.calculateSummary);
   const handleAddressChange = useOrderStore(
     (state) => state.handleAddressChange,
   );
-  const handlePaymentChange = useOrderStore(
-    (state) => state.handlePaymentChange,
-  );
-  const removePromo = useOrderStore((state) => state.removePromo);
-  console.log(shippingAddress);
-  const summary = calculateSummary();
+
   return (
-    <Field>
+    <Field className="mt-3">
       <FieldLabel htmlFor="address">
-        Для расчёта стоимости доставки введите название вашего населённого
-        пункта.<span className="destructive">*</span>
+        Введите населённый пункт и адрес доставки
+        <span className="destructive">*</span>
       </FieldLabel>
 
       <AddressSuggestions
-        token={"1c7e7688522344e4a329ef6d21221a321e230ff1"}
-        value={shippingAddress.fullAddress}
-        onChange={({ value }) => handleAddressChange("fullAddress", value)}
+        token={DADATA_TOKEN}
+        value={selectedSuggestion}
+        defaultQuery={shippingAddress.fullAddress}
+        inputProps={{
+          id: "address",
+          name: "address",
+          required: true,
+          placeholder: "Например: Москва, ул. Тверская, д. 1",
+          onChange: (event) => {
+            setSelectedSuggestion(undefined);
+            handleAddressChange("fullAddress", event.currentTarget.value);
+          },
+        }}
+        onChange={(suggestion) => {
+          setSelectedSuggestion(suggestion);
+          if (suggestion?.value) {
+            handleAddressChange("fullAddress", suggestion.value);
+          }
+          if (suggestion?.data?.city || suggestion?.data?.settlement) {
+            handleAddressChange(
+              "city",
+              suggestion.data.city || suggestion.data.settlement || "",
+            );
+          }
+          if (suggestion?.data?.postal_code) {
+            handleAddressChange("postalCode", suggestion.data.postal_code);
+          }
+        }}
       />
     </Field>
   );

@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
+import Link from "next/link";
 import { useOrderStore } from "@/entities/order";
+import { useCartStore } from "@/entities/cart";
 import {
   OrderSummary,
   PaymentInformation,
@@ -8,70 +11,116 @@ import {
   ShippingInformation,
 } from "@/features/checkout";
 import { OrderSummaryCard } from "@/widgets/checkout";
-
+import { Button, buttonVariants } from "@/shared/ui/button";
 
 export default function CheckoutScreen() {
-    const nextStep = useOrderStore(state => state.nextStep);
-    const validateStep = useOrderStore(state => state.validateStep);
-    const currentStep = useOrderStore(state => state.currentStep);
-    console.log('main1', currentStep)
-    const orderItems = useOrderStore(state => state.orderItems);
-    const isLoading = useOrderStore(state => state.isLoading);
-    const selectedPaymentType = useOrderStore(state => state.selectedPaymentType);
-    const sameAsShipping = useOrderStore(state => state.sameAsShipping);
-    const savePaymentMethod = useOrderStore(state => state.savePaymentMethod);
-    const appliedPromo = useOrderStore(state => state.appliedPromo);
-    const selectedShipping = useOrderStore(state => state.selectedShipping);
-    const shippingAddress = useOrderStore(state => state.shippingAddress);
-    const paymentMethod = useOrderStore(state => state.paymentMethod);
+  const currentStep = useOrderStore((state) => state.currentStep);
+  const createdOrder = useOrderStore((state) => state.createdOrder);
 
-    const calculateSummary = useOrderStore(state => state.calculateSummary);
-    const handlePaymentChange = useOrderStore(state => state.handlePaymentChange);
-    const removePromo = useOrderStore(state => state.removePromo);
+  const initCart = useCartStore((state) => state.initCart);
+  const fetchCartProducts = useCartStore((state) => state.fetchCartProducts);
+  const hasInitialized = useCartStore((state) => state.hasInitialized);
+  const isLoadingProducts = useCartStore((state) => state.isLoadingProducts);
+  const isError = useCartStore((state) => state.isError);
+  const cartStorage = useCartStore((state) => state.cartStorage);
+  const cartItems = useCartStore((state) => state.cartItems);
 
-    const summary = calculateSummary();
+  useEffect(() => {
+    initCart();
+  }, [initCart]);
 
-
+  if (currentStep === 4 && createdOrder) {
     return (
-
-        <div className="w-full mt-20 mx-auto p-6 flex flex-col gap-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Main Content */}
-                <div className="lg:col-span-2 flex flex-col gap-6">
-                    {/* Step 1: Shipping Information */}
-                    {
-                        currentStep === 1 && (
-                            <ShippingInformation/>
-                        )
-                    }
-                    {/* Step 2: Payment Information */}
-                    {
-                        currentStep === 2 && (
-                            <PaymentInformation/>
-                        )
-                    }
-                    {/* Step 3: Review Order */}
-                    {
-                        currentStep === 3 && (
-                            <ReviewOrder/>
-                        )
-                    }
-                    {
-                        currentStep === 4 && (
-                            <OrderSummary/>
-                        )
-                    }
-                </div>
-
-                {/* Order Summary Sidebar */}
-                {
-                    currentStep !== 4 && (
-
-                        <div className="flex flex-col gap-4">
-                            <OrderSummaryCard/>
-                        </div>
-                    )}
-            </div>
-        </div>
+      <div className="w-full mt-20 mx-auto p-6 flex flex-col gap-6">
+        <OrderSummary order={createdOrder} />
+      </div>
     );
+  }
+
+  const isWaitingForCart =
+    !hasInitialized ||
+    (cartStorage.length > 0 && isLoadingProducts && cartItems.length === 0);
+
+  if (isWaitingForCart) {
+    return (
+      <div className="w-full mt-20 mx-auto p-6">
+        <div className="animate-pulse bg-gray-200 h-24 w-full rounded" />
+      </div>
+    );
+  }
+
+  if (isError && cartItems.length === 0 && cartStorage.length > 0) {
+    return (
+      <div className="w-full mt-20 mx-auto max-w-xl p-6 text-center space-y-4">
+        <h1 className="text-xl font-semibold">Не удалось загрузить корзину</h1>
+        <p className="text-sm text-muted-foreground">
+          Проверьте соединение и повторите попытку для оформления заказа.
+        </p>
+        <div className="flex justify-center gap-3">
+          <Button type="button" onClick={() => void fetchCartProducts()}>
+            Повторить
+          </Button>
+          <Link href="/cart" className={buttonVariants({ variant: "outline" })}>
+            Вернуться в корзину
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const hasOutOfStock = cartItems.some(
+    (item) => item.stock <= 0 || item.isOutOfStock,
+  );
+  const availableItems = cartItems.filter(
+    (item) => item.stock > 0 && !item.isOutOfStock,
+  );
+
+  if (availableItems.length === 0 || hasOutOfStock) {
+    return (
+      <div className="w-full mt-20 mx-auto max-w-xl p-6 text-center space-y-4">
+        <h1 className="text-xl font-semibold">
+          {hasOutOfStock
+            ? "В корзине есть недоступные товары"
+            : "Корзина пуста"}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          {hasOutOfStock
+            ? "Удалите товары, которых нет в наличии, прежде чем оформить заказ."
+            : "Добавьте растения в корзину, чтобы перейти к оформлению."}
+        </p>
+        <div className="flex justify-center gap-3">
+          {hasOutOfStock ? (
+            <Link href="/cart" className={buttonVariants({ variant: "accent" })}>
+              Перейти в корзину
+            </Link>
+          ) : (
+            <Link
+              href="/products"
+              className={buttonVariants({ variant: "accent" })}
+            >
+              Перейти в каталог
+            </Link>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full mt-20 mx-auto p-6 flex flex-col gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Content */}
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          {currentStep === 1 && <ShippingInformation />}
+          {currentStep === 2 && <PaymentInformation />}
+          {currentStep === 3 && <ReviewOrder />}
+        </div>
+
+        {/* Order Summary Sidebar */}
+        <div className="flex flex-col gap-4">
+          <OrderSummaryCard />
+        </div>
+      </div>
+    </div>
+  );
 }
