@@ -33,7 +33,8 @@ export function CartScreen() {
   );
 
   const isWaitingInitialLoad =
-    !hasInitialized || (isLoadingProducts && variants.length === 0 && cartStorage.length > 0);
+    !hasInitialized ||
+    (isLoadingProducts && variants.length === 0 && cartStorage.length > 0);
 
   if (isWaitingInitialLoad) {
     return (
@@ -51,7 +52,8 @@ export function CartScreen() {
             Не удалось загрузить корзину
           </h1>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Ваши товары сохранены, но сервер временно не отвечает. Попробуйте обновить.
+            Ваши товары сохранены, но сервер временно не отвечает. Попробуйте
+            обновить.
           </p>
           <Button type="button" onClick={() => void fetchCartProducts()}>
             Повторить попытку
@@ -63,7 +65,7 @@ export function CartScreen() {
 
   if (variants.length === 0) {
     return (
-      <section className="bg-white mt-10 py-16 antialiased dark:bg-gray-900">
+      <section className=" mt-10 py-16 antialiased dark:bg-gray-900">
         <div className="mx-auto max-w-screen-md px-4 text-center space-y-5">
           <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-gray-100 text-gray-500">
             <ShoppingBag className="size-8" aria-hidden="true" />
@@ -74,16 +76,22 @@ export function CartScreen() {
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Вы ещё не добавили ни одного растения в корзину.
           </p>
-          <Button variant="accent" render={<Link href="/products" />}>
-            Перейти в каталог
-          </Button>
+
+
+          <Button
+            variant="accent"
+            shape="pill"
+            size="xl"
+            render={<Link href="/products">Перейти в каталог</Link>}
+          />
+
         </div>
       </section>
     );
   }
 
   return (
-    <section className="bg-white mt-10 py-8 antialiased dark:bg-gray-900 md:py-16">
+    <section className=" mt-10 py-8 antialiased dark:bg-gray-900 md:py-16">
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">

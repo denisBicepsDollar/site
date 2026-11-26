@@ -13,8 +13,8 @@ export default function Home() {
       <Marquee />
       <FeaturedProd />
       <About />
-      <Blog />
-      <Reviews />
+      {/*<Blog />*/}
+      {/*<Reviews />*/}
       <Faq />
     </main>
   );

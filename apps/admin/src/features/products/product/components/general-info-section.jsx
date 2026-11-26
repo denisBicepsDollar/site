@@ -41,7 +41,7 @@ export function GeneralInfoSection({
                         <Input
                             id="product-name"
                             required
-                            className="h-12 min-w-0 flex-1 rounded-none border-0 bg-transparent px-0 text-[20px] font-semibold leading-none tracking-tight text-[#1C1C1E] shadow-none placeholder:text-[#AEAEB2] focus-visible:border-0 focus-visible:bg-transparent focus-visible:ring-0 dark:text-white"
+                            className="h-12 min-w-0 flex-1 rounded-none border-0 bg-transparent px-0 text-[20px] font-semibold leading-none  text-[#1C1C1E] shadow-none placeholder:text-[#AEAEB2] focus-visible:border-0 focus-visible:bg-transparent focus-visible:ring-0 dark:text-white"
                             placeholder="Например, Фикус Литара"
                             value={productName}
                             maxLength={MAX_NAME_LENGTH}

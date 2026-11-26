@@ -3,7 +3,7 @@ import {cva} from "class-variance-authority"
 import {cn} from "@site/ui/lib/utils"
 
 const badgeVariants = cva(
-    "inline-flex items-center justify-center gap-1 min-w-0 rounded-full border border-transparent px-2.5 py-0.5 text-[11px] font-semibold tracking-[0.01em]  transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007AFF]/25 [&>svg]:pointer-events-none [&>svg]:size-3",
+    "inline-flex items-center justify-center gap-1 min-w-0 rounded-full border border-transparent px-2.5 py-0.5 text-[11px] font-semibold [0.01em]  transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007AFF]/25 [&>svg]:pointer-events-none [&>svg]:size-3",
     {
         variants: {
             variant: {

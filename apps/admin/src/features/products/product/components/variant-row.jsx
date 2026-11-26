@@ -122,7 +122,7 @@ export function VariantRow({
                             <span className="text-sm font-bold text-[#007AFF] dark:text-[#0A84FF]">
                                 +{hiddenCount}
                             </span>
-                            <span className="text-[9px] font-medium text-[#8E8E93] uppercase tracking-wider">
+                            <span className="text-[9px] font-medium text-[#8E8E93] uppercase ">
                                 Ещё
                             </span>
                         </Button>

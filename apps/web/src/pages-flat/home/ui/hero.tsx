@@ -37,12 +37,12 @@ export function Hero() {
             className="flex items-center gap-3"
           >
             <span className="h-px w-12 bg-clay" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-leaf">
+            <span className="text-[11px] font-semibold uppercase [0.3em] text-leaf">
               Магазин комнатных и садовых растений
             </span>
           </motion.div>
 
-          <h1 className="mt-7 font-display text-[clamp(3.4rem,9.5vw,8rem)] font-medium leading-[0.92] tracking-tight text-forest">
+          <h1 className="mt-7 font-display text-[clamp(3.4rem,9.5vw,8rem)] font-medium leading-[0.92] tight text-forest">
             {["Подарок,", "знакомства"].map((t, i) => (
               <span key={t} className="block overflow-hidden pb-1">
                 <motion.span
@@ -130,7 +130,7 @@ export function Hero() {
                 <p className="font-display text-3xl font-semibold text-forest md:text-4xl">
                   {n}
                 </p>
-                <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-ink/45">
+                <p className="mt-1 text-[11px] font-medium uppercase [0.14em] text-ink/45">
                   {l}
                 </p>
               </div>
@@ -203,7 +203,7 @@ export function Hero() {
               transition={{ duration: 0.8, delay: 1.15 }}
               className="animate-float rounded-2xl border border-forest/10 bg-cream/90 px-5 py-4 shadow-lg backdrop-blur transition-colors duration-300 hover:border-clay/50"
             >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-leaf">
+              <p className="text-[10px] font-semibold uppercase [0.2em] text-leaf">
                 Хит недели
               </p>
               <p className="mt-1 font-display text-xl font-semibold text-forest">
@@ -216,7 +216,7 @@ export function Hero() {
 
       {/* вертикальная подпись */}
       {/*      <span*/}
-      {/*          className="vertical-rl absolute right-6 top-1/2 hidden -translate-y-1/2 text-[10px] font-semibold uppercase tracking-[0.4em] text-forest/35 xl:block">*/}
+      {/*          className="vertical-rl absolute right-6 top-1/2 hidden -translate-y-1/2 text-[10px] font-semibold uppercase [0.4em] text-forest/35 xl:block">*/}
       {/*  с любовью к зелени — эст. 2013*/}
       {/*</span>*/}
     </section>

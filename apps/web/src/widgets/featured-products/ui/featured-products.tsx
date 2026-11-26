@@ -13,14 +13,14 @@ export async function FeaturedProducts({}) {
         <div className="flex flex-wrap items-end justify-between gap-6">
           <Reveal>
             <Eyebrow>Выбор покупателей</Eyebrow>
-            <h2 className="mt-4 font-display text-5xl font-medium leading-[1.02] tracking-tight text-forest md:text-6xl">
+            <h2 className="mt-4 font-display text-5xl font-medium leading-[1.02] tight text-forest md:text-6xl">
               Хиты <em className="font-light italic text-clay">недели</em>
             </h2>
           </Reveal>
           <Reveal delay={0.1}>
             <Link
               href="/catalog"
-              className="group flex items-center gap-2 rounded-full border border-forest/20 px-6 py-3.5 text-[12px] font-bold uppercase tracking-[0.14em] text-forest transition-colors duration-300 hover:border-forest hover:bg-forest hover:text-cream"
+              className="group flex items-center gap-2 rounded-full border border-forest/20 px-6 py-3.5 text-[12px] font-bold uppercase [0.14em] text-forest transition-colors duration-300 hover:border-forest hover:bg-forest hover:text-cream"
             >
               Весь каталог
               <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />

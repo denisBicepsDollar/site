@@ -3,9 +3,9 @@
 import { AlertCircle, X } from "lucide-react";
 import Link from "next/link";
 import { AspectRatio } from "@site/ui/aspect-ratio";
-import { Button, buttonVariants } from "@site/ui/button";
 import { Separator } from "@site/ui/separator";
 import { useCartStore } from "@/entities/cart";
+import { Button } from "@/shared/ui/button";
 
 const DEFAULT_IMAGE = "/default-image.png";
 
@@ -68,9 +68,12 @@ const CardDropdown = () => {
         <p className="mb-4 text-xs text-muted-foreground">
           Кажется вы еще ничего не добавили
         </p>
-        <Link className={buttonVariants({ size: "xs" })} href="/products">
-          Посмотреть каталог
-        </Link>
+        <Button
+          variant="accent"
+          shape="pill"
+          size="xl"
+          render={<Link href="/products">Посмотреть каталог</Link>}
+        />
       </section>
     );
   }
@@ -149,7 +152,9 @@ const CardDropdown = () => {
                 size="icon-xs"
                 className="shrink-0"
                 aria-label={`Удалить ${cartItem.productName}`}
-                onClick={() => removeFromCart(cartItem.variantId || cartItem.id)}
+                onClick={() =>
+                  removeFromCart(cartItem.variantId || cartItem.id)
+                }
               >
                 <X className="size-4" />
               </Button>
@@ -173,21 +178,12 @@ const CardDropdown = () => {
       <Separator className="my-6" />
 
       <div className="flex flex-col items-center space-y-2">
-        <Link href="/cart" className={buttonVariants({ size: "xs" })}>
-          Перейти в корзину
-        </Link>
-        {canProceedToCheckout ? (
-          <Link
-            href="/cart/checkout"
-            className={buttonVariants({ variant: "accent", size: "xs" })}
-          >
-            Оформить заказ
-          </Link>
-        ) : (
-          <Button type="button" variant="accent" size="xs" disabled>
-            Оформить заказ
-          </Button>
-        )}
+        <Button
+          variant="accent"
+          shape="pill"
+          size="xl"
+          render={<Link href="/cart">Перейти в корзину</Link>}
+        />
       </div>
     </section>
   );

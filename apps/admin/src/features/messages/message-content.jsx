@@ -242,7 +242,7 @@ function MessageDetails({message}) {
     return (
         <Card className="min-h-[320px] rounded-none border-0 bg-transparent shadow-none">
             <CardContent className="p-4 sm:p-6">
-                <h2 className="text-lg font-semibold tracking-tight text-[#1C1C1E] dark:text-white sm:text-xl">
+                <h2 className="text-lg font-semibold  text-[#1C1C1E] dark:text-white sm:text-xl">
                     {message.title}
                 </h2>
 

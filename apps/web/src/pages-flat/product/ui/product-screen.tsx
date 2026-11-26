@@ -138,7 +138,12 @@ export default function ProductScreen({
       galleryImages[0] ||
       DEFAULT_IMAGE;
     setActiveImage(preferred);
-  }, [currentVariant?.id, currentVariant?.previewImage, currentVariant?.images, galleryImages]);
+  }, [
+    currentVariant?.id,
+    currentVariant?.previewImage,
+    currentVariant?.images,
+    galleryImages,
+  ]);
 
   useEffect(() => {
     if (!cartFeedback) return;
@@ -175,7 +180,7 @@ export default function ProductScreen({
           </Button>
           <Link
             href="/products"
-            className="rounded-full border border-forest/20 px-6 py-3 text-[12px] font-bold uppercase tracking-[0.14em] text-forest transition-colors hover:border-forest hover:bg-forest hover:text-cream"
+            className="rounded-full border border-forest/20 px-6 py-3 text-[12px] font-bold uppercase [0.14em] text-forest transition-colors hover:border-forest hover:bg-forest hover:text-cream"
           >
             В каталог
           </Link>
@@ -199,7 +204,7 @@ export default function ProductScreen({
         </p>
         <Link
           href="/products"
-          className="mt-8 rounded-full bg-forest px-8 py-4 text-[12px] font-bold uppercase tracking-[0.14em] text-cream transition-colors hover:bg-clay"
+          className="mt-8 rounded-full bg-forest px-8 py-4 text-[12px] font-bold uppercase [0.14em] text-cream transition-colors hover:bg-clay"
         >
           В каталог
         </Link>
@@ -299,7 +304,7 @@ export default function ProductScreen({
           String(p.category ?? "").toLowerCase() ===
             product.category.toLowerCase()),
     )
-    .slice(0, 4);
+    .slice(0, 6);
 
   const categoryLabel = product.category
     ? getCategoryLabel(product.category, labels)
@@ -318,9 +323,7 @@ export default function ProductScreen({
     { icon: Sprout, label: "Сложность", value: product.level?.trim() },
   ].filter((attr) => Boolean(attr.value));
 
-  const descriptionText = product.description?.trim()
-    ? `${product.description.trim()} Растение приезжает в транспортировочном горшке со здоровой корневой системой. Кашпо, грунт и дренаж подберём под него бесплатно.`
-    : "Растение приезжает в транспортировочном горшке со здоровой корневой системой. Кашпо, грунт и дренаж подберём под него бесплатно.";
+  const descriptionText = product.description?.trim();
 
   const careText = product.careInstructions?.trim()
     ? `${product.careInstructions.trim()} Памятка по уходу прилагается к каждому заказу, а наш ботаник остаётся на связи после покупки — пришлите фото листа, подскажем.`
@@ -332,7 +335,9 @@ export default function ProductScreen({
         <Breadcrumb>
           <BreadcrumbList className="flex-wrap">
             <BreadcrumbItem>
-              <BreadcrumbLink render={<Link href="/" />}>Главная</BreadcrumbLink>
+              <BreadcrumbLink render={<Link href="/" />}>
+                Главная
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator>
               <ChevronRight />
@@ -389,7 +394,7 @@ export default function ProductScreen({
 
         <div className="mt-10 grid gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Фото и миниатюры */}
-          <Reveal className="lg:sticky lg:top-32 lg:self-start">
+          <Reveal className="mx-auto w-full max-w-lg lg:sticky lg:top-32 lg:self-start">
             <div className="relative overflow-hidden rounded-[28px] bg-parchment shadow-[0_60px_80px_-55px_rgba(20,38,27,0.5)]">
               <motion.img
                 key={activeImage}
@@ -407,7 +412,7 @@ export default function ProductScreen({
                 className="aspect-[3/4] w-full object-cover"
               />
               {product.badge && (
-                <span className="absolute left-5 top-5 rounded-full bg-clay px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-cream">
+                <span className="absolute left-5 top-5 rounded-full bg-clay px-4 py-2 text-[11px] font-bold uppercase [0.16em] text-cream">
                   {product.badge}
                 </span>
               )}
@@ -453,31 +458,31 @@ export default function ProductScreen({
                 ? `${categoryLabel} · ${subcategoryLabel}`
                 : categoryLabel}
             </Eyebrow>
-
-            {tags.length > 0 && (
-              <TagGroup aria-label="Особенности растения" className="mt-3" size="xl">
+            {/* {tags.length > 0 && (
+              <TagGroup
+                aria-label="Особенности растения"
+                className="mt-3"
+                size="xl"
+              >
                 {tags.map((tag, index) => (
                   <Tag key={`${tag}-${index}`}>{tag}</Tag>
                 ))}
               </TagGroup>
-            )}
+            )} */}
 
-            <h1 className="mt-4 font-display text-5xl font-medium leading-[1.02] tracking-tight text-forest md:text-6xl">
+            <h1 className="mt-4 font-display text-5xl font-medium leading-[1.02] tight text-forest md:text-6xl">
               {product.name}
             </h1>
-
             {product.sku && (
-              <p className="mt-2 text-xs uppercase tracking-[0.12em] text-ink/45">
+              <p className="mt-2 text-xs uppercase [0.12em] text-ink/45">
                 Артикул: {product.sku}
               </p>
             )}
-
             {product.latin && (
               <p className="mt-3 font-display text-2xl font-light italic text-ink/40">
                 {product.latin}
               </p>
             )}
-
             <div className="mt-6 flex flex-wrap items-center gap-4">
               <span className="font-display text-4xl font-semibold text-forest">
                 {formatPrice(activePrice)}
@@ -490,11 +495,11 @@ export default function ProductScreen({
               )}
 
               {isInStock ? (
-                <span className="rounded-full bg-leaf/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-leaf">
+                <span className="rounded-full bg-leaf/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase [0.14em] text-leaf">
                   В наличии · {availableStock} шт.
                 </span>
               ) : (
-                <span className="rounded-full bg-ink/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/55">
+                <span className="rounded-full bg-ink/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase [0.14em] text-ink/55">
                   Нет в наличии
                 </span>
               )}
@@ -520,7 +525,6 @@ export default function ProductScreen({
                 )}
               </Button>
             </div>
-
             <div className="mt-6 flex flex-col items-start gap-5">
               {product.shortDescription && (
                 <p className="max-w-lg text-[15px] leading-relaxed text-ink/65">
@@ -539,7 +543,7 @@ export default function ProductScreen({
                         className="size-5 text-clay"
                         strokeWidth={1.7}
                       />
-                      <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-ink/40">
+                      <p className="mt-3 text-[10px] font-bold uppercase [0.18em] text-ink/40">
                         {attr.label}
                       </p>
                       <p className="mt-1 text-[13px] font-semibold leading-snug text-forest">
@@ -552,13 +556,15 @@ export default function ProductScreen({
 
               {sortedVariants.length > 0 && (
                 <div className="w-full space-y-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.12em] text-ink/50">
+                  <span className="text-xs font-semibold uppercase [0.12em] text-ink/50">
                     Вариант / размер
                   </span>
                   <Tabs
                     size="sm"
                     value={currentVariant?.id ?? ""}
-                    onValueChange={(value) => handleVariantChange(String(value))}
+                    onValueChange={(value) =>
+                      handleVariantChange(String(value))
+                    }
                   >
                     <TabsList
                       variant="pill"
@@ -649,7 +655,18 @@ export default function ProductScreen({
                 </p>
               )}
 
-              <Accordion
+              {descriptionText && (
+                <div className="mt-8 border-t border-forest/10 pt-6">
+                  <h3 className="text-xs font-bold uppercase  text-forest/60">
+                    Описание
+                  </h3>
+                  <p className="mt-3 whitespace-pre-line text-base leading-relaxed text-ink/80">
+                    {descriptionText}
+                  </p>
+                </div>
+              )}
+
+              {/*<Accordion
                 className="mt-4 w-full"
                 defaultValue={["description"]}
                 multiple
@@ -703,12 +720,14 @@ export default function ProductScreen({
                     </ul>
                   </AccordionPanel>
                 </AccordionItem>
-              </Accordion>
+              </Accordion>*/}
             </div>
           </motion.div>
         </div>
 
-        <Reviews1 />
+        {/*
+          <Reviews1 />
+          */}
 
         {related.length > 0 && (
           <section className="mt-24 border-t border-forest/10 pt-16">
@@ -721,14 +740,14 @@ export default function ProductScreen({
                 {product.category && (
                   <Link
                     href={`/products/${encodeURIComponent(product.category)}`}
-                    className="text-[12px] font-bold uppercase tracking-[0.14em] text-leaf underline-offset-4 transition-colors hover:text-clay hover:underline"
+                    className="text-[12px] font-bold uppercase text-leaf underline-offset-4 transition-colors hover:text-clay hover:underline"
                   >
                     Все {categoryLabel.toLowerCase()}
                   </Link>
                 )}
               </div>
             </Reveal>
-            <div className="grid grid-cols-2 gap-x-5 gap-y-12 lg:grid-cols-4">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-x-5 gap-y-12 pb-3 ">
               {related.map((p, i) => (
                 <Reveal key={p.id} delay={i * 0.06}>
                   <ProductCard product={p} />

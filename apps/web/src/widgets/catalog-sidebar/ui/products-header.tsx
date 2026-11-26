@@ -86,7 +86,7 @@ export function ProductsHeader() {
           __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c"),
         }}
       />
-      <h1 className="text-3xl sm:text-4xl font-medium tracking-tight">
+      <h1 className="text-3xl sm:text-4xl font-medium tight">
         {title}
       </h1>
       <p className="mt-2 text-muted-foreground">

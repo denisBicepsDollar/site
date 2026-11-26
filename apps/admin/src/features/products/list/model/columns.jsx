@@ -120,7 +120,7 @@ export const columns = [
                 >
                 {/* строка 1: количество — всегда одна высота и кегль */}
                     <span
-                        className="text-[13px] font-semibold leading-none tracking-tight tabular-nums whitespace-nowrap">
+                        className="text-[13px] font-semibold leading-none  tabular-nums whitespace-nowrap">
                     {stock} шт.
                 </span>
 

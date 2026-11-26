@@ -39,7 +39,7 @@ export function Blog() {
           <div className="lg:sticky lg:top-28 lg:self-start">
             <Reveal>
               <Eyebrow>Уход за растениями</Eyebrow>
-              <h2 className="mt-4 font-display text-5xl font-medium leading-[1.04] tracking-tight text-forest md:text-6xl">
+              <h2 className="mt-4 font-display text-5xl font-medium leading-[1.04] tight text-forest md:text-6xl">
                 Заботиться{" "}
                 <em className="font-light italic text-clay">проще</em>, чем
                 кажется
@@ -127,7 +127,7 @@ export function Blog() {
                               {it.chips.map((c) => (
                                 <span
                                   key={c}
-                                  className="rounded-full bg-leaf/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-leaf"
+                                  className="rounded-full bg-leaf/10 px-4 py-1.5 text-[11px] font-semibold uppercase [0.14em] text-leaf"
                                 >
                                   {c}
                                 </span>

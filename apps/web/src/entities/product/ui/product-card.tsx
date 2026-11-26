@@ -20,10 +20,10 @@ export function ProductCard({ product }) {
     <Card className="overflow-hidden group border-ink/5 bg-cream/30 transition-shadow duration-300 ">
       <CardHeader className="relative block p-0">
         {/* Тег / Бейдж */}
-        {product.tags?.[0] && (
+        {/*{product.tags?.[0] && (
           <Badge
             shape="pill"
-            className={`pointer-events-none absolute left-3.5 top-3.5 z-10 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] shadow-sm ${
+            className={`pointer-events-none absolute left-3.5 top-3.5 z-10 rounded-full px-3 py-1 text-[10px] font-bold uppercase [0.14em] shadow-sm ${
               badgeStyle[product.tags[0]] ||
               badgeStyle[product.badge] ||
               "bg-forest text-cream"
@@ -31,7 +31,7 @@ export function ProductCard({ product }) {
           >
             {product.tags[0]}
           </Badge>
-        )}
+        )}*/}
         {/* Кнопка "В избранное"  */}
         {/*<button
           onClick={() => setLiked((v) => !v)}

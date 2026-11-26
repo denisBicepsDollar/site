@@ -58,8 +58,7 @@ export function ProductList() {
 
       if (
         rect.top <= viewportHeight + 400 ||
-        (document.documentElement.scrollHeight > 0 &&
-          docBottomDistance <= 400)
+        (document.documentElement.scrollHeight > 0 && docBottomDistance <= 400)
       ) {
         triggerLoadMore();
       }
@@ -147,9 +146,9 @@ export function ProductList() {
     const queryText = searchParams.get("q")?.trim() ?? "";
     const hasFilterParams = Boolean(
       queryText ||
-        searchParams.get("size") ||
-        searchParams.get("minPrice") ||
-        searchParams.get("maxPrice"),
+      searchParams.get("size") ||
+      searchParams.get("minPrice") ||
+      searchParams.get("maxPrice"),
     );
 
     const globalParams = new URLSearchParams(searchParams.toString());
@@ -184,24 +183,25 @@ export function ProductList() {
             <Button
               variant="default"
               size="sm"
-              onClick={() =>
-                router.push(globalCatalogHref, { scroll: false })
-              }
+              onClick={() => router.push(globalCatalogHref, { scroll: false })}
             >
               Искать по всему каталогу ({globalCount})
             </Button>
           )}
-          {isScopedPath && hasFilterParams && globalCount === 0 && queryText && (
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() =>
-                router.push(globalQueryOnlyHref, { scroll: false })
-              }
-            >
-              Искать по всему каталогу
-            </Button>
-          )}
+          {isScopedPath &&
+            hasFilterParams &&
+            globalCount === 0 &&
+            queryText && (
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() =>
+                  router.push(globalQueryOnlyHref, { scroll: false })
+                }
+              >
+                Искать по всему каталогу
+              </Button>
+            )}
           {(isScopedPath || hasFilterParams) && (
             <Button
               variant="outline"
@@ -219,7 +219,7 @@ export function ProductList() {
   return (
     <>
       {/* Сетка карточек */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
@@ -240,11 +240,7 @@ export function ProductList() {
             <span className="text-sm text-muted-foreground">
               Не удалось загрузить следующую страницу
             </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => fetchNextPage()}
-            >
+            <Button variant="outline" size="sm" onClick={() => fetchNextPage()}>
               Повторить
             </Button>
           </div>
