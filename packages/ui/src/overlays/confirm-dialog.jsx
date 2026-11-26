@@ -7,7 +7,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@site/ui/ui/overlays/alert-dialog.jsx"
+} from "./alert-dialog.jsx"
 
 /* Диалог подтверждения в стиле админки. Одинаковый внешний вид раньше был
    скопирован в трёх местах: шапка сущности, страница заказа и страница товара. */

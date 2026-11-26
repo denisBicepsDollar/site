@@ -13,7 +13,7 @@ export function bindProductCardEvents() {
             const productId = addToCartButton.dataset.productId;
 
             // Получаем товар с вариантами
-            fetch(`/api/products/${productId}`)
+            fetch(`/api/v1/products/${productId}`)
                 .then(res => res.json())
                 .then(product => {
                     const variant = product.variants

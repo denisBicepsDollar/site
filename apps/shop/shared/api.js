@@ -1,18 +1,25 @@
-export async function getProducts(p = {}) {
-    try {
-        // 1. Делаем запрос к серверу (автоматически формируя строку ?key=value)
-        const response = await fetch(`/api/products?${new URLSearchParams(p)}`);
+export async function getProducts(params = {}) {
+    const products = [];
+    let page = 1;
+    let hasMore = true;
 
-        // 2. Проверяем, успешен ли ответ сервера (статус 200-299)
+    while (hasMore) {
+        const query = new URLSearchParams({...params, page: String(page)});
+        const response = await fetch(`/api/v1/products?${query}`);
         if (!response.ok) {
-            throw new Error(`Ошибка сервера: ${response.status} ${response.statusText}`);
+            throw new Error(`Ошибка загрузки товаров: ${response.status} ${response.statusText}`);
         }
-        // 3. Распаковываем JSON и возвращаем его наружу
-        return await response.json();
 
-    } catch (error) {
-        console.error("Ошибка в getProducts при запросе к API:", error);
-        // Возвращаем пустой массив, чтобы приложение не падало у пользователя
-        return [];
+        const result = await response.json();
+        const pageItems = Array.isArray(result) ? result : result.data;
+        if (!Array.isArray(pageItems)) {
+            throw new Error("API вернул некорректный список товаров");
+        }
+
+        products.push(...pageItems);
+        hasMore = !Array.isArray(result) && result.meta?.hasMore === true;
+        page += 1;
     }
+
+    return products;
 }

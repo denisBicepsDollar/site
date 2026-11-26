@@ -20,6 +20,9 @@ back/Postgre/pgdata/
 *.log
 logs/
 
+# Uploaded admin product images (stored outside source control)
+apps/api/uploads/
+
 # Окружение
 .env
 .env.bak
@@ -90,3 +93,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+/uploads/admin-products/

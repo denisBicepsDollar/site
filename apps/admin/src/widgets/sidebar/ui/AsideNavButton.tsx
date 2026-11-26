@@ -1,7 +1,7 @@
 import {twMerge} from 'tailwind-merge'
 import {NavLink} from 'react-router-dom'
 
-export function AsideNavButton({icon: Icon, text, to, className = '', isExpanded, onClick}) {
+export function AsideNavButton({icon: Icon, text, to, className = '', isExpanded, onClick = undefined}) {
     return (
         <NavLink
             to={to}

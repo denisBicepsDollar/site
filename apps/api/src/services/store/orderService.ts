@@ -209,3 +209,48 @@ export async function createOrder(
     data: repoResult.order,
   };
 }
+
+export type AdminOrderStatus = "new" | "confirmed" | "processing" | "shipped" | "completed" | "cancelled";
+
+const STATUS_TRANSITIONS: Record<AdminOrderStatus, AdminOrderStatus[]> = {
+  new: ["confirmed", "cancelled"],
+  confirmed: ["processing", "cancelled"],
+  processing: ["shipped", "cancelled"],
+  shipped: ["completed", "cancelled"],
+  completed: [],
+  cancelled: [],
+};
+
+const ALLOWED_STATUSES = new Set<AdminOrderStatus>(Object.keys(STATUS_TRANSITIONS) as AdminOrderStatus[]);
+
+export type UpdateAdminOrderResult =
+  | {ok: true; order: NonNullable<Awaited<ReturnType<typeof orderRepo.getAdminOrderById>>>}
+  | {ok: false; reason: "not_found" | "invalid_transition"; currentStatus?: string};
+
+export async function listAdminOrders() {
+  return orderRepo.listAdminOrders();
+}
+
+export async function getAdminOrderById(id: number) {
+  return orderRepo.getAdminOrderById(id);
+}
+
+export async function updateAdminOrderStatus(id: number, status: unknown): Promise<UpdateAdminOrderResult> {
+  if (typeof status !== "string" || !ALLOWED_STATUSES.has(status as AdminOrderStatus)) {
+    return {ok: false, reason: "invalid_transition"};
+  }
+
+  const nextStatus = status as AdminOrderStatus;
+  const allowedFrom = (Object.keys(STATUS_TRANSITIONS) as AdminOrderStatus[])
+    .filter((current) => STATUS_TRANSITIONS[current].includes(nextStatus));
+  const result = await orderRepo.updateAdminOrderStatus(id, nextStatus, allowedFrom);
+
+  if (result.kind === "not_found") return {ok: false, reason: "not_found"};
+  if (result.kind === "conflict") {
+    return {ok: false, reason: "invalid_transition", currentStatus: result.currentStatus};
+  }
+
+  const order = await orderRepo.getAdminOrderById(id);
+  if (!order) return {ok: false, reason: "not_found"};
+  return {ok: true, order};
+}

@@ -7,6 +7,7 @@ import { apiLimiter } from "@/middleware/rateLimiters";
 import { ApiError } from "@/utils/ApiError";
 import { requestContext } from "@/middleware/requestContext";
 import { accessLogger } from "@/middleware/accessLogger";
+import { adminProductImageDirectory } from "@/controllers/admin/productImagesController.js";
 
 export function createApp() {
   const app = express();
@@ -29,6 +30,7 @@ export function createApp() {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use("/uploads/admin-products", express.static(adminProductImageDirectory, { immutable: true, maxAge: "1y" }));
   app.use(cookieParser());
 
   app.use("/api/", apiLimiter);
