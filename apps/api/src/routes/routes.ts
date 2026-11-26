@@ -11,6 +11,7 @@ import { getOneProduct } from "@/controllers/store/productController";
 export function registerRoutes(app) {
   // Public API
   app.get("/api/v1/products", productController.list);
+  app.get("/api/v1/products/labels", productController.getLabels);
   app.get("/api/v1/products/:slug", productController.getOneProduct);
   app.get("/api/v1/products/variants/by-ids", productController.getVariants);
 

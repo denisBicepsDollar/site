@@ -1,1 +1,6 @@
-export { getProducts, getProductBySlug, getProductsByVariant } from "./api";
+export {
+  getCatalogLabels,
+  getProducts,
+  getProductBySlug,
+  getProductsByVariant,
+} from "./api";

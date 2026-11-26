@@ -102,6 +102,24 @@ export const productsInProducts = products.table("products", {
 }, (table) => [
 	unique("products_slug_key").on(table.slug),]);
 
+export const catalogLabelsInProducts = products.table(
+  "catalog_labels",
+  {
+    id: serial().primaryKey(),
+    kind: text().notNull(),
+    slug: text().notNull(),
+    labelRu: text("label_ru").notNull(),
+    pageTitleRu: text("page_title_ru"),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).default(
+      sql`now()`,
+    ),
+  },
+  (table) => [
+    unique("catalog_labels_kind_slug_key").on(table.kind, table.slug),
+  ],
+);
+
 export const usersInUsers = users.table("users", {
 	id: uuid().defaultRandom().primaryKey(),
 	username: text(),

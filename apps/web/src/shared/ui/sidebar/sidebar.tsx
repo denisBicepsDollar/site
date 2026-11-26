@@ -664,7 +664,7 @@ export function Sidebar(sidebarProps: SidebarProps): React.ReactElement {
         {...props}
       >
         <div
-          className="sp-sidebar-inner flex h-full w-full flex-col bg-transparent group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:bg-[var(--sp-rw-bg-primary)] group-data-[variant=floating]:shadow-[var(--sp-rw-surface-xs-shadow)]"
+          className="sp-sidebar-inner flex h-full min-h-0 w-full flex-col bg-transparent group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:bg-[var(--sp-rw-bg-primary)] group-data-[variant=floating]:shadow-[var(--sp-rw-surface-xs-shadow)]"
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
         >
@@ -1130,12 +1130,14 @@ export function SidebarContent({
   return (
     <ScrollArea
       className={cn(
-        "-my-[calc(var(--sp-semantic-state-focus-width)+var(--sp-semantic-state-focus-offset))] min-h-0 w-auto flex-1",
+        "-my-[calc(var(--sp-semantic-state-focus-width)+var(--sp-semantic-state-focus-offset))] h-auto min-h-0 w-auto flex-1",
         hasLayoutGutter &&
           "-ms-[calc(var(--sp-semantic-state-focus-width)+var(--sp-semantic-state-focus-offset))]",
       )}
       fill
       scrollFade
+      scrollbarGutter
+      scrollbarVisibility="overflow"
     >
       {/* With a layout gutter, extend into it and restore content alignment.
           Groups/content already own the trailing inset; keep the scrollbar

@@ -14,6 +14,7 @@ export type ProductSort = "score" | "new" | "price" | "price_desc";
 export async function list(
   category?: string,
   subcategory?: string,
+  type?: string,
   sizes?: string[],
   minPrice?: number,
   maxPrice?: number,
@@ -36,15 +37,27 @@ export async function list(
   }
 
   const hasVariantFilter = Object.keys(variantFilter).length > 0;
-  const hasSearch = Boolean(buildProductSearchSql(productsInProducts, search));
+  const searchActive = Boolean(buildProductSearchSql(productsInProducts, search));
+  const hasRawWhere = Boolean(searchActive || subcategory || type);
 
   return await db.query.productsInProducts.findMany({
     where: {
       ...(category && { category: { eq: category } }),
-      ...(subcategory && { subcategory: { eq: subcategory } }),
       ...(hasVariantFilter && { productVariantsInProducts: variantFilter }),
-      ...(hasSearch && {
-        RAW: (p) => buildProductSearchSql(p, search)!,
+      ...(hasRawWhere && {
+        RAW: (p) => {
+          const conditions = [
+            searchActive ? buildProductSearchSql(p, search) : undefined,
+            subcategory
+              ? sql`coalesce(nullif(btrim(${p.subcategory}), ''), nullif(btrim(${p.type}), '')) = ${subcategory}`
+              : undefined,
+            type
+              ? sql`nullif(btrim(${p.type}), '') = ${type}`
+              : undefined,
+          ].filter(Boolean);
+
+          return conditions.length === 1 ? conditions[0]! : and(...conditions)!;
+        },
       }),
     },
     limit,
