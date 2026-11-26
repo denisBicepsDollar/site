@@ -20,6 +20,7 @@ import {
 } from './formState.ts';
 import {buildSnapshot} from './snapshot.ts';
 import {useLocation} from "react-router-dom";
+import {productsApi} from "@/shared/api/products/productsApi.ts";
 
 export function useProductForm(id) {
     const location = useLocation().pathname;
@@ -42,12 +43,16 @@ export function useProductForm(id) {
     const [savedSnapshot, setSavedSnapshot] = useState(() => buildSnapshot(createFormState(item)));
 
     /* blob-ссылки на загруженные файлы, чтобы не течь при размонтировании */
-    const objectUrlsRef = useRef(new Set());
+    const objectUrlsRef = useRef<Set<string>>(new Set());
+    const filesByObjectUrlRef = useRef<Map<string, File>>(new Map());
+    const persistedImageUrlsRef = useRef<Map<string, string>>(new Map());
 
     /* Чистим blob-ссылки, когда уходим со страницы */
     useEffect(() => () => {
         objectUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
         objectUrlsRef.current.clear();
+        filesByObjectUrlRef.current.clear();
+        persistedImageUrlsRef.current.clear();
     }, []);
 
     const toObjectUrls = files => files
@@ -55,8 +60,20 @@ export function useProductForm(id) {
         .map(file => {
             const url = URL.createObjectURL(file);
             objectUrlsRef.current.add(url);
+            filesByObjectUrlRef.current.set(url, file);
             return url;
         });
+
+    const persistImage = async (src) => {
+        if (!src?.startsWith('blob:')) return src || null;
+        if (persistedImageUrlsRef.current.has(src)) return persistedImageUrlsRef.current.get(src);
+        const file = filesByObjectUrlRef.current.get(src);
+        if (!file) throw new Error('Не удалось прочитать выбранное изображение');
+        const url = await productsApi.uploadImage(file);
+        persistedImageUrlsRef.current.set(src, url);
+        filesByObjectUrlRef.current.delete(src);
+        return url;
+    };
 
     /* ── Готовые действия для секций ─────────────────────────────────────── */
     const setProductCover = src => setForm(prev => ({...prev, cover: src}));
@@ -79,7 +96,33 @@ export function useProductForm(id) {
 
         /* Изменения */
         hasChanges: buildSnapshot(form) !== savedSnapshot,
-        save: () => setSavedSnapshot(buildSnapshot(form)),
+        isCreateMode,
+        save: async () => {
+            if (isCreateMode) {
+                if (!form.name.trim()) throw new Error('Введите название товара');
+                if (!form.category.trim()) throw new Error('Выберите категорию товара');
+                const variants = await Promise.all(form.variants.map(async (variant) => {
+                    const images = await Promise.all(variant.images.map(persistImage));
+                    return {
+                        name: variant.name,
+                        price: Number(variant.price || form.basePrice || 0),
+                        stock: Number(variant.stock || 0),
+                        previewImage: await persistImage(variant.previewImage),
+                        images: images.filter(Boolean),
+                    };
+                }));
+                const cover = await persistImage(form.cover);
+                const product = await productsApi.create({
+                    name: form.name.trim(), description: form.description, category: form.category,
+                    subcategory: form.category, status: form.status, price: Number(form.basePrice || form.variants[0]?.price || 0),
+                    previewImage: cover, careInstructions: form.note, variants,
+                });
+                setSavedSnapshot(buildSnapshot(form));
+                return product;
+            }
+            setSavedSnapshot(buildSnapshot(form));
+            return null;
+        },
 
         /* Простые поля */
         setName: value => setForm(prev => ({...prev, name: value})),

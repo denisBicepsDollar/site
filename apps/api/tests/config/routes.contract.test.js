@@ -48,6 +48,8 @@ describe("Frontend/backend API contracts", () => {
         assert.match(routesText, /app\.use\("\/api\/v1\/admin",\s*adminRouter\)/);
         assert.match(adminRoutesText, /adminRouter\.use\(authHandler\)/);
         assert.match(adminRoutesText, /adminRouter\.get\("\/products"/);
+        assert.match(adminRoutesText, /adminRouter\.post\("\/products"/);
+        assert.match(adminRoutesText, /adminRouter\.post\("\/products\/images"/);
         assert.match(adminRoutesText, /adminRouter\.get\("\/orders"/);
         assert.match(adminRoutesText, /adminRouter\.get\("\/orders\/:id"/);
         assert.match(adminRoutesText, /adminRouter\.patch\("\/orders\/:id\/status"/);
@@ -68,6 +70,7 @@ describe("Frontend/backend API contracts", () => {
             assert.match(config, /location\s+(?:\^~\s+)?\/api\//, `${path} must proxy /api/`);
             assert.match(config, /proxy_pass\s+http:\/\/api_backend/, `${path} must use the API upstream`);
             assert.match(config, /location\s+(?:\^~\s+)?\/auth\//, `${path} must proxy /auth/`);
+            assert.match(config, /location\s+\^~\s+\/uploads\/admin-products\//, `${path} must proxy uploaded product images`);
         }
     });
 });

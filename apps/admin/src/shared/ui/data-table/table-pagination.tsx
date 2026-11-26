@@ -5,16 +5,12 @@ export function TablePagination({table, dataLength}) {
     const pageIndex = pagination.pageIndex ?? 0
     const pageSize = pagination.pageSize ?? 8
 
-    const filteredLength = table.getFilteredRowModel().rows.length
+    const totalDataLength = dataLength ?? table.getRowModel().rows.length
     const rowsOnPage = table.getRowModel().rows.length
-    const totalDataLength = dataLength ?? filteredLength
     const pageCount = table.getPageCount()
 
-    const firstShown = filteredLength === 0 ? 0 : pageIndex * pageSize + 1
-    const lastShown =
-        filteredLength === 0
-            ? 0
-            : Math.min(pageIndex * pageSize + rowsOnPage, filteredLength)
+    const firstShown = totalDataLength === 0 ? 0 : pageIndex * pageSize + 1
+    const lastShown = totalDataLength === 0 ? 0 : Math.min(pageIndex * pageSize + rowsOnPage, totalDataLength)
 
     return (
         <div
@@ -26,11 +22,8 @@ export function TablePagination({table, dataLength}) {
                 </span>{" "}
                 из{" "}
                 <span className="font-semibold text-[#1C1C1E] dark:text-[#F2F2F7]">
-                    {filteredLength}
+                    {totalDataLength}
                 </span>
-                {filteredLength !== totalDataLength && (
-                    <span> · всего {totalDataLength}</span>
-                )}
             </span>
 
             <span className="tabular-nums">

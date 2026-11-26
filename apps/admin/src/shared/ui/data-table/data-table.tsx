@@ -17,9 +17,6 @@ import {
     globalFilteringFeature,
     columnFilteringFeature,
     rowSortingFeature,
-    createSortedRowModel,
-    createFilteredRowModel,
-    createPaginatedRowModel,
     tableFeatures,
     rowPaginationFeature,
 } from "@tanstack/react-table"
@@ -39,9 +36,7 @@ const features = tableFeatures({
     globalFilteringFeature,
     columnFilteringFeature,
     rowPaginationFeature,
-    sortedRowModel: createSortedRowModel(),
-    filteredRowModel: createFilteredRowModel(),
-    paginatedRowModel: createPaginatedRowModel(),
+    // Product records are already sorted, filtered and paginated by the admin API.
 })
 
 // Хелпер для адаптивного скрытия колонок на мобильных устройствах
@@ -58,7 +53,7 @@ const getResponsiveColumnClass = (columnId) => {
     }
 }
 
-export function DataTable({columns, data, action}) {
+export function DataTable({columns, data, action = null, meta = undefined, onQueryChange = undefined, isFetching = false}) {
 
     const paginationAtom = useCreateAtom({
         pageIndex: 0,
@@ -97,10 +92,38 @@ export function DataTable({columns, data, action}) {
 
     const navigate = useNavigate()
 
+    const sorting = useSelector(sortingAtom)
+    const globalFilter = useSelector(globalFilterAtom)
+    const columnFilters = useSelector(columnFiltersAtom)
+
+    useEffect(() => {
+        setPagination((current) => current.pageIndex === 0 ? current : {...current, pageIndex: 0})
+    }, [globalFilter, sorting, columnFilters, setPagination])
+
+    useEffect(() => {
+        const timer = window.setTimeout(() => {
+            const status = columnFilters.find(({id}) => id === "status")?.value ?? "all"
+            onQueryChange?.({
+                page: pagination.pageIndex,
+                pageSize: pagination.pageSize,
+                q: String(globalFilter ?? ""),
+                status: String(status),
+                lowStock: Boolean(columnFilters.find(({id}) => id === "stock")?.value),
+                sortBy: sorting[0]?.id ?? "createdAt",
+                sortDirection: sorting[0]?.desc ? "desc" : "asc",
+            })
+        }, globalFilter ? 250 : 0)
+        return () => window.clearTimeout(timer)
+    }, [pagination, sorting, globalFilter, columnFilters, onQueryChange])
+
     const table = useTable({
         features,
         data,
         columns,
+        manualSorting: true,
+        manualFiltering: true,
+        manualPagination: true,
+        rowCount: meta?.total ?? 0,
         debugTable: true,
         atoms: {
             sorting: sortingAtom,
@@ -111,14 +134,16 @@ export function DataTable({columns, data, action}) {
         },
     })
 
-    const statusesInfo = getUniqueStatuses(table.options.data)
+    const statusesInfo = meta?.statusCounts
+        ? [{label: "all", count: meta.total ?? 0}, ...Object.entries(meta.statusCounts).map(([label, count]) => ({label, count}))]
+        : getUniqueStatuses(table.options.data)
 
     // Вычисляем количество пустых строк для рендера
     const activeRows = table.getRowModel().rows
     const emptyRowsCount = Math.max(0, pagination.pageSize - activeRows.length)
 
     return (
-        <div className="space-y-4 w-full max-w-full overflow-hidden">
+        <div className="space-y-4 w-full max-w-full overflow-hidden" aria-busy={isFetching}>
             <TableToolbar table={table} statusesInfo={statusesInfo} action={action}/>
 
             <div className="
@@ -133,10 +158,10 @@ export function DataTable({columns, data, action}) {
                 */}
                 <div className="w-full overflow-x-auto scrollbar-none touch-pan-x [-webkit-overflow-scrolling:touch]">
                     <div className="w-full min-w-[340px] bg-white dark:bg-[#1C1C1E]">
-                        <Table>
-                            <TableHeader>
+                        <Table className="">
+                            <TableHeader className="">
                                 {table.getHeaderGroups().map((headerGroup) => (
-                                    <TableRow key={headerGroup.id}>
+                                    <TableRow className="" key={headerGroup.id}>
                                         {headerGroup.headers.map((header) => {
                                             const colId = header.column.id;
                                             return (
@@ -176,13 +201,13 @@ export function DataTable({columns, data, action}) {
                                 ))}
                             </TableHeader>
 
-                            <TableBody>
+                            <TableBody className="">
                                 {activeRows.length > 0 ? (
                                     <>
                                         {/* Реальные товары */}
                                         {activeRows.map((row) => (
                                             <TableRow
-                                                onClick={() => navigate(`${row.original.id}`)}
+                                                onClick={() => navigate(`${(row.original as {id: string | number}).id}`)}
                                                 key={row.id}
                                                 className="cursor-pointer active:bg-black/[0.02] dark:active:bg-white/[0.02]" // Эффект тапа на iOS
                                                 data-state={row.getIsSelected() ? "selected" : undefined}
@@ -234,7 +259,7 @@ export function DataTable({columns, data, action}) {
                                     </>
                                 ) : (
                                     /* Если фильтр вообще ничего не выдал */
-                                    <TableRow>
+                                    <TableRow className="">
                                         <TableCell
                                             colSpan={columns.length}
                                             style={{height: `${pagination.pageSize * 72.8}px`}}

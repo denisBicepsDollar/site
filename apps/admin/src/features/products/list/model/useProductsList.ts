@@ -1,11 +1,11 @@
 import {useQuery} from "@tanstack/react-query";
-import {productsApi} from "@/shared/api/products/productsApi.ts";
+import {productsApi, type ProductsQuery} from "@/shared/api/products/productsApi.ts";
 
-
-export function useProductsList() {
+export function useProductsList(query: ProductsQuery) {
     return useQuery({
-        queryKey: ['products'],
-        queryFn: productsApi.list,
-        staleTime: 5 * 60 * 1000,
+        queryKey: ['admin-products', query],
+        queryFn: () => productsApi.list(query),
+        placeholderData: (previous) => previous,
+        staleTime: 0,
     });
 }

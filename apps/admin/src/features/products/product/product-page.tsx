@@ -28,6 +28,14 @@ export function ProductPage() {
 function ProductForm({id}) {
     const navigate = useNavigate();
     const form = useProductForm(id);
+    const saveProduct = async () => {
+        try {
+            await form.save();
+            if (form.isCreateMode) navigate("/products");
+        } catch (error) {
+            window.alert(error instanceof Error ? error.message : "Не удалось сохранить товар");
+        }
+    };
 
     /* заменить зарефакторить переменные на src */
     const [activePhotoIndex, setActivePhotoIndex] = useState(null);
@@ -137,7 +145,7 @@ function ProductForm({id}) {
                         icon: Save,
                         variant: "default",
                         className: "hidden sm:flex",
-                        onClick: form.save,
+                        onClick: saveProduct,
                     },
                 ]}
             />
