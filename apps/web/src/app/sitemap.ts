@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
-import { getCachedCatalogProducts } from "@/shared/api/catalog-cache";
-import { getSiteUrl } from "@/shared/config/site";
+import { getCachedCatalogProducts } from "@/shared/api/server";
+import { getSiteUrl } from "@/shared/config";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = getSiteUrl();

@@ -1,7 +1,7 @@
 import {AnimatePresence, motion} from 'framer-motion';
 import {products,} from '../data/products';
-import ProductCard from './ProductCard';
-import {Eyebrow, Reveal} from './Reveal';
+import {ProductCard} from '@/entities/product';
+import {Eyebrow, Reveal} from '@/shared/ui/reveal';
 
 const filters = [
     {key: 'all', label: 'Все растения'},

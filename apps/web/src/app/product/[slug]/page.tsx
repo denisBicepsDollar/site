@@ -2,16 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ProductScreen } from "@/pages-flat/product";
-import {
-  getCategoryLabel,
-  getSubcategoryLabel,
-} from "@/pages-flat/products/config/catalog-labels";
+import { getCategoryLabel, getSubcategoryLabel } from "@/entities/product";
 import {
   getCachedCatalogLabels,
   getCachedCatalogProducts,
   getCachedProductBySlug,
-} from "@/shared/api/catalog-cache";
-import { DEFAULT_OG_IMAGE, getSiteUrl, SITE_NAME } from "@/shared/config/site";
+} from "@/shared/api/server";
+import { DEFAULT_OG_IMAGE, getSiteUrl, SITE_NAME } from "@/shared/config";
 
 type PageProps = {
   params: Promise<{ slug: string }>;

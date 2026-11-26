@@ -18,20 +18,18 @@ import {
   Truck,
 } from "lucide-react";
 import { Eyebrow, Reveal } from "@/shared/ui/reveal";
-import { ProductCard } from "@/entities/product";
-import { useCartStore } from "@/entities/cart";
-import { Reviews1 } from "./reviews";
-import { formatPrice } from "../config/const";
 import {
   getCategoryLabel,
   getSubcategoryLabel,
-  type CatalogLabels,
-} from "@/pages-flat/products/config/catalog-labels";
-import {
+  ProductCard,
   useVariants,
+  type CatalogLabels,
   type ProductDetail,
   type ProductVariant,
-} from "../model/use-variants";
+} from "@/entities/product";
+import { useCartStore } from "@/entities/cart";
+import { Reviews1 } from "@/widgets/product-reviews";
+import { formatPrice } from "../config/const";
 import {
   Breadcrumb,
   BreadcrumbItem,

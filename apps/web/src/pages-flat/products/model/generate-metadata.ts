@@ -3,16 +3,16 @@ import { notFound } from "next/navigation";
 import {
   getCachedCatalogLabels,
   getCachedCatalogProducts,
-} from "@/shared/api/catalog-cache";
-import { DEFAULT_OG_IMAGE, SITE_NAME } from "@/shared/config/site";
+} from "@/shared/api/server";
+import { DEFAULT_OG_IMAGE, SITE_NAME } from "@/shared/config";
 import {
   decodeRouteSegment,
   getCategoryLabel,
   getCategoryPageTitle,
   getSubcategoryLabel,
   getTypeLabel,
-} from "../config/catalog-labels";
-import { isUnknownEmptyCatalogRoute } from "./catalog-route";
+  isUnknownEmptyCatalogRoute,
+} from "@/entities/product";
 
 type RawSearchParams = Record<string, string | string[] | undefined>;
 

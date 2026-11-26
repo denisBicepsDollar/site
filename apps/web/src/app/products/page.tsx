@@ -1,8 +1,7 @@
 import { Suspense } from "react";
-import { ProductsScreen } from "@/pages-flat/products";
-import { normalizeCatalogFilters } from "@/pages-flat/products/model/catalog-route";
-import { buildCatalogMetadata } from "@/pages-flat/products/model/generate-metadata";
-import { fetchCatalogPageData } from "@/shared/api/catalog-cache";
+import { buildCatalogMetadata, ProductsScreen } from "@/pages-flat/products";
+import { normalizeCatalogFilters } from "@/entities/product";
+import { fetchCatalogPageData } from "@/shared/api/server";
 
 type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
