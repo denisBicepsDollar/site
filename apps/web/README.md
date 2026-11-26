@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Витрина (apps/web)
 
-## Getting Started
+Публичный магазин на Next.js 16 (App Router), порт **3001**.
 
-First, run the development server:
+## Запуск
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev     # из корня: npm run dev:web  -> http://localhost:3001
+npm run build   # продакшен-сборка
+npm start
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Витрина ходит в API через server-side прокси (`src/app/api/*`), поэтому нужен запущенный API:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+BACKEND_URL=http://localhost:3000   # по умолчанию http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Окружение
 
-## Learn More
+| Переменная | Назначение |
+|---|---|
+| `BACKEND_URL` | адрес API для server-side запросов |
+| `NEXT_PUBLIC_SITE_URL` / `SITE_URL` | базовый URL сайта (по умолчанию https://zelenyeusy.ru) |
+| `NEXT_PUBLIC_DADATA_TOKEN` | токен DaData для подсказок адреса |
+| `NEXT_PUBLIC_POCHTA_WIDGET_ID` | виджет Почты России |
 
-To learn more about Next.js, take a look at the following resources:
+## Структура
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`src/app` — роуты (/, /products, /product/[slug], /cart, /about, /contact, /blog),
+`src/pages-flat` — экраны страниц, `src/widgets`, `src/features`, `src/entities`, `src/shared`.
