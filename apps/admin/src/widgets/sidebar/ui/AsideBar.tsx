@@ -1,8 +1,11 @@
 import icon from '/icon.png'
 import {useState} from 'react'
-import {ArrowUpRight, Pin, PinOff, Menu, X} from 'lucide-react'
+import {ArrowUpRight, LogOut, Pin, PinOff, Menu, X} from 'lucide-react'
+import {useQueryClient} from '@tanstack/react-query'
+import {useNavigate} from 'react-router-dom'
 import {AsideNavButton} from './AsideNavButton'
 import {dashboardNavigation} from "../config/navigation";
+import {authApi} from "@/shared/api/auth/authApi.ts";
 
 const ICON_BTN = [
     'flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-xl',
@@ -14,15 +17,31 @@ export function Sidebar() {
     const [isHovered, setIsHovered] = useState(false)
     const [isPinned, setIsPinned] = useState(false)
     const [isMobileOpen, setIsMobileOpen] = useState(false)
+    const navigate = useNavigate()
+    const queryClient = useQueryClient()
 
     const isExpanded = isHovered || isPinned
     const PinIcon = isPinned ? PinOff : Pin
+
+    const handleLogout = async () => {
+        try {
+            await authApi.logout()
+        } catch {
+            // Игнорируем сетевую ошибку при выходе и всё равно сбрасываем локальную сессию
+        } finally {
+            queryClient.clear()
+            setIsMobileOpen(false)
+            navigate('/', {replace: true})
+        }
+    }
 
     return (
         <>
             {/* 1. Кнопка «Меню» для мобильных устройств */}
             <div className="md:hidden fixed top-4 left-4 z-30">
                 <button
+                    type="button"
+                    aria-label="Открыть меню"
                     onClick={() => setIsMobileOpen(true)}
                     className="
                         flex h-11 w-11 items-center justify-center rounded-2xl
@@ -57,6 +76,8 @@ export function Sidebar() {
                 `}
             >
                 <button
+                    type="button"
+                    aria-label="Закрыть меню"
                     onClick={() => setIsMobileOpen(false)}
                     className="absolute top-4 right-4 p-2 text-[#8E8E93] active:scale-90 transition-transform cursor-pointer"
                 >
@@ -91,18 +112,25 @@ export function Sidebar() {
 
                 <hr className="border-t border-white/5 mx-2"/>
 
-                <AsideNavButton
-                    to="https://zelenyeusy.ru"
-                    text="В магазин"
-                    icon={ArrowUpRight}
-                    isExpanded={true}
-                    onClick={() => setIsMobileOpen(false)}
-                />
+                <div className="flex flex-col gap-1">
+                    <AsideNavButton
+                        to="https://zelenyeusy.ru"
+                        text="В магазин"
+                        icon={ArrowUpRight}
+                        isExpanded={true}
+                        onClick={() => setIsMobileOpen(false)}
+                    />
+                    <AsideNavButton
+                        text="Выйти"
+                        icon={LogOut}
+                        isExpanded={true}
+                        onClick={handleLogout}
+                    />
+                </div>
             </div>
 
             {/*
               4. Десктопная панель
-              ДОБАВЛЕНО: sticky top-0 h-screen (теперь панель зафиксирована при скролле)
             */}
             <aside
                 className={`
@@ -132,6 +160,8 @@ export function Sidebar() {
                             </span>
                             {/* Кнопка пина */}
                             <button
+                                type="button"
+                                aria-label={isPinned ? "Открепить панель" : "Закрепить панель"}
                                 onClick={() => setIsPinned(v => !v)}
                                 className={`
                                     ${ICON_BTN} transition-all duration-300 ease-in-out
@@ -161,12 +191,20 @@ export function Sidebar() {
 
                     <hr className="border-t border-white/5 mx-2 shrink-0"/>
 
-                    <AsideNavButton
-                        to="https://zelenyeusy.ru"
-                        text="В магазин"
-                        icon={ArrowUpRight}
-                        isExpanded={isExpanded}
-                    />
+                    <div className="flex flex-col gap-1 shrink-0">
+                        <AsideNavButton
+                            to="https://zelenyeusy.ru"
+                            text="В магазин"
+                            icon={ArrowUpRight}
+                            isExpanded={isExpanded}
+                        />
+                        <AsideNavButton
+                            text="Выйти"
+                            icon={LogOut}
+                            isExpanded={isExpanded}
+                            onClick={handleLogout}
+                        />
+                    </div>
                 </div>
             </aside>
         </>

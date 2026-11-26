@@ -5,18 +5,44 @@ import {createPortal} from "react-dom";
 import {statusLabels} from "@/shared/components/localization.ts";
 import {X, Trash2} from "lucide-react";
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {cn} from "@site/ui/lib/utils";
 
-
-export function SelectedRowsBar({count, statusesInfo, onClear}) {
-    console.log(statusesInfo)
+export function SelectedRowsBar({
+                                    count,
+                                    selectedIds = [],
+                                    statusesInfo = [],
+                                    onClear,
+                                    onBulkStatusChange = undefined,
+                                    onBulkDelete = undefined,
+                                    isPending = false,
+                                }) {
     const [lastCount, setLastCount] = useState(0)
-    if (count > 0 && count !== lastCount) {
-        setLastCount(count)
-    }
+
+    useEffect(() => {
+        if (count > 0) {
+            setLastCount(count)
+        }
+    }, [count])
+
     const visible = count > 0
     const shown = count > 0 ? count : lastCount
+    const statusActions = statusesInfo.filter(({label}) => label !== "all")
+
+    const handleStatus = async (status: string) => {
+        if (!onBulkStatusChange || !selectedIds.length || isPending) return;
+        await onBulkStatusChange(selectedIds, status);
+        onClear?.();
+    }
+
+    const handleDelete = async () => {
+        if (!onBulkDelete || !selectedIds.length || isPending) return;
+        if (!window.confirm(`Удалить выбранные позиции (${selectedIds.length})? Действие нельзя отменить.`)) {
+            return;
+        }
+        await onBulkDelete(selectedIds);
+        onClear?.();
+    }
 
     return createPortal(
         <div
@@ -40,24 +66,45 @@ export function SelectedRowsBar({count, statusesInfo, onClear}) {
                 </Badge>
             </div>
 
-            <Separator orientation="vertical"/>
+            {onBulkStatusChange && statusActions.length > 0 && (
+                <>
+                    <Separator orientation="vertical"/>
+                    <div className="flex items-center gap-1">
+                        {statusActions.map(({label}) => (
+                            <Button
+                                key={label}
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                disabled={isPending}
+                                onClick={() => handleStatus(label)}
+                                className="h-8 rounded-full"
+                            >
+                                {statusLabels[label] ?? label}
+                            </Button>
+                        ))}
+                    </div>
+                </>
+            )}
 
-            <div className="flex items-center gap-1">
-                {statusesInfo.filter(({label}) => label !== 'all').map(({label}) => (
-                    <Button key={label} variant="ghost" size="sm" className="h-8 rounded-full">
-                        {statusLabels[label]}
+            {onBulkDelete && (
+                <>
+                    <Separator orientation="vertical"/>
+                    <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        disabled={isPending}
+                        onClick={handleDelete}
+                        className="h-8 rounded-full gap-1.5"
+                    >
+                        <Trash2 className="h-3.5 w-3.5"/>
+                        Удалить
                     </Button>
-                ))}
-            </div>
+                </>
+            )}
 
-            <Separator orientation="vertical"/>
-
-            <Button variant="destructive" size="sm" className="h-8 rounded-full gap-1.5">
-                <Trash2 className="h-3.5 w-3.5"/>
-                Удалить
-            </Button>
-
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={onClear}>
+            <Button type="button" variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={onClear}>
                 <X className="h-4 w-4"/>
                 <span className="sr-only">Снять выделение</span>
             </Button>

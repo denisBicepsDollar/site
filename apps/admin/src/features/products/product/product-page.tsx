@@ -6,6 +6,7 @@ import {EmptyState} from "@/shared/ui/EmptyState.tsx";
 
 import {useProductForm} from "./model/useProductForm.ts";
 import {collectPhotos, findCoverIndex, findVariantPhotoIndex, stepIndex} from "./model/photos.ts";
+import {MAX_NOTE_LENGTH} from "./constants.ts";
 
 import {Save} from 'lucide-react'
 
@@ -22,32 +23,58 @@ import {EntityHeader} from "@/shared/ui/sections/entity-page-header.tsx";
    и не тащит в себе данные предыдущего товара. */
 export function ProductPage() {
     const {id} = useParams();
-    return <ProductForm key={id} id={id}/>;
+    return <ProductForm key={id ?? "create"} id={id}/>;
 }
 
-function ProductForm({id}) {
+function ProductForm({id}: {id?: string}) {
     const navigate = useNavigate();
     const form = useProductForm(id);
+    const [feedback, setFeedback] = useState<{type: "success" | "error"; text: string} | null>(null);
+
     const saveProduct = async () => {
+        setFeedback(null);
         try {
-            await form.save();
-            if (form.isCreateMode) navigate("/dashboard/products", {replace: true});
+            const saved = await form.save();
+            if (form.isCreateMode) {
+                navigate(`/dashboard/products/${saved.id}`, {replace: true});
+            } else {
+                setFeedback({type: "success", text: "Изменения сохранены"});
+            }
         } catch (error) {
-            window.alert(error instanceof Error ? error.message : "Не удалось сохранить товар");
+            setFeedback({
+                type: "error",
+                text: error instanceof Error ? error.message : "Не удалось сохранить товар",
+            });
         }
     };
 
-    /* заменить зарефакторить переменные на src */
-    const [activePhotoIndex, setActivePhotoIndex] = useState(null);
+    const deleteProduct = async () => {
+        if (!window.confirm(`Удалить товар «${form.name || "Без названия"}»? Действие нельзя отменить.`)) {
+            return;
+        }
+        setFeedback(null);
+        try {
+            await form.remove();
+            navigate("/dashboard/products", {replace: true});
+        } catch (error) {
+            setFeedback({
+                type: "error",
+                text: error instanceof Error ? error.message : "Не удалось удалить товар",
+            });
+        }
+    };
+
+    const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
 
     const photos = useMemo(() => collectPhotos(form.cover, form.variants), [form.cover, form.variants]);
     const activePhoto = activePhotoIndex === null ? null : photos[activePhotoIndex] ?? null;
 
-    const isVariantCover = activePhoto
+    const isVariantCover = activePhoto && activePhoto.variantIndex !== null
         ? form.variants[activePhoto.variantIndex]?.previewImage === activePhoto.src
         : false;
+
     /* ── Просмотрщик фото ────────────────────────────────────────────────── */
-    const openVariantPhoto = (variantIndex, imageIndex) => {
+    const openVariantPhoto = (variantIndex: number, imageIndex: number) => {
         const index = findVariantPhotoIndex(photos, variantIndex, imageIndex);
         if (index !== -1) setActivePhotoIndex(index);
     };
@@ -57,27 +84,26 @@ function ProductForm({id}) {
         if (index !== -1) setActivePhotoIndex(index);
     };
 
-    const stepPhoto = direction => {
+    const stepPhoto = (direction: number) => {
         if (!photos.length) return;
-        setActivePhotoIndex(index => stepIndex(index, direction, photos.length));
+        setActivePhotoIndex(index => stepIndex(index ?? 0, direction, photos.length));
     };
 
     /* ── Действия с фото (с подтверждением) ──────────────────────────────── */
-
-    const handleRemovePhoto = (variantIndex, imageIndex) => {
+    const handleRemovePhoto = (variantIndex: number, imageIndex: number) => {
         if (!window.confirm("Удалить это фото?")) return;
 
         form.removeVariantPhoto(variantIndex, imageIndex);
         setActivePhotoIndex(null);
     };
 
-    const handleMakeProductCover = src => {
+    const handleMakeProductCover = (src: string) => {
         if (!window.confirm("Сделать фото обложкой всего товара?")) return;
 
         form.setProductCover(src);
     };
 
-    const handleMakeVariantCover = (variantIndex, src) => {
+    const handleMakeVariantCover = (variantIndex: number, src: string) => {
         const variantName = form.variants[variantIndex]?.name;
 
         if (!window.confirm(`Сделать фото обложкой варианта ${variantName}`)) return;
@@ -89,7 +115,6 @@ function ProductForm({id}) {
 
     /* ── Динамический расчёт состояния изменений (Badge) ────────────────── */
     const changesBadge = useMemo(() => {
-        // Проверяем, изменены ли данные в форме (флаг isDirty из вашего useProductForm)
         if (form.hasChanges) {
             return {
                 text: "Изменения не сохранены",
@@ -98,20 +123,29 @@ function ProductForm({id}) {
         }
         return {
             text: "Изменений нет",
-            className: " bg-[#34C759]/10 h-[40px] text-[#248A3D] dark:bg-[#30D158]/15 dark:text-[#30D158] border-none rounded-xl px-2.5 py-0.5 text-sm font-medium"
+            className: "bg-[#34C759]/10 h-[40px] text-[#248A3D] dark:bg-[#30D158]/15 dark:text-[#30D158] border-none rounded-xl px-2.5 py-0.5 text-sm font-medium"
         };
     }, [form.hasChanges]);
 
-    /* ── Разметка ────────────────────────────────────────────────────────── */
+    /* ── Состояния загрузки и 404 ────────────────────────────────────────── */
+    if (form.isLoading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center p-6 text-sm text-[#8E8E93]">
+                Загружаем карточку товара…
+            </div>
+        );
+    }
 
-    if (!form.item) {
+    if (form.isError || !form.item) {
+        const errorText = form.error instanceof Error
+            ? form.error.message
+            : "Возможно, карточка была удалена или ссылка устарела. Вернитесь в каталог и выберите товар из списка.";
         return (
             <div className="mx-auto flex min-h-screen max-w-3xl items-center justify-center p-6">
-                <div
-                    className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black p-4">
+                <div className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black p-4">
                     <EmptyState
                         title="Товар не найден"
-                        description="Возможно, карточка была удалена или ссылка устарела. Вернитесь в каталог и выберите товар из списка."
+                        description={errorText}
                     >
                         <Button
                             className="mt-5 rounded-xl bg-[#007AFF] text-white hover:bg-[#006FE6]"
@@ -124,12 +158,14 @@ function ProductForm({id}) {
             </div>
         );
     }
+
     return (
         <div className="flex min-h-screen flex-col bg-muted/10 print:bg-white">
 
             <EntityHeader
                 className="border-b"
                 backLabel="К товарам"
+                onBack={() => navigate("/dashboard/products")}
                 title={form.name || "Новый товар"}
                 metadata={null}
                 status={
@@ -140,14 +176,32 @@ function ProductForm({id}) {
                 actions={[
                     {
                         id: "save",
-                        label: "Сохранить",
+                        label: form.isSaving ? "Сохранение..." : "Сохранить",
                         icon: Save,
                         variant: "default",
+                        disabled: form.isSaving || form.isDeleting,
                         className: "hidden sm:flex",
                         onClick: saveProduct,
                     },
                 ]}
             />
+
+            {feedback && (
+                <div
+                    role={feedback.type === "error" ? "alert" : "status"}
+                    className={`mx-auto mt-4 w-full max-w-screen-2xl px-4 sm:px-5`}
+                >
+                    <div
+                        className={`rounded-xl px-4 py-2.5 text-sm font-medium ${
+                            feedback.type === "error"
+                                ? "bg-[#FF3B30]/10 text-[#D70015] dark:bg-[#FF453A]/15 dark:text-[#FF6961]"
+                                : "bg-[#34C759]/10 text-[#248A3D] dark:bg-[#30D158]/15 dark:text-[#30D158]"
+                        }`}
+                    >
+                        {feedback.text}
+                    </div>
+                </div>
+            )}
 
             {/* Контент страницы */}
             <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-5 p-4 sm:p-5 lg:flex-row flex-1">
@@ -197,27 +251,30 @@ function ProductForm({id}) {
                 <aside className="flex w-full shrink-0 flex-col gap-3 lg:w-80">
                     <StatusSection status={form.status} onStatusChange={form.setStatus}/>
 
-                    <NotesSection note={form.note} onNoteChange={form.setNote} MAX_NOTE_LENGTH={100}/>
-                    <Badge className={changesBadge.className + "flex sm:hidden"}>
+                    <NotesSection note={form.note} onNoteChange={form.setNote} MAX_NOTE_LENGTH={MAX_NOTE_LENGTH}/>
+                    <Badge className={changesBadge.className + " flex sm:hidden"}>
                         {changesBadge.text}
                     </Badge>
                     <Button
                         type="button"
                         variant="default"
                         title="Сохранить товар"
+                        disabled={form.isSaving || form.isDeleting}
                         className="sm:hidden"
                         onClick={saveProduct}
                     >
                         <Save/>
-                        Сохранить
+                        {form.isSaving ? "Сохранение..." : "Сохранить"}
                     </Button>
                     {!form.isCreateMode && (
                         <Button
                             type="button"
                             variant="destructive"
                             title="Удаление товара"
+                            disabled={form.isSaving || form.isDeleting}
+                            onClick={deleteProduct}
                         >
-                            Удалить товар
+                            {form.isDeleting ? "Удаление..." : "Удалить товар"}
                         </Button>
                     )}
                 </aside>

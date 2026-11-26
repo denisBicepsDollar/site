@@ -1,16 +1,12 @@
 /* ============================================================================
-   CONSTANTS — справочники и моковые данные страницы товара.
-
-   Пока товар берётся из массива `goods`. Когда появится API — меняется только
-   функция findGoodById (или сам массив), остальной код страницы не трогаем.
+   CONSTANTS — справочники и лимиты страницы товара.
    ============================================================================ */
 
-/* Лимиты на длину текстовых полей */
 import {data} from "@/shared/mock/data.ts";
 
 export const MAX_NAME_LENGTH = 100;
-export const MAX_DESCRIPTION_LENGTH = 200;
-export const MAX_NOTE_LENGTH = 100;
+export const MAX_DESCRIPTION_LENGTH = 5000;
+export const MAX_NOTE_LENGTH = 500;
 
 /* Категории товара */
 export const CATEGORIES = ['Комнатные', 'Садовые'];
@@ -46,14 +42,11 @@ export const STATUSES = [
     },
 ];
 
-
 export const BREAKPOINTS = {
     xl: 1600,
     lg: 1366,
     md: 1200,
     sm: 800,
 };
+
 export const findGoodById = id => data.find(item => item.id === Number(id)) ?? null;
-
-
-

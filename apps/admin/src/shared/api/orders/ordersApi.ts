@@ -51,7 +51,7 @@ interface AdminOrdersResponse {
 export type AdminOrderStatus = "new" | "confirmed" | "processing" | "shipped" | "completed" | "cancelled";
 
 async function list(): Promise<AdminOrder[]> {
-    const response = await ordersClient.get<AdminOrdersResponse>("/");
+    const response = await ordersClient.get<AdminOrdersResponse>("");
     return response.data.data;
 }
 

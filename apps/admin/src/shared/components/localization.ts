@@ -1,15 +1,37 @@
-export const statusLabels = {
+export const statusLabels: Record<string, string> = {
     all: 'Все',
     active: "Активен",
     inactive: "Архив",
+    archived: "Архив",
     draft: "Черновик",
     pending: "В ожидании обработки",
-    processing: "В обработке"
-}
-export const errorTranslations = {
+    new: "Новый",
+    confirmed: "Подтверждён",
+    processing: "Собирается",
+    shipped: "Отправлен",
+    completed: "Завершён",
+    cancelled: "Отменён",
+};
+
+export const errorTranslations: Record<string, string> = {
     "No token provided": "Войдите в систему",
     "Invalid token": "Сессия устарела, войдите заново",
     "Invalid username or password": "Неверное имя пользователя или пароль",
     "Too many requests. Please try again later.": "Слишком много попыток. Попробуйте позже.",
-    "Something went wrong": "Что-то пошло не так на сервере"
+    "Something went wrong": "Что-то пошло не так на сервере",
+    "Product not found": "Товар не найден",
+    "Invalid product ID": "Некорректный идентификатор товара",
+    "Product name and category are required": "Укажите название и категорию товара",
+    "Product name is too long": "Слишком длинное название товара",
+    "Invalid product status": "Некорректный статус товара",
+    "Product variants are invalid": "Некорректные данные вариантов товара",
+    "Product price must be a non-negative number": "Цена должна быть неотрицательным числом",
+    "Variant price and stock are invalid": "Некорректные цена или остаток варианта",
+    "Could not create product": "Не удалось создать товар",
+    "Could not update product": "Не удалось обновить товар",
+    "Could not delete product": "Не удалось удалить товар",
+    "An image file is required": "Выберите файл изображения (JPG, PNG, WEBP или AVIF)",
+    "Unsupported image type": "Неподдерживаемый формат изображения",
+    "File too large": "Файл слишком большой (максимум 8 МБ)",
+    "Internal server error": "Внутренняя ошибка сервера",
 };

@@ -6,9 +6,18 @@ import {
     DialogTitle,
 } from "@site/ui/dialog"
 import {PhotoTile} from "@/features/products/product/ui/photo-tile.tsx";
+import {UploadTile} from "@/features/products/product/ui/upload-tile.tsx";
 import {Button} from "@site/ui/button";
 
-export function VariantPhotosModal({open, onClose, variant, onOpenPhoto, onRemovePhoto, onMakeVariantCover}) {
+export function VariantPhotosModal({
+                                       open,
+                                       onClose,
+                                       variant,
+                                       onOpenPhoto,
+                                       onRemovePhoto,
+                                       onMakeVariantCover,
+                                       onUploadPhotos,
+                                   }) {
     const {clientId, name, images, previewImage} = variant;
     return (
         <Dialog
@@ -29,7 +38,7 @@ export function VariantPhotosModal({open, onClose, variant, onOpenPhoto, onRemov
                 </DialogHeader>
 
                 <div
-                    className="min-h-0 flex-1 flex flex-wrap gap-3 overflow-y-auto p-3 sm:p-5 min-w-min justify-between items">
+                    className="min-h-0 flex-1 flex flex-wrap gap-3 overflow-y-auto p-3 sm:p-5 min-w-min justify-start items-start">
                     {images.map((image, imageIndex) => (
                         <div key={`${clientId}-${imageIndex}`} className="shrink-0 flex flex-col gap-3 items-center">
                             <PhotoTile
@@ -44,10 +53,13 @@ export function VariantPhotosModal({open, onClose, variant, onOpenPhoto, onRemov
                                 size={"xs"}
                                 variant={"outline"}
                                 onClick={() => onMakeVariantCover(image)}>
-                                Сделать
-                                обложкой</Button>
+                                Сделать обложкой
+                            </Button>
                         </div>
                     ))}
+                    {onUploadPhotos && (
+                        <UploadTile className="h-28 w-28" onFiles={onUploadPhotos}/>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>

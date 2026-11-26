@@ -32,6 +32,17 @@ export default function errorHandler(err, req, res, _next) {
         })
     }
 
+    if (err.name === 'MulterError') {
+        const status = err.code === 'LIMIT_FILE_SIZE' ? 413 : 400;
+        const message = err.code === 'LIMIT_FILE_SIZE' ? 'File too large' : err.message;
+        log.warn({status, code: err.code, message, request_id}, 'Upload Warning');
+        return res.status(status).json({
+            status: 'error',
+            request_id,
+            message,
+        });
+    }
+
     if (err.name === 'ValidationError') {
         log.warn({
             status: 400,

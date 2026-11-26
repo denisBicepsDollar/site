@@ -163,6 +163,7 @@ export function VariantRow({
                 onOpenPhoto={onOpenPhoto}
                 onRemovePhoto={onRemovePhoto}
                 onMakeVariantCover={onMakeVariantCover}
+                onUploadPhotos={onUploadPhotos}
             />
         </div>
     );

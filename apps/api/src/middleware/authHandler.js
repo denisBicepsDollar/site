@@ -11,18 +11,25 @@ export default async function authHandler(req, res, next) {
     })
     log.debug({ip: req.ip});
 
-    const token = req.cookies.token;
+    const token = req.cookies?.token;
     if (!token) {
         throw new ApiError(401, "No token provided");
     }
-    const secretKey = config.secretKey;
-    const decoded = jwt.verify(token, secretKey);
 
-    if (!decoded) {
+    try {
+        const secretKey = config.secretKey;
+        const decoded = jwt.verify(token, secretKey);
+
+        if (!decoded) {
+            throw new ApiError(401, "Invalid token");
+        }
+
+        req.user = decoded;
+        next();
+    } catch (error) {
+        if (error instanceof ApiError) {
+            throw error;
+        }
         throw new ApiError(401, "Invalid token");
     }
-
-    req.user = decoded;
-
-    next();
 }

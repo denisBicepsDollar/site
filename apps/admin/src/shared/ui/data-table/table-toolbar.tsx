@@ -6,23 +6,41 @@ import {Input} from "@site/ui/input"
 import {Button} from "@site/ui/button"
 import {Badge} from "@site/ui/badge"
 
-// Вынесли вспомогательный компонент в этот же файл (или импортируйте его)
-export function ProductSummary({table}) {
-    const {totalCount, activeCount, lowStockCount} = useMemo(() => {
-        if (!table) return {totalCount: 0, activeCount: 0, lowStockCount: 0};
+function getOptionalColumn(table, columnId: string) {
+    if (!table) return undefined;
+    const exists = table.getAllLeafColumns?.().some((col) => col.id === columnId);
+    return exists ? table.getColumn(columnId) : undefined;
+}
 
-        // Получаем все исходные данные напрямую из инстанса таблицы
-        const rows = table.getCoreRowModel().rows;
+export function ProductSummary({table, meta = undefined}) {
+    const stockColumn = getOptionalColumn(table, "stock");
+    const isLowStockActive = Boolean(stockColumn?.getFilterValue());
+    const rows = table?.getCoreRowModel().rows;
+
+    const {totalCount, activeCount, lowStockCount} = useMemo(() => {
+        if (!table || !stockColumn) {
+            return {totalCount: 0, activeCount: 0, lowStockCount: 0};
+        }
+
+        if (meta?.statusCounts) {
+            const counts = meta.statusCounts as Record<string, number>;
+            const total = Object.values(counts).reduce((sum, value) => sum + Number(value || 0), 0);
+            return {
+                totalCount: total,
+                activeCount: Number(counts.active ?? 0),
+                lowStockCount: Number(meta.lowStockCount ?? 0),
+            };
+        }
+
         let total = 0;
         let active = 0;
         let lowStock = 0;
 
-        rows.forEach(row => {
+        (rows ?? []).forEach(row => {
             const item = row.original;
             total++;
             if (item.status === "active") {
                 active++;
-                // Считаем товары, которые заканчиваются (склад <= 5)
                 if (Number(item.stock) <= 5) {
                     lowStock++;
                 }
@@ -34,19 +52,21 @@ export function ProductSummary({table}) {
             activeCount: active,
             lowStockCount: lowStock,
         };
-    }, [table, table?.getCoreRowModel().rows]);
+    }, [table, stockColumn, meta, rows]);
 
     const handleLowStockClick = () => {
-        if (!table) return;
+        if (!table || !stockColumn) return;
 
-        // 1. Устанавливаем фильтр статуса на "active"
+        if (isLowStockActive) {
+            stockColumn.setFilterValue(undefined);
+            return;
+        }
+
         table.getColumn("status")?.setFilterValue("active");
-
-        // 2. Фильтруем колонку "stock" (показываем значения <= 5)
-        table.getColumn("stock")?.setFilterValue([undefined, 5]);
+        stockColumn.setFilterValue([undefined, 5]);
     };
 
-    if (totalCount === 0) return null;
+    if (!stockColumn || totalCount === 0) return null;
 
     return (
         <div
@@ -64,13 +84,15 @@ export function ProductSummary({table}) {
                 <>
                     <span className="text-[#E5E5EA] dark:text-[#3A3A3C]">•</span>
                     <button
+                        type="button"
                         onClick={handleLowStockClick}
-                        className="
+                        className={`
                             text-[#FF3B30] dark:text-[#FF453A]
                             hover:underline cursor-pointer
                             active:opacity-60 transition-all
                             font-medium text-left
-                        "
+                            ${isLowStockActive ? "underline font-semibold" : ""}
+                        `}
                     >
                         {lowStockCount} заканчиваются
                     </button>
@@ -80,32 +102,25 @@ export function ProductSummary({table}) {
     );
 }
 
-export function TableToolbar({table, statusesInfo, action}) {
-    // Делаем табы управляемыми от стейта таблицы.
-    // Если фильтр пустой, активен таб "all"
-    const activeTab = table.getColumn("status")?.getFilterValue() || "all";
+export function TableToolbar({table, statusesInfo, action, meta = undefined, onExport = undefined}) {
+    const activeTab = getOptionalColumn(table, "status")?.getFilterValue() || "all";
+    const searchValue = String(table.state?.globalFilter ?? "");
 
     return (
         <div className="flex flex-col gap-4 w-full sm:flex-row sm:items-end sm:justify-between">
             <div className="flex flex-col gap-3">
-                {/*
-                    iOS Информационный Бабл (сводка).
-                    Показывается только если есть данные.
-                */}
                 <div className="mt-4 w-full flex justify-center sm:justify-start">
-                    <ProductSummary table={table}/>
+                    <ProductSummary table={table} meta={meta}/>
                 </div>
 
                 <Tabs
                     value={activeTab}
                     className="w-full sm:w-auto"
                     onValueChange={(value) => {
-                        // При переключении табов сбрасываем фильтр "заканчиваются" по складу
-                        table.getColumn("stock")?.setFilterValue(undefined);
-
-                        table
-                            .getColumn("status")
-                            ?.setFilterValue(value === "all" ? undefined : value);
+                        getOptionalColumn(table, "stock")?.setFilterValue(undefined);
+                        getOptionalColumn(table, "status")?.setFilterValue(
+                            value === "all" ? undefined : value,
+                        );
                     }}
                 >
                     <TabsList className="
@@ -134,7 +149,7 @@ export function TableToolbar({table, statusesInfo, action}) {
                                     dark:data-[state=active]:shadow-none
                                 "
                             >
-                                <span className="whitespace-nowrap">{statusLabels[label]}</span>
+                                <span className="whitespace-nowrap">{statusLabels[label] ?? label}</span>
 
                                 <Badge
                                     variant="secondary"
@@ -152,13 +167,12 @@ export function TableToolbar({table, statusesInfo, action}) {
                 </Tabs>
             </div>
 
-            {/* Правая часть: Поиск и Кнопки */}
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                {/* iOS-style Поисковая строка */}
                 <div className="relative w-full sm:w-72">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8E8E93]"/>
                     <Input
-                        placeholder="Название, артикул..."
+                        value={searchValue}
+                        placeholder="Поиск..."
                         className="
                             pl-10 h-11 rounded-xl
                             bg-[#E5E5EA]/50 dark:bg-[#2C2C2E]/50
@@ -171,26 +185,31 @@ export function TableToolbar({table, statusesInfo, action}) {
                     />
                 </div>
 
-                {/* Экшен кнопки */}
-                <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
-                    <Button
-                        variant="outline"
-                        className="
-                            h-11 rounded-xl gap-2 font-medium border-[#E5E5EA] dark:border-[#2C2C2E]
-                            active:scale-[0.98] transition-all
-                        "
-                    >
-                        <Upload className="h-4 w-4 text-[#007AFF]"/>
-                        Экспорт
-                    </Button>
+                {(onExport || action) && (
+                    <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
+                        {onExport && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => onExport(table.getFilteredRowModel().rows.map(r => r.original))}
+                                className="
+                                    h-11 rounded-xl gap-2 font-medium border-[#E5E5EA] dark:border-[#2C2C2E]
+                                    active:scale-[0.98] transition-all
+                                "
+                            >
+                                <Upload className="h-4 w-4 text-[#007AFF]"/>
+                                Экспорт
+                            </Button>
+                        )}
 
-                    {action && (
-                        <div
-                            className="h-11 [&_button]:h-full [&_button]:w-full [&_button]:rounded-xl [&_button]:active:scale-[0.98]">
-                            {action}
-                        </div>
-                    )}
-                </div>
+                        {action && (
+                            <div
+                                className="h-11 [&_button]:h-full [&_button]:w-full [&_button]:rounded-xl [&_button]:active:scale-[0.98]">
+                                {action}
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     )

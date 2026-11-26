@@ -27,7 +27,7 @@ import {TablePagination} from "./table-pagination.tsx"
 import {SelectedRowsBar} from "./selected-rows-bar.tsx"
 import {TableToolbar} from "./table-toolbar.tsx"
 import {cn} from "@site/ui/lib/utils";
-import {useEffect} from "react";
+import {useEffect, useMemo} from "react";
 
 const features = tableFeatures({
     rowSelectionFeature,
@@ -36,24 +36,34 @@ const features = tableFeatures({
     globalFilteringFeature,
     columnFilteringFeature,
     rowPaginationFeature,
-    // Product records are already sorted, filtered and paginated by the admin API.
 })
 
-// Хелпер для адаптивного скрытия колонок на мобильных устройствах
-const getResponsiveColumnClass = (columnId) => {
+const getResponsiveColumnClass = (columnId: string) => {
     switch (columnId) {
         case "category":
-            return "hidden md:table-cell"; // Скрываем на мобилках и планшетах
+            return "hidden md:table-cell";
         case "variants":
-            return "hidden lg:table-cell"; // Варианты оставляем только на больших экранах
+            return "hidden lg:table-cell";
         case "status":
-            return "hidden sm:table-cell"; // Скрываем статус на экранах меньше 640px (iPhone)
+            return "hidden sm:table-cell";
         default:
-            return ""; // Остальные колонки (Товар, Цена, Склад, Чекбокс, Действия) всегда видны
+            return "";
     }
 }
 
-export function DataTable({columns, data, action = null, meta = undefined, onQueryChange = undefined, isFetching = false}) {
+export function DataTable({
+                              columns,
+                              data,
+                              action = null,
+                              meta = undefined,
+                              onQueryChange = undefined,
+                              isFetching = false,
+                              onExport = undefined,
+                              onBulkStatusChange = undefined,
+                              onBulkDelete = undefined,
+                              isBulkPending = false,
+                          }) {
+    const isServerMode = typeof onQueryChange === "function"
 
     const paginationAtom = useCreateAtom({
         pageIndex: 0,
@@ -64,17 +74,11 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
 
     useEffect(() => {
         const handleResize = () => {
-            let pageSize = 8;
-            if (window.innerHeight <= 703) {
-                pageSize = 5;
-            } else {
-                pageSize = 8;
-            }
-
-            setPagination((prev) => ({
+            const pageSize = window.innerHeight <= 703 ? 5 : 8;
+            setPagination((prev) => prev.pageSize === pageSize ? prev : {
                 ...prev,
                 pageSize,
-            }));
+            });
         };
 
         handleResize();
@@ -88,7 +92,11 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
     const globalFilterAtom = useCreateAtom("")
 
     const rowSelection = useSelector(rowSelectionAtom)
-    const selectedCount = Object.values(rowSelection).filter(Boolean).length
+    const selectedIds = useMemo(
+        () => Object.entries(rowSelection).filter(([, selected]) => Boolean(selected)).map(([id]) => id),
+        [rowSelection],
+    )
+    const selectedCount = selectedIds.length
 
     const navigate = useNavigate()
 
@@ -101,9 +109,10 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
     }, [globalFilter, sorting, columnFilters, setPagination])
 
     useEffect(() => {
+        if (!onQueryChange) return;
         const timer = window.setTimeout(() => {
             const status = columnFilters.find(({id}) => id === "status")?.value ?? "all"
-            onQueryChange?.({
+            onQueryChange({
                 page: pagination.pageIndex,
                 pageSize: pagination.pageSize,
                 q: String(globalFilter ?? ""),
@@ -120,11 +129,11 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
         features,
         data,
         columns,
-        manualSorting: true,
-        manualFiltering: true,
-        manualPagination: true,
-        rowCount: meta?.total ?? 0,
-        debugTable: true,
+        getRowId: (row, index) => String((row as {id?: string | number}).id ?? index),
+        manualSorting: isServerMode,
+        manualFiltering: isServerMode,
+        manualPagination: isServerMode,
+        ...(isServerMode ? {rowCount: meta?.total ?? 0} : {}),
         atoms: {
             sorting: sortingAtom,
             globalFilter: globalFilterAtom,
@@ -134,17 +143,38 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
         },
     })
 
-    const statusesInfo = meta?.statusCounts
-        ? [{label: "all", count: meta.total ?? 0}, ...Object.entries(meta.statusCounts).map(([label, count]) => ({label, count}))]
-        : getUniqueStatuses(table.options.data)
+    const statusesInfo = useMemo(() => {
+        if (!meta?.statusCounts) {
+            return getUniqueStatuses(table.options.data)
+        }
+        const counts = meta.statusCounts as Record<string, number>
+        const totalAll = Object.values(counts).reduce((sum, value) => sum + Number(value || 0), 0)
+        const baseOrder = ["active", "draft", "archived"]
+        const extraStatuses = Object.keys(counts).filter((key) => !baseOrder.includes(key))
+        return [
+            {label: "all", count: totalAll},
+            ...[...baseOrder, ...extraStatuses].map((label) => ({
+                label,
+                count: Number(counts[label] ?? 0),
+            })),
+        ]
+    }, [meta, table.options.data])
 
-    // Вычисляем количество пустых строк для рендера
     const activeRows = table.getRowModel().rows
     const emptyRowsCount = Math.max(0, pagination.pageSize - activeRows.length)
+    const totalPaginationCount = isServerMode
+        ? (meta?.total ?? 0)
+        : table.getFilteredRowModel().rows.length
 
     return (
         <div className="space-y-4 w-full max-w-full overflow-hidden" aria-busy={isFetching}>
-            <TableToolbar table={table} statusesInfo={statusesInfo} action={action}/>
+            <TableToolbar
+                table={table}
+                statusesInfo={statusesInfo}
+                action={action}
+                meta={meta}
+                onExport={onExport}
+            />
 
             <div className="
                 flex flex-col overflow-hidden rounded-[18px]
@@ -152,10 +182,6 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
                 shadow-[0_4px_16px_rgba(0,0,0,0.04)]
                 dark:border-white/[0.06] dark:bg-[#1C1C1E] dark:shadow-none
             ">
-                {/*
-                  Контейнер с поддержкой горизонтальной прокрутки на очень маленьких iPhone.
-                  no-scrollbar скрывает системный скроллбар для нативного вида.
-                */}
                 <div className="w-full overflow-x-auto scrollbar-none touch-pan-x [-webkit-overflow-scrolling:touch]">
                     <div className="w-full min-w-[340px] bg-white dark:bg-[#1C1C1E]">
                         <Table className="">
@@ -170,7 +196,7 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
                                                     style={{width: header.column.getSize()}}
                                                     className={cn(
                                                         header.column.id === "select" ? "px-0" : "font-medium",
-                                                        getResponsiveColumnClass(colId) // Применяем адаптивные классы
+                                                        getResponsiveColumnClass(colId)
                                                     )}
                                                 >
                                                     <div
@@ -178,7 +204,10 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
                                                             "flex items-center",
                                                             header.column.id === "select"
                                                                 ? "justify-center"
-                                                                : "cursor-pointer gap-1 rounded-md px-2 justify-between py-1 transition-colors duration-150 hover:bg-black/5 active:bg-black/10"
+                                                                : cn(
+                                                                    "gap-1 rounded-md px-2 justify-between py-1 transition-colors duration-150",
+                                                                    header.column.getCanSort() && "cursor-pointer hover:bg-black/5 active:bg-black/10",
+                                                                )
                                                         )}
                                                         onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
                                                     >
@@ -204,12 +233,11 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
                             <TableBody className="">
                                 {activeRows.length > 0 ? (
                                     <>
-                                        {/* Реальные товары */}
                                         {activeRows.map((row) => (
                                             <TableRow
                                                 onClick={() => navigate(`${(row.original as {id: string | number}).id}`)}
                                                 key={row.id}
-                                                className="cursor-pointer active:bg-black/[0.02] dark:active:bg-white/[0.02]" // Эффект тапа на iOS
+                                                className="cursor-pointer active:bg-black/[0.02] dark:active:bg-white/[0.02]"
                                                 data-state={row.getIsSelected() ? "selected" : undefined}
                                             >
                                                 {row.getAllCells().map((cell) => {
@@ -220,7 +248,7 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
                                                             style={{width: cell.column.getSize()}}
                                                             className={cn(
                                                                 cell.column.id === "select" ? "px-0" : undefined,
-                                                                getResponsiveColumnClass(colId) // Скрываем ячейки на мобилке в такт шапке
+                                                                getResponsiveColumnClass(colId)
                                                             )}
                                                         >
                                                             <div
@@ -233,7 +261,6 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
                                             </TableRow>
                                         ))}
 
-                                        {/* Строки-заглушки (Placeholders) */}
                                         {Array.from({length: emptyRowsCount}).map((_, index) => (
                                             <TableRow
                                                 key={`empty-row-${index}`}
@@ -247,7 +274,7 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
                                                             style={{width: column.size}}
                                                             className={cn(
                                                                 "h-[72.8px] py-0",
-                                                                getResponsiveColumnClass(colId) // Заглушки тоже должны скрывать колонки!
+                                                                getResponsiveColumnClass(colId)
                                                             )}
                                                         >
                                                             <div className="opacity-0">&nbsp;</div>
@@ -258,7 +285,6 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
                                         ))}
                                     </>
                                 ) : (
-                                    /* Если фильтр вообще ничего не выдал */
                                     <TableRow className="">
                                         <TableCell
                                             colSpan={columns.length}
@@ -275,7 +301,7 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
                             <tfoot>
                             <tr>
                                 <td colSpan={columns.length} className="p-0">
-                                    <TablePagination table={table} dataLength={data.length}/>
+                                    <TablePagination table={table} dataLength={totalPaginationCount}/>
                                 </td>
                             </tr>
                             </tfoot>
@@ -286,8 +312,12 @@ export function DataTable({columns, data, action = null, meta = undefined, onQue
 
             <SelectedRowsBar
                 count={selectedCount}
+                selectedIds={selectedIds}
                 statusesInfo={statusesInfo}
                 onClear={() => table.setRowSelection({})}
+                onBulkStatusChange={onBulkStatusChange}
+                onBulkDelete={onBulkDelete}
+                isPending={isBulkPending}
             />
         </div>
     )

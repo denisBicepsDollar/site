@@ -1,6 +1,8 @@
-const csvCell = value => `"${String(value ?? "").replaceAll('"', '""')}"`;
+import {statusLabels} from "@/shared/components/localization.ts";
 
-export function downloadProductsCsv(products) {
+const csvCell = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;
+
+export function downloadProductsCsv(products: Array<Record<string, any>>) {
     const headers = [
         "ID",
         "Название",
@@ -12,17 +14,24 @@ export function downloadProductsCsv(products) {
         "Статус",
         "Обновлён",
     ];
-    const rows = products.map(product => [
-        product.id,
-        product.name,
-        product.sku,
-        product.category,
-        product.price,
-        product.stock,
-        product.variantSummary,
-        product.status,
-        product.updated,
-    ]);
+    const rows = products.map(product => {
+        const variantSummary = product.variantSummary ?? (product.variants ?? [])
+            .map((v: {name?: string; stock?: number; price?: number}) =>
+                `${v.name || "Стандарт"}: ${v.stock ?? 0} шт. (${v.price ?? product.price ?? 0} ₽)`)
+            .join(", ");
+
+        return [
+            product.id,
+            product.name,
+            product.sku,
+            product.category,
+            product.price,
+            product.stock,
+            variantSummary,
+            statusLabels[product.status] ?? product.status,
+            product.updated,
+        ];
+    });
     const contents = [headers, ...rows]
         .map(row => row.map(csvCell).join(";"))
         .join("\r\n");

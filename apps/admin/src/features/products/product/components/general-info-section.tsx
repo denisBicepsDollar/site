@@ -11,6 +11,20 @@ import {CharCounter} from "../ui/char-counter.tsx"
 import {MetaBadge, MetaField} from "../ui/meta.tsx"
 import {PriceInput} from "../ui/price-input.tsx"
 
+function formatUpdatedDate(value: unknown): string {
+    if (!value || value === "—") return "—";
+    const text = String(value);
+    const parsed = Date.parse(text);
+    if (Number.isNaN(parsed)) return text;
+    return new Date(parsed).toLocaleString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+}
+
 export function GeneralInfoSection({
                                        name,
                                        onNameChange,
@@ -53,17 +67,15 @@ export function GeneralInfoSection({
                         current={productName.length}
                         max={MAX_NAME_LENGTH}
                     />
-
                 </div>
-
 
                 <div
                     className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-[#E5E5EA] pt-3 dark:border-[#38383A]">
-                    <MetaField label="Артикул" value={sku} strong/>
+                    <MetaField label="Артикул" value={sku || "Автоматически"} strong/>
 
                     <MetaField
                         label="Обновлён"
-                        value={String(updated).toLowerCase()}
+                        value={formatUpdatedDate(updated)}
                     />
 
                     <MetaBadge label="Вариантов" value={variantsCount}/>
@@ -79,7 +91,7 @@ export function GeneralInfoSection({
                         required
                         value={basePrice}
                         onChange={onBasePriceChange}
-                        wrapperClassName="w-24" /* Управляет шириной серой капсулы */
+                        wrapperClassName="w-28"
                     />
                 </div>
             </CardContent>
