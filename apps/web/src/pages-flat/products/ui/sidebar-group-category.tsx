@@ -12,11 +12,21 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/shared/ui/sidebar";
+import {
+  CATEGORY_LABELS,
+  DEFAULT_SUBCATEGORIES_BY_CATEGORY,
+  SUBCATEGORY_LABELS,
+} from "../config/catalog-labels";
 import { useProductsCatalog } from "../model/use-products-store";
 
 export function SidebarGroupCategory() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const segments = pathname.split("/").filter(Boolean);
+  const activeCategory = segments[0] === "products" ? segments[1] : undefined;
+  const activeSubcategory =
+    segments[0] === "products" ? segments[2] : undefined;
 
   const createHref = (path: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -25,17 +35,15 @@ export function SidebarGroupCategory() {
     return queryString ? `${path}?${queryString}` : path;
   };
 
-  const category = [
-    { label: "Комнатные", key: "indoor" },
-    { label: "Садовые", key: "outdoor" },
-  ] as const;
-
-  const indoorCategory = [{ label: "Англаонема", key: "aglaonema" }] as const;
-  const outdoorCategory = [{ label: "Гортензия", key: "gortenzia" }] as const;
   const { counts } = useProductsCatalog();
   const total = counts?.total ?? 0;
   const categories = counts?.categories ?? {};
   const subcategories = counts?.subcategories ?? {};
+  const byCategory = counts?.byCategory ?? {};
+
+  const categoryKeys = Array.from(
+    new Set(["indoor", "outdoor", ...Object.keys(categories)]),
+  );
 
   return (
     <SidebarGroup>
@@ -50,53 +58,45 @@ export function SidebarGroupCategory() {
           </SidebarMenuButton>
           <SidebarMenuBadge>{total}</SidebarMenuBadge>
         </SidebarMenuItem>
-        {category.map(({ label, key }) => {
+        {categoryKeys.map((key) => {
           const hrefCategory = `/products/${key}`;
+          const isCategoryActive = activeCategory === key;
+          const label = CATEGORY_LABELS[key] ?? key;
+
+          const subKeys = Array.from(
+            new Set([
+              ...(DEFAULT_SUBCATEGORIES_BY_CATEGORY[key] ?? []),
+              ...Object.keys(byCategory[key] ?? {}),
+            ]),
+          );
+
           return (
             <SidebarMenuItem key={key}>
               <SidebarMenuButton
-                active={pathname.includes(hrefCategory)}
+                active={isCategoryActive && !activeSubcategory}
                 render={<Link href={createHref(hrefCategory)} />}
               >
                 <span>{label}</span>
               </SidebarMenuButton>
               <SidebarMenuBadge>{categories[key] ?? 0}</SidebarMenuBadge>
 
-              {key === "indoor" && pathname.includes("indoor") && (
+              {isCategoryActive && subKeys.length > 0 && (
                 <SidebarMenuSub>
-                  {indoorCategory.map((sub) => {
-                    const hrefSubcategory = `/products/indoor/${sub.key}`;
+                  {subKeys.map((subKey) => {
+                    const hrefSubcategory = `/products/${key}/${subKey}`;
+                    const subLabel = SUBCATEGORY_LABELS[subKey] ?? subKey;
+                    const subCount =
+                      byCategory[key]?.[subKey] ?? subcategories[subKey] ?? 0;
+
                     return (
-                      <SidebarMenuSubItem key={sub.key}>
+                      <SidebarMenuSubItem key={subKey}>
                         <SidebarMenuSubButton
                           render={<Link href={createHref(hrefSubcategory)} />}
-                          active={pathname === hrefSubcategory}
+                          active={activeSubcategory === subKey}
                         >
-                          {sub.label}
+                          {subLabel}
                         </SidebarMenuSubButton>
-                        <SidebarMenuBadge>
-                          {subcategories[sub.key] ?? 0}
-                        </SidebarMenuBadge>
-                      </SidebarMenuSubItem>
-                    );
-                  })}
-                </SidebarMenuSub>
-              )}
-              {key === "outdoor" && pathname.includes("outdoor") && (
-                <SidebarMenuSub>
-                  {outdoorCategory.map((sub) => {
-                    const hrefSubcategory = `/products/outdoor/${sub.key}`;
-                    return (
-                      <SidebarMenuSubItem key={sub.key}>
-                        <SidebarMenuSubButton
-                          render={<Link href={createHref(hrefSubcategory)} />}
-                          active={pathname === hrefSubcategory}
-                        >
-                          {sub.label}
-                        </SidebarMenuSubButton>
-                        <SidebarMenuBadge>
-                          {subcategories[sub.key] ?? 0}
-                        </SidebarMenuBadge>
+                        <SidebarMenuBadge>{subCount}</SidebarMenuBadge>
                       </SidebarMenuSubItem>
                     );
                   })}

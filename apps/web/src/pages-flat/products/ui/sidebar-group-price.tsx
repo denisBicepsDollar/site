@@ -13,44 +13,118 @@ import {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useProductsCatalog } from "../model/use-products-store";
 
+function parseUrlPrice(value: string | null): number | null {
+  if (value === null || value.trim() === "") return null;
+  const num = Number(value);
+  return Number.isFinite(num) && num >= 0 ? num : null;
+}
+
 export function SidebarGroupPrice() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { prices } = useProductsCatalog();
-  // Базовые границы цен из бэкенда (meta)
+
   const metaMin = prices?.minPrice ?? 0;
   const metaMax = prices?.maxPrice ?? 0;
 
-  const urlMin = searchParams.get("minPrice");
-  const urlMax = searchParams.get("maxPrice");
+  const rawUrlMin = searchParams.get("minPrice");
+  const rawUrlMax = searchParams.get("maxPrice");
+  const searchString = searchParams.toString();
 
-  // Локальный стейт для инпутов: если в URL ничего нет, подставляем значения из meta
-  const [minVal, setMinVal] = useState<string>(urlMin ?? String(metaMin || ""));
-  const [maxVal, setMaxVal] = useState<string>(urlMax ?? String(metaMax || ""));
+  const parsedUrlMin = parseUrlPrice(rawUrlMin);
+  const parsedUrlMax = parseUrlPrice(rawUrlMax);
 
-  // Когда meta загрузилась с бэка или изменился URL — обновляем значения в инпутах
+  const [minVal, setMinVal] = useState<string>(
+    parsedUrlMin !== null
+      ? String(parsedUrlMin)
+      : metaMin > 0
+        ? String(metaMin)
+        : "",
+  );
+  const [maxVal, setMaxVal] = useState<string>(
+    parsedUrlMax !== null
+      ? String(parsedUrlMax)
+      : metaMax > 0
+        ? String(metaMax)
+        : "",
+  );
+
   useEffect(() => {
-    setMinVal(urlMin ?? (metaMin ? String(metaMin) : ""));
-    setMaxVal(urlMax ?? (metaMax ? String(metaMax) : ""));
-  }, [urlMin, urlMax, metaMin, metaMax]);
+    const hasInvalidMin = rawUrlMin !== null && parsedUrlMin === null;
+    const hasInvalidMax = rawUrlMax !== null && parsedUrlMax === null;
+    const hasInvertedRange =
+      parsedUrlMin !== null &&
+      parsedUrlMax !== null &&
+      parsedUrlMin > parsedUrlMax;
 
-  // Запись в URL (если число совпадает с границей из meta, не засоряем URL лишним параметром)
-  const updateUrlPrices = (newMin: string, newMax: string) => {
+    if (hasInvalidMin || hasInvalidMax || hasInvertedRange) {
+      const params = new URLSearchParams(searchString);
+      params.delete("page");
+
+      let nextMin = parsedUrlMin;
+      let nextMax = parsedUrlMax;
+      if (nextMin !== null && nextMax !== null && nextMin > nextMax) {
+        [nextMin, nextMax] = [nextMax, nextMin];
+      }
+
+      if (nextMin !== null) {
+        params.set("minPrice", String(nextMin));
+      } else {
+        params.delete("minPrice");
+      }
+
+      if (nextMax !== null) {
+        params.set("maxPrice", String(nextMax));
+      } else {
+        params.delete("maxPrice");
+      }
+
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, {
+        scroll: false,
+      });
+      return;
+    }
+
+    setMinVal(
+      parsedUrlMin !== null
+        ? String(parsedUrlMin)
+        : metaMin > 0
+          ? String(metaMin)
+          : "",
+    );
+    setMaxVal(
+      parsedUrlMax !== null
+        ? String(parsedUrlMax)
+        : metaMax > 0
+          ? String(metaMax)
+          : "",
+    );
+  }, [
+    rawUrlMin,
+    rawUrlMax,
+    parsedUrlMin,
+    parsedUrlMax,
+    metaMin,
+    metaMax,
+    pathname,
+    router,
+    searchString,
+  ]);
+
+  const updateUrlPrices = (nextMin: number | null, nextMax: number | null) => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("page");
 
-    const numMin = Number(newMin);
-    const numMax = Number(newMax);
-
-    if (newMin !== "" && numMin !== metaMin) {
-      params.set("minPrice", String(numMin));
+    if (nextMin !== null && Number.isFinite(nextMin) && nextMin >= 0) {
+      params.set("minPrice", String(nextMin));
     } else {
       params.delete("minPrice");
     }
 
-    if (newMax !== "" && numMax !== metaMax) {
-      params.set("maxPrice", String(numMax));
+    if (nextMax !== null && Number.isFinite(nextMax) && nextMax >= 0) {
+      params.set("maxPrice", String(nextMax));
     } else {
       params.delete("maxPrice");
     }
@@ -61,109 +135,82 @@ export function SidebarGroupPrice() {
     });
   };
 
-  // Умное определение активной радиокнопки по текущим значениям в инпутах
   const getActiveRadio = () => {
-    const currentMin = Number(minVal);
-    const currentMax = Number(maxVal);
-
-    // Пока мета не загрузилась
-    if (!minVal && !maxVal) return "all";
-
-    // "до 500" — нижняя граница базовая (из meta), а верхняя ровно 500
-    if (currentMin <= metaMin && currentMax === 500) return "under-500";
-
-    // "до 1000" — нижняя граница базовая (из meta), а верхняя ровно 1000
-    if (currentMin <= metaMin && currentMax === 1000) return "under-1000";
-
-    // "1000 и дороже" — нижняя граница ровно 1000, а верхняя базовая (из meta)
-    if (currentMin >= 1000) return "over-1000";
-
-    if (currentMin <= metaMin && currentMax >= metaMax) return "all";
-
-    // Если ввели свой нестандартный диапазон (например, от 300 до 800) — ни одна радио не горит
+    if (parsedUrlMin === null && parsedUrlMax === null) return "all";
+    if (parsedUrlMin === null && parsedUrlMax === 500) return "under-500";
+    if (parsedUrlMin === null && parsedUrlMax === 1000) return "under-1000";
+    if (parsedUrlMin === 1000 && parsedUrlMax === null) return "over-1000";
     return "";
   };
+
   const applyPriceBounds = (rawMin: string, rawMax: string) => {
-    // Парсим числа; если поле пустое или ввели не число — берем границы из meta
-    let numMin =
-      rawMin.trim() === "" || isNaN(Number(rawMin)) ? metaMin : Number(rawMin);
-    let numMax =
-      rawMax.trim() === "" || isNaN(Number(rawMax)) ? metaMax : Number(rawMax);
+    const trimmedMin = rawMin.trim();
+    const trimmedMax = rawMax.trim();
 
-    // 1. Не даем выйти за пределы [metaMin, metaMax]
-    numMin = Math.max(metaMin, Math.min(numMin, metaMax));
-    numMax = Math.min(metaMax, Math.max(numMax, metaMin));
+    let nextMin =
+      trimmedMin !== "" && Number.isFinite(Number(trimmedMin))
+        ? Math.max(0, Number(trimmedMin))
+        : null;
+    let nextMax =
+      trimmedMax !== "" && Number.isFinite(Number(trimmedMax))
+        ? Math.max(0, Number(trimmedMax))
+        : null;
 
-    // 2. Если пользователь ввел "от" больше чем "до" — выравниваем
-    if (numMin > numMax) {
-      numMin = numMax;
+    if (nextMin !== null && nextMax !== null && nextMin > nextMax) {
+      [nextMin, nextMax] = [nextMax, nextMin];
     }
 
-    const safeMin = String(numMin);
-    const safeMax = String(numMax);
+    if (
+      nextMin !== null &&
+      metaMin > 0 &&
+      nextMin === metaMin &&
+      parsedUrlMin === null
+    ) {
+      nextMin = null;
+    }
 
-    setMinVal(safeMin);
-    setMaxVal(safeMax);
-    updateUrlPrices(safeMin, safeMax);
+    if (
+      nextMax !== null &&
+      metaMax > 0 &&
+      nextMax === metaMax &&
+      parsedUrlMax === null
+    ) {
+      nextMax = null;
+    }
+
+    setMinVal(
+      nextMin !== null
+        ? String(nextMin)
+        : metaMin > 0
+          ? String(metaMin)
+          : "",
+    );
+    setMaxVal(
+      nextMax !== null
+        ? String(nextMax)
+        : metaMax > 0
+          ? String(metaMax)
+          : "",
+    );
+    updateUrlPrices(nextMin, nextMax);
   };
 
-  // При клике на радио ставим в URL и инпуты комбинацию из meta и выбранного порога
   const handleRadioChange = (value: string) => {
     switch (value) {
       case "under-500":
-        updateUrlPrices(String(metaMin), "500");
+        updateUrlPrices(null, 500);
         break;
       case "under-1000":
-        updateUrlPrices(String(metaMin), "1000");
+        updateUrlPrices(null, 1000);
         break;
       case "over-1000":
-        updateUrlPrices("1000", String(metaMax));
+        updateUrlPrices(1000, null);
         break;
       case "all":
-        updateUrlPrices(String(metaMin), String(metaMax));
+        updateUrlPrices(null, null);
         break;
     }
   };
-
-  // Внутри SidebarGroupPrice.tsx
-  useEffect(() => {
-    if (!metaMin && !metaMax) return;
-
-    let nextMin = urlMin !== null ? Number(urlMin) : metaMin;
-    let nextMax = urlMax !== null ? Number(urlMax) : metaMax;
-
-    // Защита от NaN, если в URL вбили ?minPrice=abc
-    if (!Number.isFinite(nextMin)) nextMin = metaMin;
-    if (!Number.isFinite(nextMax)) nextMax = metaMax;
-
-    // Зажимаем в реальные границы категории
-    const clampedMin = Math.max(metaMin, Math.min(nextMin, metaMax));
-    const clampedMax = Math.min(metaMax, Math.max(nextMax, metaMin));
-
-    setMinVal(String(clampedMin));
-    setMaxVal(String(clampedMax));
-
-    // Проверяем, отличается ли URL от валидных границ
-    const expectedUrlMin = clampedMin > metaMin ? String(clampedMin) : null;
-    const expectedUrlMax = clampedMax < metaMax ? String(clampedMax) : null;
-
-    if (urlMin !== expectedUrlMin || urlMax !== expectedUrlMax) {
-      const params = new URLSearchParams(searchParams.toString());
-
-      expectedUrlMin
-        ? params.set("minPrice", expectedUrlMin)
-        : params.delete("minPrice");
-
-      expectedUrlMax
-        ? params.set("maxPrice", expectedUrlMax)
-        : params.delete("maxPrice");
-
-      const query = params.toString();
-      router.replace(`${pathname}${query ? `?${query}` : ""}`, {
-        scroll: false,
-      });
-    }
-  }, [urlMin, urlMax, metaMin, metaMax, pathname, router, searchParams]);
 
   return (
     <SidebarGroup>
@@ -172,6 +219,8 @@ export function SidebarGroupPrice() {
         <Fieldset>
           <Field className="flex flex-row gap-2">
             <Input
+              aria-label="Цена от"
+              placeholder={metaMin > 0 ? String(metaMin) : "От"}
               value={minVal}
               onValueChange={(val) => setMinVal(val.replace(/\D/g, ""))}
               onBlur={() => {
@@ -184,6 +233,8 @@ export function SidebarGroupPrice() {
               }}
             />
             <Input
+              aria-label="Цена до"
+              placeholder={metaMax > 0 ? String(metaMax) : "До"}
               value={maxVal}
               onValueChange={(val) => setMaxVal(val.replace(/\D/g, ""))}
               onBlur={() => {

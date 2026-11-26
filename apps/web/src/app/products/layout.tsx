@@ -43,7 +43,10 @@ export default function ProductsLayout({
           layout="inset"
           mobileBreakpoint="lg"
         >
-          <Sidebar className="sticky top-20 h-fit" collapsible="icon">
+          <Sidebar
+            className="lg:sticky! lg:top-24! lg:bottom-auto! lg:h-fit!"
+            collapsible="icon"
+          >
             <SidebarHeader className="flex-row items-center gap-1">
               <SidebarBrand className="group-data-[state=collapsed]:hidden">
                 Фильтры

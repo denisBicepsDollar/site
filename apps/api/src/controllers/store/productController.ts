@@ -24,26 +24,26 @@ export async function list(req, res) {
 
   // Если это 2-я страница и дальше — не грузим базу лишними запросами за sizes, prices и counts
   if (page > 1) {
-    const data = await productService.list(searchParams);
+    const { items, hasMore, limit } = await productService.listPage(searchParams);
 
     return res.status(200).json({
-      data,
-      meta: {}, // Отдаем пустой объект, чтобы не сломать типизацию { data, meta } на фронте
+      data: items,
+      meta: { hasMore, page, limit },
     });
   }
 
   // Только для первой страницы (или при смене фильтров) считаем всю мету
-  const [data, sizes, prices, counts] = await Promise.all([
-    productService.list(searchParams),
+  const [{ items, hasMore, limit }, sizes, prices, counts] = await Promise.all([
+    productService.listPage(searchParams),
     productService.sizes(searchParams),
     productService.prices(searchParams),
     productService.counts(searchParams),
   ]);
 
-  const meta = { sizes, prices, counts };
+  const meta = { sizes, prices, counts, hasMore, page, limit };
 
   return res.status(200).json({
-    data,
+    data: items,
     meta,
   });
 }

@@ -53,8 +53,17 @@ export function ProductsSortCombobox() {
       value={currentOption}
       onValueChange={handleSortChange}
       items={SORTING_TAGS}
+      itemToStringLabel={(item) => item.label}
+      isItemEqualToValue={(a, b) => a.value === b.value}
     >
-      <ComboboxTrigger render={<SelectButton className="max-w-xs" />}>
+      <ComboboxTrigger
+        render={
+          <SelectButton
+            aria-label="Сортировка товаров"
+            className="max-w-xs"
+          />
+        }
+      >
         <ComboboxValue />
       </ComboboxTrigger>
       <ComboboxPopup aria-label="Сортировка товаров">

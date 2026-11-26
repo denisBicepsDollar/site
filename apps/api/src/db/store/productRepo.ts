@@ -1,7 +1,8 @@
 import type { SearchParams } from "@/controllers/store/productController";
 import db from "@/db/index";
 import { productsInProducts, productVariantsInProducts } from "@drizzle/schema";
-import { and, eq, exists, desc, asc, inArray, sql } from "drizzle-orm";
+import { and, eq, gt, gte, inArray, lte, sql } from "drizzle-orm";
+import { buildProductSearchSql } from "./productSearch";
 
 const formattedDates = {
   created_at: sql<string>`TO_CHAR(${productsInProducts.createdAt}, 'DD.MM.YYYY HH24:MI:SS')`,
@@ -35,68 +36,81 @@ export async function list(
   }
 
   const hasVariantFilter = Object.keys(variantFilter).length > 0;
-
-  // Подзапрос минимальной цены варианта (учитывает выбранные размеры, если они есть)
-  const minVariantPrice = sql<number>`(
-    select min(${productVariantsInProducts.price})
-    from ${productVariantsInProducts}
-    where ${and(
-      eq(productVariantsInProducts.productId, productsInProducts.id),
-      sizes && sizes.length > 0
-        ? inArray(productVariantsInProducts.name, sizes)
-        : undefined,
-    )}
-  )`;
-
-  // Проверка наличия: товары с остатком > 0 всегда выше тех, что закончились
-  const hasStock = sql<boolean>`exists(
-    select 1 from ${productVariantsInProducts}
-    where ${productVariantsInProducts.productId} = ${productsInProducts.id}
-      and ${productVariantsInProducts.stock} > 0
-  )`;
-
-  const searchPattern = search ? `%${search}%` : undefined;
+  const hasSearch = Boolean(buildProductSearchSql(productsInProducts, search));
 
   return await db.query.productsInProducts.findMany({
     where: {
       ...(category && { category: { eq: category } }),
       ...(subcategory && { subcategory: { eq: subcategory } }),
       ...(hasVariantFilter && { productVariantsInProducts: variantFilter }),
-      ...(searchPattern && {
-        OR: [
-          { name: { ilike: searchPattern } },
-          { shortDescription: { ilike: searchPattern } },
-          { sku: { ilike: searchPattern } },
-        ],
+      ...(hasSearch && {
+        RAW: (p) => buildProductSearchSql(p, search)!,
       }),
     },
-    limit, // <-- берём 12 записей
+    limit,
     offset,
-    orderBy: (p, { asc, desc }) => {
-      const minVariantPrice = sql<number>`(
-        select min(${productVariantsInProducts.price})
-        from ${productVariantsInProducts}
-        where ${and(
-          eq(productVariantsInProducts.productId, p.id),
-          sizes && sizes.length > 0
-            ? inArray(productVariantsInProducts.name, sizes)
-            : undefined,
-        )}
+    orderBy: (p, { desc }) => {
+      const matchingVariantFilters = [
+        eq(productVariantsInProducts.productId, p.id),
+        sizes && sizes.length > 0
+          ? inArray(productVariantsInProducts.name, sizes)
+          : undefined,
+        minPrice !== undefined
+          ? gte(productVariantsInProducts.price, minPrice)
+          : undefined,
+        maxPrice !== undefined
+          ? lte(productVariantsInProducts.price, maxPrice)
+          : undefined,
+      ];
+
+      const effectiveMinPrice = sql<number | null>`coalesce(
+        (
+          select min(${productVariantsInProducts.price})
+          from ${productVariantsInProducts}
+          where ${and(
+            ...matchingVariantFilters,
+            gt(productVariantsInProducts.stock, 0),
+            gt(productVariantsInProducts.price, 0),
+          )}
+        ),
+        (
+          select min(${productVariantsInProducts.price})
+          from ${productVariantsInProducts}
+          where ${and(
+            ...matchingVariantFilters,
+            gt(productVariantsInProducts.price, 0),
+          )}
+        ),
+        nullif(${p.price}, 0)
       )`;
 
       const hasStock = sql<boolean>`exists(
         select 1 from ${productVariantsInProducts}
-        where ${productVariantsInProducts.productId} = ${p.id}
-          and ${productVariantsInProducts.stock} > 0
+        where ${and(
+          ...matchingVariantFilters,
+          gt(productVariantsInProducts.stock, 0),
+        )}
       )`;
 
       switch (sort) {
         case "price":
-          return [desc(hasStock), asc(minVariantPrice), desc(p.id)];
+          return [
+            desc(hasStock),
+            sql`${effectiveMinPrice} asc nulls last`,
+            desc(p.id),
+          ];
         case "price_desc":
-          return [desc(hasStock), desc(minVariantPrice), desc(p.id)];
+          return [
+            desc(hasStock),
+            sql`${effectiveMinPrice} desc nulls last`,
+            desc(p.id),
+          ];
         case "new":
-          return [desc(hasStock), desc(p.createdAt), desc(p.id)];
+          return [
+            desc(hasStock),
+            sql`${p.createdAt} desc nulls last`,
+            desc(p.id),
+          ];
         case "score":
         default:
           return [
